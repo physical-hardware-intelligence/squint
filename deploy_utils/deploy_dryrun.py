@@ -65,10 +65,10 @@ class SimCamera:
     """Closed loop: renders Squint's own sim wrist camera at the fake arm's current pose (sim-as-real). The frame is
     padded to 640x480 so deploy's centre crop gets the square render back. Also scores the reach like the sim does."""
 
-    def __init__(self, bus, seed):
+    def __init__(self, bus, seed, env_id="SO101ReachCube-v1"):
         import gymnasium as gym, torch, envs  # noqa: F401
         self.torch, self.bus = torch, bus
-        self.env = gym.make("SO101ReachCube-v1", obs_mode="rgb+segmentation", render_mode="sensors", num_envs=1,
+        self.env = gym.make(env_id, obs_mode="rgb+segmentation", render_mode="sensors", num_envs=1,
                             domain_randomization=False, sensor_configs={"width": 480, "height": 480})
         self.env.reset(seed=seed)
         self.u = self.env.unwrapped
@@ -100,9 +100,9 @@ class SimCamera:
 class FakeRobot:
     name = "so_follower"          # what lerobot 0.4.3 reports
 
-    def __init__(self, camera="sim", seed=0, frame=None):
+    def __init__(self, camera="sim", seed=0, frame=None, env_id="SO101ReachCube-v1"):
         self.bus = FakeBus()
-        self.cameras = {"base_camera": FakeCamera(frame) if camera == "frame" else SimCamera(self.bus, seed)}
+        self.cameras = {"base_camera": FakeCamera(frame) if camera == "frame" else SimCamera(self.bus, seed, env_id)}
         self.log, self.events = [], []
 
     def connect(self, calibrate=True):
@@ -177,6 +177,8 @@ def main():
     ap.add_argument("--checkpoint", required=True)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--record-dir", default=None, help="pass --record_dir to deploy.py (flight recorder test)")
+    ap.add_argument("--env-id", default="SO101ReachCube-v1",
+                    help="task; the sim camera teleports the robot, so objects never move (pipeline test, not a grasp test)")
     a = ap.parse_args()
 
     import tyro
@@ -185,7 +187,7 @@ def main():
 
     if a.camera == "frame" and not a.frame:
         raise SystemExit("--camera frame needs --frame <image>")
-    robot = FakeRobot(a.camera, a.seed, a.frame)
+    robot = FakeRobot(a.camera, a.seed, a.frame, a.env_id)
     atexit.register(summarize, robot)                 # registered first, so it runs last
     deploy.create_real_robot = lambda: robot
     deploy.KeyboardController = lambda: ScriptedKeys(a.steps)
@@ -209,7 +211,7 @@ def main():
     deploy.LeRobotRealAgent.reset = reset_tagged
 
     args = tyro.cli(deploy.Args, args=[
-        f"--checkpoint={a.checkpoint}", "--env_id=SO101ReachCube-v1",
+        f"--checkpoint={a.checkpoint}", f"--env_id={a.env_id}",
         "--no-continuous_eval", "--control_freq=15", "--debug", f"--max_episode_steps={a.steps}"]
         + ([f"--record_dir={a.record_dir}"] if a.record_dir else []))
     deploy.main(args)
