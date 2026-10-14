@@ -508,6 +508,7 @@ def main(args: Args):
             skip_episode = False
             if flight:
                 flight.start_episode()
+            real_obs = real_env.observe()   # Phi: a fresh frame; reset() captured one before the cube was placed
 
             for _ in tqdm(range(args.max_episode_steps), desc="Steps"):
                 key = kb.check_key()

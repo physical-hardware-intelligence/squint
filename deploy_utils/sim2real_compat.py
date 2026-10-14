@@ -19,3 +19,19 @@ class Sim2RealEnv(_ManiSkillSim2RealEnv):
     @property
     def base_sim_env(self):
         return self._base_sim_env
+
+    def observe(self):
+        """A fresh observation (camera frame + joint angles) through the same wrapper path as reset(), without
+        moving the arm. Phi: deploy.py captures each episode's first frame inside reset(), i.e. before the cube is
+        placed for that episode, so without this step 0 sees the previous cube position."""
+        if self._handle_wrappers:
+            orig_env = self._last_wrapper.env
+            self._last_wrapper.env = self._env_with_real_step_reset
+            try:
+                obs, _ = self._first_wrapper.reset()
+            finally:
+                self._last_wrapper.env = orig_env
+        else:
+            obs, _ = self._env_with_real_step_reset.reset()
+        self.base_sim_env.agent.robot.set_qpos(self.agent.robot.qpos)
+        return obs
