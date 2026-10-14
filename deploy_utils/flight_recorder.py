@@ -21,7 +21,9 @@ class FlightRecorder:
     def __init__(self, root):
         self.root = Path(root)
         self.root.mkdir(parents=True, exist_ok=True)
-        self.episode, self.step, self._f, self._w = -1, 0, None, None
+        # never overwrite: a second launch into the same folder continues after the highest existing episode
+        done = [int(d.name[2:]) for d in self.root.glob("ep[0-9][0-9][0-9]") if d.is_dir()]
+        self.episode, self.step, self._f, self._w = (max(done) if done else -1), 0, None, None
 
     def start_episode(self):
         self.close()
