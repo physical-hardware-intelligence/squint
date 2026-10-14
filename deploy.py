@@ -39,6 +39,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 from deploy_utils.sim2real_compat import Sim2RealEnv  # ManiSkill's, minus the reset() recursion (ManiSkill#1498)
+from deploy_utils.safety import exit_qpos, guard_until_safe_exit
 from mani_skill.utils.wrappers.flatten import FlattenRGBDObservationWrapper
 from mani_skill.sensors.camera import CameraConfig
 from mani_skill.utils import common
@@ -158,7 +159,8 @@ def setup_safe_exit(sim_env, real_env, real_agent, recorder=None):
             pass
         try:
             if real_agent is not None:
-                real_agent.reset(sim_env.unwrapped.agent.keyframes["rest"].qpos)
+                # rest pose with wrist roll -90 deg, not -180 deg (the encoder seam on a full-circle wrist calibration)
+                real_agent.reset(exit_qpos())
         except Exception:
             pass
         for env in [real_env, sim_env]:
@@ -382,6 +384,8 @@ def main(args: Args):
     real_robot = create_real_robot()
     real_robot.connect()
     real_agent = LeRobotRealAgent(real_robot)
+    # torque is on from here; until setup_safe_exit below, a crash would leave the arm holding wherever it is
+    safety_guard = guard_until_safe_exit(real_agent, real_robot)
 
     env_kwargs = dict(
         obs_mode=args.obs_mode,
@@ -422,6 +426,7 @@ def main(args: Args):
         print(f"  {k}: sim={sim_obs[k].shape}, real={real_obs[k].shape}")
 
     setup_safe_exit(sim_env, real_env, real_agent, recorder=recorder)
+    safety_guard["armed"] = False   # deploy's own exit handler now covers the arm
 
     # --------------------------------------------------
     # Phase 2: Agent Loading
@@ -570,7 +575,7 @@ def main(args: Args):
     # Cleanup
     print("\nReturning robot to rest position...")
     try:
-        real_agent.reset(sim_env.unwrapped.agent.keyframes["rest"].qpos)
+        real_agent.reset(exit_qpos())   # rest pose with wrist roll -90 deg (see deploy_utils/safety.py)
     except Exception as e:
         print(f"Warning: failed to reset robot to rest: {e}")
 
