@@ -494,8 +494,11 @@ class WristCameraEnv(BaseRandomEnv):
     """
 
     # Base pose relative to gripper_link
-    WRIST_CAMERA_BASE_POS = (-0.0049, 0.0498, -0.0591)
-    WRIST_CAMERA_BASE_ROT_RAD = (np.deg2rad(-90), np.deg2rad(91), np.deg2rad(-35.31))  # radians (roll, pitch, yaw)
+    # Phi: tuned to our SO-101 wrist-camera mount (no-motion tuner, deploy with a 180 deg image flip:
+    # SQUINT_CAMERA_ROTATION=180). Upstream values: (-0.0049, 0.0498, -0.0591) m and (-90, 91, -35.31) deg.
+    # Re-tune for your mount (deploy_utils/tune_camera_nomotion.py) and retrain: the pose is a training-time input.
+    WRIST_CAMERA_BASE_POS = (0.0030, 0.0490, -0.0610)
+    WRIST_CAMERA_BASE_ROT_RAD = (np.deg2rad(-92.0), np.deg2rad(92.0), np.deg2rad(-36.0))  # radians (roll, pitch, yaw)
     WRIST_CAMERA_FOV = np.deg2rad(71)  # 71 degrees
 
     def __init__(
