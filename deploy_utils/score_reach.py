@@ -10,10 +10,12 @@ Score real SO101ReachCube episodes from a flight recording (deploy.py --record_d
   * gripper: logged gripper angle below 3 deg sim (closeness >= 90% of the -10..120 deg range).
 
 Usage (repo root): source env.sh && python deploy_utils/score_reach.py <record_dir>/flight [--positions cubes.csv]
-  --positions: CSV with columns ep,x_cm,y_cm (e.g. 0,30,-5): the cube positions measured with a ruler, base frame
-               (x forward from the pan axis, y to the robot's left). Used instead of the estimate, which is still
+  --positions: CSV with columns ep,x_cm,y_cm (e.g. 0,26,-5): the cube centres measured with a ruler FROM THE PAN AXIS
+               (x forward along the arm at pan 0, y to the robot's left). Used instead of the estimate, which is still
                reported, so the CSV also measures the estimate's error.
-  --cube-xy X Y: one measured position in metres for every episode.
+  --cube-xy X Y: one measured position in cm from the pan axis for every episode.
+  All positions printed are from the pan axis. The sim's own origin (the URDF base) sits PAN_X (3.9 cm) behind it;
+  the training square is x 20-40 cm from that origin = 16.1-36.1 cm from the pan axis, y -10..10 cm.
 """
 
 import os
@@ -35,7 +37,7 @@ GOAL_ABOVE_TOP = 0.02      # reach.py above_item_goal_height
 REACH_THRESH = 0.02        # reach.py target_goal_thresh
 STATIC_DEG = 0.5           # [judgement] max joint change between consecutive recorded steps to count as still
 GRIPPER_CLOSED_DEG = 3.0   # sim degrees: closeness >= 90% of the -10..120 deg range
-SPAWN = {"x": (0.20, 0.40), "y": (-0.10, 0.10)}   # reach.py spawn_box_pos [0.3, 0], half size 0.1
+SPAWN = {"x": (0.20, 0.40), "y": (-0.10, 0.10)}   # reach.py spawn_box_pos [0.3, 0], half size 0.1 (sim origin frame)
 
 
 def cube_from_frame(u, rgb, qpos):
@@ -61,19 +63,20 @@ def cube_from_frame(u, rgb, qpos):
 def main():
     ap = argparse.ArgumentParser(description="score real ReachCube episodes from a flight recording")
     ap.add_argument("flight")
-    ap.add_argument("--cube-xy", nargs=2, type=float, default=None, metavar=("X", "Y"))
+    ap.add_argument("--cube-xy", nargs=2, type=float, default=None, metavar=("X_CM", "Y_CM"))
     ap.add_argument("--positions", default=None, help="CSV ep,x_cm,y_cm of ruler-measured cube positions")
     a = ap.parse_args()
     measured = {}
     if a.positions:
         for r in csv.DictReader(open(a.positions)):
-            measured[int(r["ep"])] = (float(r["x_cm"]) / 100, float(r["y_cm"]) / 100)
+            measured[int(r["ep"])] = (float(r["x_cm"]) / 100, float(r["y_cm"]) / 100)   # pan-axis frame
 
     env = gym.make("SO101ReachCube-v1", obs_mode="rgb+segmentation", render_mode="sensors", num_envs=1,
                    domain_randomization=False, sensor_configs={"width": 128, "height": 128})
     env.reset(seed=0)
     u = env.unwrapped
     half = float(u.item_half_sizes[0])
+    pan_x = float(u.agent.robot.links_map["shoulder_link"].pose.p[0, 0])   # pan axis, 0.0388 m ahead of the origin
     report = {}
     for ep in sorted(p for p in Path(a.flight).iterdir() if p.is_dir() and p.name.startswith("ep")):
         rows = list(csv.DictReader(open(ep / "log.csv")))
@@ -82,7 +85,8 @@ def main():
         est = cube_from_frame(u, rgb, torch.from_numpy(q[:1]))
         ep_idx = int(ep.name[2:])
         if ep_idx in measured or a.cube_xy:
-            cx, cy = measured.get(ep_idx, tuple(a.cube_xy or (0, 0)))
+            mx, my = measured.get(ep_idx, tuple(v / 100 for v in (a.cube_xy or (0, 0))))
+            cx, cy = mx + pan_x, my                      # to the sim's frame
             src = "measured"
         elif est is not None:
             cx, cy, src = est[0], est[1], f"estimated from {est[2]} red pixels"
@@ -106,7 +110,8 @@ def main():
         first = lambda m: int(np.argmax(m)) if m.any() else None
         in_spawn = SPAWN["x"][0] <= cx <= SPAWN["x"][1] and SPAWN["y"][0] <= cy <= SPAWN["y"][1]
         report[ep.name] = {
-            "cube_xy_cm": [round(100 * cx, 1), round(100 * cy, 1)], "cube_source": src, "cube_in_training_area": in_spawn,
+            "cube_xy_cm_from_pan_axis": [round(100 * (cx - pan_x), 1), round(100 * cy, 1)], "cube_source": src,
+            "cube_in_training_area": in_spawn,
             "estimate_error_cm": est_err,
             "steps": len(q), "start_dist_cm": round(100 * dist[0], 1), "min_dist_cm": round(100 * min(dist), 1),
             "min_dist_step": int(np.argmin(dist)), "end_dist_cm": round(100 * dist[-1], 1),
@@ -114,7 +119,7 @@ def main():
             "success_at_end": bool(success[-1]), "success_any": bool(success.any()),
             "per_step": {"dist_cm": [round(100 * d, 2) for d in dist], "tip_m": tips}}
         e = report[ep.name]
-        print(f"{ep.name}: cube ({e['cube_xy_cm'][0]}, {e['cube_xy_cm'][1]}) cm {'inside' if in_spawn else 'OUTSIDE'} the training "
+        print(f"{ep.name}: cube ({e['cube_xy_cm_from_pan_axis'][0]}, {e['cube_xy_cm_from_pan_axis'][1]}) cm from the pan axis, {'inside' if in_spawn else 'OUTSIDE'} the training "
               f"area [{src}] | tip-goal {e['start_dist_cm']} -> min {e['min_dist_cm']} (step {e['min_dist_step']}) -> "
               f"end {e['end_dist_cm']} cm | reached {e['first_reached_step']}, closed {e['first_closed_step']}, "
               f"success {e['first_success_step']} | SUCCESS at end: {e['success_at_end']}"
