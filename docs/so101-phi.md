@@ -13,6 +13,7 @@ This branch (`phi/so101`) runs [Squint](https://github.com/aalmuzairee/squint) o
 | `feat(safety): crash guard and an exit pose off the wrist-roll seam` | `deploy_utils/safety.py` | a crash between connect and deploy's exit handler left the arm standing with torque on; exit drove the wrist to the encoder seam | |
 | `feat(deploy): flight recorder` | `--record_dir` also saves every policy input | to see exactly what the policy saw, step by step | |
 | `config(phi): wrist camera pose tuned for our SO-101 mount` | `envs/base_random_env.py` | **rig-specific**: our camera mount differs from Squint's | |
+| `fix(deploy): take each episode's first frame when it starts` | `Sim2RealEnv.observe()` + one line in `deploy.py` | `reset()` captured the first frame right after the arm returned, before the next cube was placed, so step 0 saw the previous cube position | |
 | `feat(tools): ...` | `deploy_utils/*.py` | see Tools below | |
 
 ## Setup on macOS (Apple Silicon)
@@ -37,7 +38,7 @@ source env.sh                    # every session, from the repo root
 ## Workflow, safest first
 
 1. **Fake-arm dry run** (no hardware): `MPLBACKEND=Agg python deploy_utils/deploy_dryrun.py --checkpoint runs/<run>/ckpt.pt`. It runs `deploy.py`'s real `main()` against a perfect fake servo, with Squint's sim as the camera, and prints every command the arm would have received.
-2. **Camera.** Lock exposure and white balance outside LeRobot (its `OpenCVCameraConfig` has no exposure setting; we used `uvcc`). Set `SQUINT_CAMERA_ROTATION` if the camera is mounted rotated. Measure the camera pose with `deploy_utils/tune_camera_nomotion.py`, paste the printed values into `envs/base_random_env.py`, and **retrain**: the pose is a training-time input, so pasting alone changes nothing for an existing checkpoint.
+2. **Camera.** Lock exposure and white balance outside LeRobot (its `OpenCVCameraConfig` has no exposure setting; we used `uvcc`). `deploy_utils/camera_match.py --sweep` picks them by comparing the real image with the sim at the same pose; do it at the task's start pose (while `deploy.py` holds the arm there: macOS lets two processes read one camera), not with the arm folded, where the sim hides the jaws below the table. Our camera came back in auto exposure after every power cycle: `camera_match.py --apply <lock.json>` at the start of each session, `--check` before deploying. Set `SQUINT_CAMERA_ROTATION` if the camera is mounted rotated. Measure the camera pose with `deploy_utils/tune_camera_nomotion.py`, paste the printed values into `envs/base_random_env.py`, and **retrain**: the pose is a training-time input, so pasting alone changes nothing for an existing checkpoint.
 3. **Hold test:** `python deploy_utils/hold_test.py`. Torque on, every joint must stay within 1 degree for 3 s, torque off.
 4. **Deploy, one step per Enter:**
 
@@ -67,7 +68,9 @@ source env.sh                    # every session, from the repo root
 - **What success means:** gripper tip within 2 cm of a point 2 cm above the cube, arm still, gripper at least 90% closed (`envs/reach.py`). Closing the gripper over the cube is part of the task.
 - **Sim:** 1.00 success at training settings; 5/5 at our deploy settings (action x0.15, 60 steps).
 - **Real, cube in front of the arm:** in both episodes the arm went above the cube and closed the gripper (not yet scored against the 2 cm criterion).
-- **Real, cube about 10 cm from the base and 10 cm to the left:** failed. That spot is outside the area the cube spawns in during training (20-40 cm in front of the base, within 10 cm either side), and the same checkpoint fails there in sim too.
+- **Real, cube about 10 cm from the base and 10 cm to the left:** failed. That spot is outside the area the cube spawns in during training, and the same checkpoint fails there in sim too.
+- **Where training puts the cube:** x 20-40 cm, y ±10 cm from the sim's origin, the URDF base origin, which sits 3.9 cm behind the pan axis. Measured on the table from the pan axis: **x 16-36 cm forward, y ±10 cm**. At the start pose the wrist camera sees the table only up to about 25 cm, so for most of that square the cube is not in the first frames.
+- **Real, cube at ~(21.5, +4) cm from the pan axis, 4 episodes, continuous 15 Hz:** very repeatable, closest approach 3.4-3.7 cm from the goal point (success needs 2 cm), then the gripper closed. Unscored: the cube position (camera) and the tip (kinematics) are model estimates, not yet checked with a ruler.
 
 ## Known limits
 
@@ -88,6 +91,8 @@ source env.sh                    # every session, from the repo root
 | `background_position_test.py` | background colour and cube position, in sim; estimates a recording's cube position |
 | `measure_camera_fit.py` | how well a camera pose matches the real view at the policy's 16x16 |
 | `check_deploy_camera.py` | deploy's camera path vs a direct capture; camera settings before/after |
+| `camera_match.py` | real vs sim at the same pose, region by region (robot, cube, background); sweeps, applies and checks exposure, gain and white balance through `uvcc` |
+| `score_reach.py` | Squint's success test on a recorded real episode; cube from a ruler CSV (from the pan axis) or the camera |
 
 ## License
 
