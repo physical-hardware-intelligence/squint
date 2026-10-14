@@ -68,6 +68,12 @@ class RandomizationConfig:
     """Robot color in RGB (0-1). Set to "random" for per-episode randomization."""
     randomize_lighting: bool = True
     """Whether to randomize ambient lighting."""
+    background_level_range: Optional[Sequence[float]] = None
+    """Phi: replace the overlay image with a solid background colour drawn per env at every episode reset: a grey
+    level from this range (0-255), plus background_tint per channel. Robot and task objects are untouched (they are
+    on the segmentation keep-list). None = upstream: the fixed overlay image (black)."""
+    background_tint: float = 0.0
+    """Phi: max per-channel offset (0-255) added to the grey level, drawn independently for R, G and B."""
 
     # === Third-person camera settings (only used by ThirdCameraEnv) ===
     third_camera_pos_noise: Sequence[float] = (0.025, 0.025, 0.025)
@@ -127,6 +133,7 @@ class BaseRandomEnv(BaseEnv):
         self._objects_to_remove_from_greenscreen: list[Union[Actor, Link]] = []
         self._segmentation_ids_to_keep: torch.Tensor = None
         self._rgb_overlay_image: torch.Tensor = None
+        self._background_colors: torch.Tensor = None   # Phi: (num_envs, 3) per-episode background, if randomized
         self._overlay_initialized = False
 
         # Load overlay image as numpy array (will convert to tensor in _after_reconfigure)
@@ -348,6 +355,8 @@ class BaseRandomEnv(BaseEnv):
             if overlay.device != camera_obs["rgb"].device:
                 self._rgb_overlay_image = overlay.to(camera_obs["rgb"].device)
                 overlay = self._rgb_overlay_image
+            if self._background_colors is not None:   # Phi: per-env solid colour, (N, 1, 1, 3) broadcasts over H, W
+                overlay = self._background_colors.to(camera_obs["rgb"].device)[:, None, None, :]
 
             obs[camera_name]["rgb"] = self._green_screen_rgb(
                 camera_obs["rgb"],
@@ -382,6 +391,20 @@ class BaseRandomEnv(BaseEnv):
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
         """Base episode initialization. Subclasses should call super() first."""
         self._randomize_gripper_speed(env_idx)
+        self._randomize_background(env_idx)
+
+    def _randomize_background(self, env_idx: torch.Tensor):
+        """Phi: a solid background colour per env, drawn at every episode reset (see background_level_range)."""
+        cfg = self.domain_randomization_config
+        if cfg.background_level_range is None or not self.domain_randomization:
+            return
+        if self._background_colors is None:
+            self._background_colors = torch.zeros((self.num_envs, 3), device=self.device)
+        lo, hi = cfg.background_level_range
+        b = len(env_idx)
+        level = torch.rand((b, 1), device=self.device) * (hi - lo) + lo
+        tint = (2 * torch.rand((b, 3), device=self.device) - 1) * cfg.background_tint
+        self._background_colors[env_idx] = (level + tint).clamp(0, 255)
 
 
 class ThirdCameraEnv(BaseRandomEnv):

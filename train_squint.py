@@ -81,6 +81,11 @@ class Args:
     env_id: str = "SO101LiftCube-v1"
     """the id of the environment"""
     env_domain_randomization: bool = True
+    env_background_level: Optional[tuple[float, float]] = None
+    """Phi: randomize the background as a solid colour per env and episode, grey level in this range (0-255),
+    e.g. 0 50. None = upstream's fixed black overlay. Needs env_domain_randomization."""
+    env_background_tint: float = 0.0
+    """Phi: max per-channel offset (0-255) on top of the grey level, e.g. 6."""
     """adds domain randomization flag if env supports it"""
     num_envs: int = 1024
     """the number of parallel environments"""
@@ -586,6 +591,10 @@ if __name__ == "__main__":
     if args.env_domain_randomization:
         env_kwargs["domain_randomization"] = True
         eval_env_kwargs["domain_randomization"] = True
+    if args.env_background_level is not None:
+        bg_cfg = {"background_level_range": list(args.env_background_level), "background_tint": args.env_background_tint}
+        env_kwargs["domain_randomization_config"] = bg_cfg
+        eval_env_kwargs["domain_randomization_config"] = dict(bg_cfg)
 
     envs = gym.make(args.env_id, num_envs=args.num_envs if not args.evaluate else 1,
                     reconfiguration_freq=args.reconfiguration_freq, **env_kwargs)
