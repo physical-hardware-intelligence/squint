@@ -40,6 +40,7 @@ from tqdm import tqdm
 
 from deploy_utils.sim2real_compat import Sim2RealEnv  # ManiSkill's, minus the reset() recursion (ManiSkill#1498)
 from deploy_utils.safety import exit_qpos, guard_until_safe_exit
+from deploy_utils.flight_recorder import FlightRecorder
 from mani_skill.utils.wrappers.flatten import FlattenRGBDObservationWrapper
 from mani_skill.sensors.camera import CameraConfig
 from mani_skill.utils import common
@@ -408,6 +409,8 @@ def main(args: Args):
             fps=args.control_freq or 30,
             resolution=args.record_resolution,
         )
+    # every step: the exact image the policy received (PNG) + state/action CSV, crash-safe
+    flight = FlightRecorder(Path(args.record_dir) / "flight") if args.record_dir else None
 
     preprocessor = create_wrist_camera_preprocessor(sim_env.unwrapped)
     real_env = Sim2RealEnv(
@@ -503,6 +506,8 @@ def main(args: Args):
                 print("[Quitting...]")
                 break
             skip_episode = False
+            if flight:
+                flight.start_episode()
 
             for _ in tqdm(range(args.max_episode_steps), desc="Steps"):
                 key = kb.check_key()
@@ -529,6 +534,8 @@ def main(args: Args):
 
                 action = action.cpu().numpy()
                 scaled_action = np.clip(action * args.action_scale, -1, 1)
+                if flight:
+                    flight.log(obs, action, scaled_action)   # what the policy saw, what it chose, what was sent
 
                 t0 = time.perf_counter()
                 real_obs, _, terminated, truncated, info = real_env.step(scaled_action)
