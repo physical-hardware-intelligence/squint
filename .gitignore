@@ -99,3 +99,10 @@ Thumbs.db
 *.bak
 
 
+
+# Phi: local-only files (never published)
+._*
+MoltenVK/
+backups/
+tune_snapshots/
+rig.local.sh
