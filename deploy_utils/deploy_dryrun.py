@@ -177,6 +177,7 @@ def main():
     ap.add_argument("--checkpoint", required=True)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--record-dir", default=None, help="pass --record_dir to deploy.py (flight recorder test)")
+    ap.add_argument("--hold-at-end", action="store_true", help="pass --hold_at_end to deploy.py")
     ap.add_argument("--env-id", default="SO101ReachCube-v1",
                     help="task; the sim camera teleports the robot, so objects never move (pipeline test, not a grasp test)")
     a = ap.parse_args()
@@ -213,6 +214,7 @@ def main():
     args = tyro.cli(deploy.Args, args=[
         f"--checkpoint={a.checkpoint}", f"--env_id={a.env_id}",
         "--no-continuous_eval", "--control_freq=15", "--debug", f"--max_episode_steps={a.steps}"]
+        + (["--hold_at_end"] if a.hold_at_end else [])
         + ([f"--record_dir={a.record_dir}"] if a.record_dir else []))
     deploy.main(args)
 

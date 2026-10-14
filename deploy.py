@@ -78,6 +78,8 @@ class Args:
     """Directory to save episode recordings. If None, no recording."""
     record_resolution: int = 256
     """Resolution (HxW) for each frame in the recorded video. Use 128, 256, or 480."""
+    hold_at_end: bool = False
+    """Phi: after each episode, hold the final pose until Enter, so the result can be checked by eye or ruler."""
     debug: bool = False
     """If True, shows sim/real overlay visualization."""
     seed: int = 1
@@ -576,6 +578,15 @@ def main(args: Args):
                 recorder.end_episode()
 
             episode_count += 1
+
+            if args.hold_at_end and not skip_episode:
+                print(f"Episode {episode_count - 1} done: the arm holds its final pose. Check the result, then Enter "
+                      "to return to the start pose ('q' to quit)")
+                while (key := kb.check_key()) not in ('\n', '\r', 'q'):
+                    time.sleep(0.01)
+                if key == 'q':
+                    print("[Quitting...]")
+                    break
 
             if not skip_episode:
                 real_obs, _ = real_env.reset()
