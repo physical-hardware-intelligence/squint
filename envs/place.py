@@ -37,6 +37,10 @@ class PlaceRandomizationConfig(DefaultRandomizationConfig):
     item_friction_range: Sequence[float] = (0.1, 0.5)
     item_density_range: Sequence[float] = (200, 200)
     randomize_item_color: bool = False
+    # Phi: the colours of our printed items. Each env draws one at scene load (like the size ranges above), so a
+    # 1024-env batch trains on all of them. None = upstream (red cube, blue can). RGB in 0..1.
+    cube_colors: Optional[Sequence[Sequence[float]]] = ((1.0, 0.0, 0.0), (1.0, 1.0, 0.0))   # red, yellow
+    can_colors: Optional[Sequence[Sequence[float]]] = ((1.0, 1.0, 0.0),)                    # yellow
 
 
 class Place(DefaultCameraEnv):
@@ -204,6 +208,10 @@ class Place(DefaultCameraEnv):
             self.item_half_sizes = self.item_half_heights
             self.item_dimensions = torch.stack([self.item_half_radii, self.item_half_radii, self.item_half_heights], dim=-1)
 
+        palette = cfg.cube_colors if self.item_type == "cube" else cfg.can_colors
+        if palette and not (self.domain_randomization and cfg.randomize_item_color):
+            choice = np.asarray(self._batched_episode_rng.randint(0, len(palette))).reshape(-1)
+            colors = np.asarray(palette, dtype=np.float64)[choice]
         colors = np.concatenate([colors, np.ones((self.num_envs, 1))], axis=-1)
         self.item_frictions = common.to_tensor(frictions, device=self.device)
         self.item_densities = common.to_tensor(densities, device=self.device)
