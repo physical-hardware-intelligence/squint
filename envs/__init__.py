@@ -8,5 +8,6 @@ import envs.reach
 import envs.lift
 import envs.place
 import envs.stack
+import envs.place_hold
 import envs.place_v2
 import envs.place_v3
