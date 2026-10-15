@@ -12,7 +12,8 @@ from mani_skill.utils.registration import register_env
 
 from envs.place import PlaceCube
 
-# WHY 0.5: well under the gap between success (9) and every non-success state, so success stays the best outcome.
+# WHY 0.5: success then pays at least 8.5, still above the best non-success states (cube still touched: <= 8;
+# arm still moving: about 8.1), so finishing the task stays the best outcome.
 HOLD_PENALTY = 0.5
 
 
