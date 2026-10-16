@@ -8,10 +8,14 @@ black, like the policy's image. Slide until the sim robot sits on the real one, 
 
 Trackbars: eye x/y/z and aim x/y/z in cm (URDF frame: x forward from the base, y to the robot's left, z up),
 FOV in degrees. Image rotation: SQUINT_TOP_CAMERA_ROTATION (0/90/180/-90) or the o key (cycles 0, 90, 180, 270).
-Keys: p print  c save snapshot+json to tune_snapshots/  o rotate real image  q quit
+Keys: p print  c save snapshot+json to tune_snapshots/  o rotate real image  n next camera index  q quit
+
+Which index is the overhead camera: OpenCV's macOS index changes with what is plugged in and in what order
+(phi/src/phi/utils/camera_realign.py records two different orders), so it is chosen by looking: press n until the
+left panel shows the overhead view. The index in use is printed on the panel and saved with c.
 
 Run (repo root, a Terminal with Camera permission, arm powered, torque state left as it is):
-  source env.sh && SQUINT_TOP_CAMERA=<index> python deploy_utils/tune_top_camera.py
+  source env.sh && python deploy_utils/tune_top_camera.py          # starts at index SQUINT_TOP_CAMERA or 0
 Check without hardware:  python deploy_utils/tune_top_camera.py --selftest
 """
 import os
@@ -42,8 +46,8 @@ SLIDERS = {"eye x": (-60, 120), "eye y": (-80, 80), "eye z": (5, 150), "aim x": 
 
 
 class TopCameraFitter:
-    def __init__(self, cam, rotation, arm, headless=False):
-        self.cam, self.arm, self.headless = cam, arm, headless
+    def __init__(self, cam, rotation, arm, headless=False, cam_index=None):
+        self.cam, self.arm, self.headless, self.cam_index = cam, arm, headless, cam_index
         self.rot = rotation
         self.eye = list(v2.TOP_CAMERA_EYE)
         self.aim = list(v2.TOP_CAMERA_TARGET)
@@ -104,19 +108,21 @@ class TopCameraFitter:
         real = self.real_image()
         blend = cv2.addWeighted(real, 0.5, sim, 0.5, 0)
         row = np.concatenate([real, sim, blend], 1)
-        for i, t in enumerate(["real (rot %d)" % self.rot, "sim", "blend"]):
+        for i, t in enumerate([f"real: index {self.cam_index}, rot {self.rot}", "sim", "blend"]):
             cv2.putText(row, t, (10 + i * SIZE, 24), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
         return row
 
     def params(self):
         r = lambda v: [round(x, 4) for x in v]
         return {"TOP_CAMERA_EYE": r(self.eye), "TOP_CAMERA_TARGET": r(self.aim), "TOP_CAMERA_FOV_DEG": round(self.fov, 1),
-                "SQUINT_TOP_CAMERA_ROTATION": {270: -90}.get(self.rot, self.rot), "qpos_deg": self.qpos_deg}
+                "SQUINT_TOP_CAMERA_ROTATION": {270: -90}.get(self.rot, self.rot), "SQUINT_TOP_CAMERA": self.cam_index,
+                "qpos_deg": self.qpos_deg}
 
     def print_params(self):
         p = self.params()
         print(f"\nTOP_CAMERA_EYE = {p['TOP_CAMERA_EYE']}\nTOP_CAMERA_TARGET = {p['TOP_CAMERA_TARGET']}\n"
-              f"TOP_CAMERA_FOV = np.deg2rad({p['TOP_CAMERA_FOV_DEG']})\nSQUINT_TOP_CAMERA_ROTATION={p['SQUINT_TOP_CAMERA_ROTATION']}")
+              f"TOP_CAMERA_FOV = np.deg2rad({p['TOP_CAMERA_FOV_DEG']})\nSQUINT_TOP_CAMERA={p['SQUINT_TOP_CAMERA']}  "
+              f"SQUINT_TOP_CAMERA_ROTATION={p['SQUINT_TOP_CAMERA_ROTATION']}")
 
     def save(self, img):
         SNAP_DIR.mkdir(exist_ok=True)
@@ -145,7 +151,34 @@ class TopCameraFitter:
                 self.save(img)
             if k == ord("o"):
                 self.rot = (self.rot + 90) % 360
+            if k == ord("n") and self.cam is not None:
+                self.cam.release()
+                self.cam_index, self.cam = open_next_camera(self.cam_index + 1)
         self.print_params()
+
+
+def open_camera(index):
+    """The deploy capture (robot_config.py _top_camera: 640x480 @ 30), or None if nothing answers at this index."""
+    cap = cv2.VideoCapture(index, cv2.CAP_AVFOUNDATION if sys.platform == "darwin" else cv2.CAP_ANY)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    cap.set(cv2.CAP_PROP_FPS, 30)
+    ok = cap.isOpened() and any(cap.read()[0] for _ in range(10))   # WHY: first frames are often empty
+    if not ok:
+        cap.release()
+        return None
+    return cap
+
+
+def open_next_camera(start, max_index=8):
+    """First index from `start` (wrapping) that delivers frames."""
+    for k in range(max_index):
+        i = (start + k) % max_index
+        cap = open_camera(i)
+        if cap is not None:
+            print(f"camera index {i}")
+            return i, cap
+    raise SystemExit("no camera delivered frames: check this Terminal's Camera permission")
 
 
 def main():
@@ -166,25 +199,19 @@ def main():
         print(f"selftest OK: robot {robot_px} px in the sim top view; saved {SNAP_DIR / 'top_camera_selftest.png'}")
         f.print_params()
         return
-    top = os.environ.get("SQUINT_TOP_CAMERA")
-    if not top:
-        raise SystemExit("set SQUINT_TOP_CAMERA to the top camera's OpenCV index (find it with tools/camera_probe.py)")
-    cap = cv2.VideoCapture(int(top) if top.isdigit() else top, cv2.CAP_AVFOUNDATION if sys.platform == "darwin" else cv2.CAP_ANY)
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)     # = robot_config.py _top_camera()
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-    cap.set(cv2.CAP_PROP_FPS, 30)
-    if not cap.isOpened():
-        raise SystemExit("could not open the top camera: check SQUINT_TOP_CAMERA and this Terminal's Camera permission")
-    for _ in range(10):
-        cap.read()
+    idx, cap = open_next_camera(int(os.environ.get("SQUINT_TOP_CAMERA", "0")))
     arm = None
     if not a.no_arm:
         from deploy_utils.tune_camera_nomotion import ReadOnlyArm
         arm = ReadOnlyArm()
     try:
-        TopCameraFitter(cap, rot, arm).run()
+        fitter = TopCameraFitter(cap, rot, arm, cam_index=idx)
+        fitter.run()
     finally:
-        cap.release()
+        try:
+            fitter.cam.release()
+        except Exception:
+            pass
         if arm is not None:
             print("arm unchanged check:", arm.close())
 
