@@ -66,7 +66,9 @@ class ColorJitterWrapper(gym.ObservationWrapper):
 
         # (B, H, W, C) -> (B, C, H, W) for ColorJitter
         rgb = rgb.permute(0, 3, 1, 2)
-        rgb = self.jitter(rgb.float() / 255.0)
+        # Phi: one 3-channel image per camera (wrist + top = 6 channels); ColorJitter accepts only 1 or 3 channels.
+        # Each camera gets its own draw, as two real cameras differ. 3 channels: one call, exactly as before.
+        rgb = torch.cat([self.jitter(c) for c in (rgb.float() / 255.0).split(3, dim=1)], dim=1)
         # (B, C, H, W) -> (B, H, W, C)
         rgb = rgb.permute(0, 2, 3, 1)
 
