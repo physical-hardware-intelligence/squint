@@ -212,6 +212,10 @@ def print_timing_stats(timing_stats: dict, episode_num: int, target_freq: int):
     print(f"Total:     {np.mean(timing_stats['total'])*1000:.1f}ms avg, "
           f"{np.max(timing_stats['total'])*1000:.1f}ms max")
     print(f"Achieved freq: {1/np.mean(timing_stats['total']):.1f} Hz (target: {target_freq} Hz)")
+    if len(timing_stats["loop"]) > 1:
+        # Phi: "Achieved freq" above times only inference + step; this is the real step-to-step rate (includes --debug drawing)
+        period = np.median(np.diff(timing_stats["loop"]))
+        print(f"Wall-clock loop: {1/period:.1f} Hz ({period*1000:.0f} ms per step)")
 
 
 def silent_reset(env, seed=None, options=None):
@@ -485,6 +489,9 @@ def main(args: Args):
         im3 = ax3.imshow(real_img)
         ax3.set_title('Real')
         plt.tight_layout()
+        # Phi: show the window now; upstream only drew it inside the step loop, so it stayed hidden until step 1
+        plt.show(block=False)
+        plt.pause(0.001)
 
     # --------------------------------------------------
     # Phase 4: Evaluation Loop
@@ -496,14 +503,14 @@ def main(args: Args):
     print("=" * 40 + "\n")
 
     episode_count = 0
-    timing_stats = {"inference": [], "step": [], "total": []}
+    timing_stats = {"inference": [], "step": [], "total": [], "loop": []}
 
     with KeyboardController() as kb:
         while True:
             print("=============================")
             print(f"Episode {episode_count} - Press Enter to start, 'q' to quit")
             while (key := kb.check_key()) not in ('\n', '\r', 'q'):
-                time.sleep(0.01)
+                plt.pause(0.01) if args.debug else time.sleep(0.01)   # Phi: keep the debug window responsive
             if key == 'q':
                 print("[Quitting...]")
                 break
@@ -525,6 +532,7 @@ def main(args: Args):
                     break
 
                 loop_start = time.perf_counter()
+                timing_stats["loop"].append(loop_start)
 
                 obs = {k: v.to(device) for k, v in real_obs.items()}
 
@@ -571,7 +579,7 @@ def main(args: Args):
             print_timing_stats(timing_stats, episode_count, args.control_freq)
             if recorder and recorder.queue_size > 0:
                 print(f"  Recorder queue: {recorder.queue_size} frames pending write")
-            timing_stats = {"inference": [], "step": [], "total": []}
+            timing_stats = {"inference": [], "step": [], "total": [], "loop": []}
 
             # Signal end of episode to recorder
             if recorder:

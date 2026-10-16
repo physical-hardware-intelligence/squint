@@ -8,6 +8,9 @@ upstream Squint's:
   SQUINT_CAMERA_ROTATION   0, 90, 180 or -90 degrees                   default 0
   SQUINT_ROBOT_ID          calibration file name, without .json        default so101_follower_arm
   SQUINT_CALIBRATION_DIR   folder holding that file                    default: this folder
+  SQUINT_TOP_CAMERA        Phi: fixed top camera, OpenCV index or path  default: none (wrist only). Set it only for a
+                           policy trained with a top camera (SO101PlaceCubeV2FarTop-v1, envs/place_v2.py)
+  SQUINT_TOP_CAMERA_ROTATION                                            default 0
 
 On top of upstream, every robot created here (docs/so101-phi.md):
   * holds its position when torque comes on (goal = present position first),
@@ -36,6 +39,16 @@ def _camera(value: str):
     return int(value) if value.isdigit() else value
 
 
+def _top_camera() -> dict:
+    """Phi: {"top_camera": ...} when SQUINT_TOP_CAMERA is set. The name must match the sim sensor, and it must come
+    after base_camera: the policy's 6-channel image is wrist channels first, then top."""
+    top = os.environ.get("SQUINT_TOP_CAMERA")
+    if not top:
+        return {}
+    return {"top_camera": OpenCVCameraConfig(index_or_path=_camera(top), fps=30, width=640, height=480,
+                                             rotation=Cv2Rotation(int(os.environ.get("SQUINT_TOP_CAMERA_ROTATION", "0"))))}
+
+
 def create_real_robot() -> Robot:
     """Create and configure a real robot with the specified camera.
     Returns:
@@ -51,7 +64,7 @@ def create_real_robot() -> Robot:
             width=640,
             height=480,
             rotation=Cv2Rotation(int(os.environ.get("SQUINT_CAMERA_ROTATION", "0"))),
-        )},
+        ), **_top_camera()},
         # cameras={"base_camera": RealSenseCameraConfig(
         #     serial_number_or_name="053645021390",
         #     fps=30,

@@ -72,6 +72,7 @@ class SimCamera:
                             domain_randomization=False, sensor_configs={"width": 480, "height": 480})
         self.env.reset(seed=seed)
         self.u = self.env.unwrapped
+        self.reach = "Reach" in env_id
         self.lim = self.u.agent.robot.get_qlimits()[0].cpu()
         self.trace = []
 
@@ -85,7 +86,10 @@ class SimCamera:
 
     def async_read(self):
         self._sync()
-        dist = float(self.torch.linalg.norm(self.u.goal_site.pose.p - self.u.agent.tcp_pose.p, axis=1)[0])
+        # WHY: Reach scores the tcp against goal_site; Place also has a goal_site (the hidden bin target), so pick by
+        # task, not by attribute. Lift/Place/Stack trace the tcp-to-item distance.
+        target = self.u.goal_site if self.reach else self.u.item
+        dist = float(self.torch.linalg.norm(target.pose.p - self.u.agent.tcp_pose.p, axis=1)[0])
         self.trace.append(dist)
         rgb = self.u.get_obs()["sensor_data"]["base_camera"]["rgb"][0].cpu().numpy()
         return np.pad(rgb, ((0, 0), (80, 80), (0, 0)))
@@ -103,6 +107,9 @@ class FakeRobot:
     def __init__(self, camera="sim", seed=0, frame=None, env_id="SO101ReachCube-v1"):
         self.bus = FakeBus()
         self.cameras = {"base_camera": FakeCamera(frame) if camera == "frame" else SimCamera(self.bus, seed, env_id)}
+        if "Top" in env_id:   # Phi: a black top-camera frame, to test the 6-channel pipeline (shapes, order), not behaviour
+            self.cameras["top_camera"] = types.SimpleNamespace(async_read=lambda: np.zeros((480, 640, 3), np.uint8),
+                                                               connect=lambda: None, disconnect=lambda: None)
         self.log, self.events = [], []
 
     def connect(self, calibrate=True):
@@ -161,7 +168,7 @@ def summarize(robot):
     cam = robot.cameras["base_camera"]
     if isinstance(cam, SimCamera) and cam.trace:
         tr = cam.trace
-        out["sim_in_the_loop"] = {"tcp_to_goal_m_start": round(tr[0], 3), "min": round(min(tr), 3),
+        out["sim_in_the_loop"] = {"target": "goal_site" if cam.reach else "item", "tcp_to_target_m_start": round(tr[0], 3), "min": round(min(tr), 3),
                                   "at_min_frame": tr.index(min(tr)), "end": round(tr[-1], 3),
                                   "reached_<=0.02m": min(tr) <= 0.02, "frames": len(tr)}
     print("\n=== DRY RUN: what the real arm would have been told (servo degrees) ===")
