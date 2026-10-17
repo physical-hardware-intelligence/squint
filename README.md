@@ -1,6 +1,6 @@
 # Squint
 
-> **Physical Hardware Intelligence fork, branch `phi/so101`:** Squint deployed on a real SO-101 from macOS (CPU), with deploy fixes, safety guards and tools. See [docs/so101-phi.md](docs/so101-phi.md). Upstream: [aalmuzairee/squint](https://github.com/aalmuzairee/squint).
+> **Physical Hardware Intelligence fork, branch `phi/so101`:** Squint deployed on a real SO-101 from macOS (CPU), with deploy fixes, safety guards and tools. See [docs/so101-phi.md](docs/so101-phi.md); the commands to run our trained models are in [Run our trained models](docs/so101-phi.md#run-our-trained-models). Upstream: [aalmuzairee/squint](https://github.com/aalmuzairee/squint).
 
 <p align="center">
 <img width="24%" src="https://aalmuzairee.github.io/papers-media/squint/extras/gifs/reach_cube.gif">

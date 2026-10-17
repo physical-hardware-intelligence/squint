@@ -35,6 +35,43 @@ source env.sh                    # every session, from the repo root
 - macOS grants camera access per app: run deploy from a terminal that has Camera permission.
 - Retraining after a camera change happens on a CUDA machine with the same `train_squint.py`.
 
+## Run our trained models
+
+The checkpoints are not in git (`runs/` is ignored): copy them from the training machine to `runs/<name>/ckpt.pt`.
+
+| model | task | trained with | checkpoint |
+|---|---|---|---|
+| A | `SO101ReachCube-v1` | our camera, black background (as upstream) | `runs/reach_camtuned_2026-10-13/ckpt.pt` |
+| B | `SO101ReachCube-v1` | our camera, random grey background | `runs/reach_camtuned_bgrand_2026-10-14/ckpt.pt` |
+| P | `SO101PlaceCube-v1` | our camera, random grey background, 1.5M steps | `runs/place_camtuned_bgrand_2026-10-14/ckpt.pt` |
+
+Once per session, from the repo root, with the arm plugged in, 12 V on and the room lights on (the camera lock is matched to a lit room):
+
+```bash
+source env.sh
+python deploy_utils/camera_match.py --apply tune_snapshots/20261014_camera_lock_startpose.json   # the camera forgets it on every power cycle
+```
+
+Then one line per run. Each check stops the chain if it fails: servo temperatures and status, the camera lock, the torque-on hold test.
+
+```bash
+# A, ReachCube (B: the same with its checkpoint and its own --record_dir)
+python deploy_utils/motor_check.py && python deploy_utils/camera_match.py --check tune_snapshots/20261014_camera_lock_startpose.json \
+  && python deploy_utils/hold_test.py && python deploy.py --checkpoint runs/reach_camtuned_2026-10-13/ckpt.pt \
+  --env_id SO101ReachCube-v1 --control_freq 15 --max_episode_steps 60 --hold_at_end \
+  --record_dir runs/reach_camtuned_2026-10-13/real_eval_<date>
+
+# P, PlaceCube: longer episodes
+python deploy_utils/motor_check.py && python deploy_utils/camera_match.py --check tune_snapshots/20261014_camera_lock_startpose.json \
+  && python deploy_utils/hold_test.py && python deploy.py --checkpoint runs/place_camtuned_bgrand_2026-10-14/ckpt.pt \
+  --env_id SO101PlaceCube-v1 --control_freq 15 --max_episode_steps 250 --hold_at_end \
+  --record_dir runs/place_camtuned_bgrand_2026-10-14/real_eval_<date>
+```
+
+- **Keys:** press Enter **once** to start an episode (holding it starts several). With `--hold_at_end` the arm holds its last pose until the next Enter, which returns it to the start pose. `s` skips an episode; `q` or Ctrl-C folds the arm and releases torque.
+- **Score ReachCube:** `python deploy_utils/score_reach.py runs/<run>/real_eval_<date>/flight --positions cubes.csv` (`ep,x_cm,y_cm`, measured from the pan axis).
+- **What needs the simulator:** the network itself (encoder + actor, 304,386 parameters) only maps a 16×16 wrist image and 12 joint numbers to 6 joint-target changes. `deploy.py` still builds the ManiSkill task on the CPU, without stepping its physics, to reuse three pieces of the training code: the camera frame becomes the policy input the same way (square crop, 128×128, area-averaged to 16×16), each action becomes joint targets through the sim's own controller (at most 0.1 rad arm and 0.2 rad gripper per step at full action, times `action_scale` 0.15, added to the previous target), and the start pose. That is why deployment needs ManiSkill and MoltenVK, but no GPU.
+
 ## Workflow, safest first
 
 1. **Fake-arm dry run** (no hardware): `MPLBACKEND=Agg python deploy_utils/deploy_dryrun.py --checkpoint runs/<run>/ckpt.pt`. It runs `deploy.py`'s real `main()` against a perfect fake servo, with Squint's sim as the camera, and prints every command the arm would have received.
@@ -76,7 +113,7 @@ source env.sh                    # every session, from the repo root
 
 - **Cube placement.** Keep the cube inside the training spawn area above, or widen the area and retrain.
 - **Background.** Training images have a pure black background everywhere. Our black cloth reads about 33/255 on the camera, and on real frames the policy's actions are far more sensitive to the background level than in sim (mean action change 0.9 vs 0.1 when the background is set to black). The wall behind the robot can also come into view at some angles, as the Squint author notes in [squint#2](https://github.com/aalmuzairee/squint/issues/2).
-- Every real run so far was paced by Enter (`--no-continuous_eval`), not yet continuous at 15 Hz.
+- Since 2026-10-14 real runs are continuous at 15 Hz; the Mac keeps up (0.5 ms inference, 15.1 Hz achieved).
 
 ## Tools (`deploy_utils/`)
 
@@ -93,6 +130,8 @@ source env.sh                    # every session, from the repo root
 | `check_deploy_camera.py` | deploy's camera path vs a direct capture; camera settings before/after |
 | `camera_match.py` | real vs sim at the same pose, region by region (robot, cube, background); sweeps, applies and checks exposure, gain and white balance through `uvcc` |
 | `score_reach.py` | Squint's success test on a recorded real episode; cube from a ruler CSV (from the pan axis) or the camera |
+| `motor_check.py` | servo temperature, load, voltage and status, read-only; exits 1 above `--max-temp` |
+| `gripper_check.py` | the gripper through `manipulator.py`'s conversion: `--read` by hand with torque off, `--drive` to the sim's closed and open ends with a stop-pushing guard (`--fake` for a dry run) |
 
 ## License
 
