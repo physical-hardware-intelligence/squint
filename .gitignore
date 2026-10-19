@@ -104,5 +104,6 @@ Thumbs.db
 ._*
 MoltenVK/
 backups/
-tune_snapshots/
+tune_snapshots/*
+!tune_snapshots/20261014_camera_lock_startpose.json
 rig.local.sh

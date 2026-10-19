@@ -8,3 +8,5 @@ export SQUINT_CALIBRATION_DIR=deploy_utils      # folder holding that file
 export SQUINT_UVCC=uvcc                         # the uvcc command (npm install uvcc); prefix with node's path if needed
 export SQUINT_UVC_VENDOR=0                      # the wrist cam's USB vendor id (decimal): uvcc devices
 export SQUINT_UVC_PRODUCT=0                     # and its product id
+# Optional, for run_real.sh: the camera lock its pre-flight checks against (default: ours, matched at the start pose)
+# export SQUINT_CAMERA_LOCK=tune_snapshots/20261014_camera_lock_startpose.json
