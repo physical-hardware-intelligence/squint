@@ -314,7 +314,9 @@ class AsyncRecorder:
         self._queue = queue.Queue()
         self._worker = threading.Thread(target=self._write_loop, daemon=True)
         self._worker.start()
-        self._episode_count = 0
+        # Phi: never overwrite: a second launch into the same folder continues after the highest existing video
+        done = [int(p.stem[8:]) for p in self.output_dir.glob("episode_*.mp4") if p.stem[8:].isdigit()]
+        self._episode_count = max(done) + 1 if done else 0
         self._writer = None
 
     def push(self, frame: np.ndarray):
