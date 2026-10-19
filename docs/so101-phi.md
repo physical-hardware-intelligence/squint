@@ -14,6 +14,8 @@ This branch (`phi/so101`) runs [Squint](https://github.com/aalmuzairee/squint) o
 | `feat(deploy): flight recorder` | `--record_dir` also saves every policy input | to see exactly what the policy saw, step by step | |
 | `config(phi): wrist camera pose tuned for our SO-101 mount` | `envs/base_random_env.py` | **rig-specific**: our camera mount differs from Squint's | |
 | `fix(deploy): take each episode's first frame when it starts` | `Sim2RealEnv.observe()` + one line in `deploy.py` | `reset()` captured the first frame right after the arm returned, before the next cube was placed, so step 0 saw the previous cube position | |
+| `fix(deploy): never overwrite an earlier launch's videos` | `AsyncRecorder` in `deploy.py` | a second launch into the same `--record_dir` started again at `episode_0.mp4` and overwrote the first launch's videos | |
+| `feat(tools): run_real.sh` | every pre-flight check and a run in one command | to run the models without remembering the chain | |
 | `feat(tools): ...` | `deploy_utils/*.py` | see Tools below | |
 
 ## Setup on macOS (Apple Silicon)
@@ -26,6 +28,7 @@ python3.11 -m venv .venv
 .venv/bin/pip install torch==2.6.0 torchvision==0.21.0 tensordict==0.7.2 torchrl==0.7.2 \
     mani_skill_nightly==2026.8.2.400 gymnasium tyro tqdm wandb opencv-python==4.12.0.88 matplotlib "lerobot[feetech]==0.4.3"
 curl -L -o mvk.tar https://github.com/KhronosGroup/MoltenVK/releases/download/v1.4.2/MoltenVK-macos.tar && tar -xf mvk.tar && rm mvk.tar
+mkdir -p ~/tools/uvcc && (cd ~/tools/uvcc && npm install uvcc@8.0.0)   # camera lock tool (Node.js); run_real.sh finds it here
 cp rig.example.sh rig.local.sh   # set your port, camera, camera rotation, calibration file (git-ignored)
 source env.sh                    # every session, from the repo root
 ```
@@ -45,16 +48,22 @@ The checkpoints are not in git (`runs/` is ignored): copy them from the training
 | B | `SO101ReachCube-v1` | our camera, random grey background | `runs/reach_camtuned_bgrand_2026-10-14/ckpt.pt` |
 | P | `SO101PlaceCube-v1` | our camera, random grey background, 1.5M steps | `runs/place_camtuned_bgrand_2026-10-14/ckpt.pt` |
 
-Once per session, from the repo root, with the arm plugged in, 12 V on and the room lights on (the camera lock is matched to a lit room):
+From a terminal with Camera permission, with the arm plugged in, 12 V on and the room lights on (the camera lock is matched to a lit room):
 
 ```bash
-source env.sh
-python deploy_utils/camera_match.py --apply tune_snapshots/20261014_camera_lock_startpose.json   # the camera forgets it on every power cycle
+./run_real.sh camera   # once per session: the camera forgets its lock on every power cycle. No arm motion
+./run_real.sh P        # each run: servo check, camera-lock check, torque-on hold test, then the model (A, B or P)
 ```
 
-Then one line per run. Each check stops the chain if it fails: servo temperatures and status, the camera lock, the torque-on hold test.
+- **First run of a session:** when the arm has reached the start pose and waits for Enter, run `./run_real.sh camera-start` in a second window. It compares the camera's image with the sim's at that pose and prints `EXPOSURE OK` when the jaws read 120-200, the background at most 50, and at most 1% of pixels clip. Training's light gives the jaws 140-196 there, widened by a ±30% brightness jitter; our lock read 127 on 14 Oct, when P placed 5 of 5. If not OK, `./run_real.sh camera-sweep` in the same window finds new settings and saves a new lock; set `SQUINT_CAMERA_LOCK` in `rig.local.sh` to check later runs against it.
+- **Without hardware:** `./run_real.sh dry P` runs the same thing on a fake arm.
+- **Recordings:** `runs/<run>/real_eval_<date>/`. `flight/epNNN/` holds every policy input and a CSV of joints, targets and actions per step; `episode_N.mp4` is the camera video. A second launch on the same day continues the numbering.
+
+By hand, `run_real.sh` runs these from the repo root after `source env.sh`. Each check stops the chain if it fails: servo temperatures and status, the camera lock, the torque-on hold test.
 
 ```bash
+python deploy_utils/camera_match.py --apply tune_snapshots/20261014_camera_lock_startpose.json   # once per session
+
 # A, ReachCube (B: the same with its checkpoint and its own --record_dir)
 python deploy_utils/motor_check.py && python deploy_utils/camera_match.py --check tune_snapshots/20261014_camera_lock_startpose.json \
   && python deploy_utils/hold_test.py && python deploy.py --checkpoint runs/reach_camtuned_2026-10-13/ckpt.pt \
