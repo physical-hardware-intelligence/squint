@@ -73,7 +73,7 @@ Two counts of the same checkpoint and seed gave 127/31 and 128/33 (grasp/handove
 
 Both-hold lasts 115 steps in total over 48 episodes (about 2 steps each): the picker now lets go almost at once. Carrying lasts 3,746 steps over 39 episodes (about 96 each): the receiver holds the bar until the episode ends.
 
-**Bin in the receiver's wrist view** (bin centre or a rim corner projected inside the 128 × 128 image; geometry only, occlusion ignored, so an upper bound; agrees with the segmentation image on 98.2% of 3,840 camera-steps):
+**Bin in the receiver's wrist view, first measure** (bin centre or a rim corner projected inside the 128 × 128 image; geometry only, occlusion ignored, any size, so an upper bound; agrees with the segmentation image on 98.2% of 3,840 camera-steps). A2's exact count (occlusion included, at least one policy pixel) gives 2% for the carry:
 
 | Phase | Bin in view |
 |---|---|
@@ -85,4 +85,4 @@ The policy has no memory and no bin position in its input. Yash noted the receiv
 
 **Predictions:** 1 held. 2 failed at 1.5M (1 carry) but was met by 3M (39). 3 failed (0 in bin, 0% success).
 
-**Decision (rule: releases but nothing in the bin by 3M, look at what follows the release):** what follows is a carry with the bin out of view. This is a correlation; the causal test is B004: give the policy the bin's position (simulation only, a diagnostic, not deployable) and change nothing else. If carries then reach the bin, missing information is the stall, and the deployable fix is memory or a layout that keeps the bin in view. The mid-air start curriculum is not triggered (39 ≥ 10).
+**Decision (rule: releases but nothing in the bin by 3M, look at what follows the release):** what follows is a carry with the bin out of the receiver's own camera (A2: 2% of carry steps; the picker's camera sees it 40%). This is a correlation; the causal test is B004: give the policy the bin's position (simulation only, a diagnostic, not deployable) and change nothing else. If carries then reach the bin, missing information is the stall, and the deployable fix is memory, a top camera, or a layout that keeps the bin in view. The mid-air start curriculum is not triggered (39 ≥ 10).

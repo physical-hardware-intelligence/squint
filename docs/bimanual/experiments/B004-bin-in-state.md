@@ -5,6 +5,8 @@
 ## Question
 After B003 the receiver takes the bar (39 of 128) but never reaches the bin, and the bin is out of its camera for 88% of the carry. If the policy is simply told where the bin is, does the bar reach the bin?
 
+_(Protocol text as written. B003 A2 later refined the 88%: with occlusion, the receiver's camera sees the bin in 2% of carry steps, the picker's in 40%. The question stands.)_
+
 ## Intuition
 The policy sees only the current wrist images and its joint angles. No memory. Once the bin leaves the picture, it has no way to know where the bin is. B004 hands it that missing fact directly. If the bar then lands in the bin, missing information was the stall.
 
