@@ -1,6 +1,6 @@
 # B004: Is the stall missing information?
 
-**Status:** protocol written 2026-10-24, before the run.
+**Status:** run 1 (seed 1) done 2026-10-24 22:38: inconclusive, never reached the carry. Run 2 (seed 2) running, per the rule.
 
 ## Question
 After B003 the receiver takes the bar (39 of 128) but never reaches the bin, and the bin is out of its camera for 88% of the carry. If the policy is simply told where the bin is, does the bar reach the bin?
@@ -25,4 +25,15 @@ Env `SO101HandoverBarBinInState-v1`: 4 numbers added to the state input (bin x, 
 - Carries < 10: the extra input disturbed learning; rerun with seed 2 before concluding.
 
 ## Results
-_Not run._
+**Run 1** (commit `33a2ad9`, seed 1, `runs/handover_b004_2026-10-24`): exit 0, about 1,050 steps/s. Evaluation returns 250k-3M: 18.3, 27.9, 29.5, 36.9, 38.5, 34.1, 38.6, 37.8, 36.1, 38.9, 31.1, 38.9; success 0.
+
+| Stage (of 128) | B003 1.5M | B004 1.5M | B003 3M | B004 3M |
+|---|---|---|---|---|
+| picker grasps | 128 | 127 | 128 | 128 |
+| both hold (mid-air handover) | 33 | 6 | 48 | 21 |
+| receiver carries | 1 | 0 | 39 | **0** |
+| bar in bin | 0 | 0 | 0 | 0 |
+
+**Reading:** the bin's position can only matter after the release, and run 1 never released. So this run says nothing about the question. It does show that two runs differing by one input can diverge before the handover (48 vs 21 handovers): with one seed per arm, run-to-run spread is unknown and may be large.
+
+**Decision (rule: carries < 10, rerun with seed 2 before concluding):** run 2, seed 2, otherwise identical.

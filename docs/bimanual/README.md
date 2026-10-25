@@ -26,7 +26,7 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | [B001](experiments/B001-handover-env-check.md) | Is the handover doable in simulation; do the stages and success fire in order? | done: layout checks out; scripted grasp fails (0/10) |
 | [B002](experiments/B002-handover-train.md) | Does Squint learn task 1, and where does it stall? | stopped at 1.5M: 99% grasp, 13% handovers, 0 releases |
 | [B003](experiments/B003-release-payoff.md) | Does paying for the release get past the stall? | done: release learned (39/128 carry at 3M), 0 in bin; bin in the receiver's camera 2% of carry steps, the picker's 40% |
-| [B004](experiments/B004-bin-in-state.md) | Is the stall missing information (tell the policy where the bin is)? | protocol written |
+| [B004](experiments/B004-bin-in-state.md) | Is the stall missing information (tell the policy where the bin is)? | run 1 inconclusive (never released: 0 carries); run 2 (seed 2) running |
 
 ## Story so far
 1. **B001.** The layout works; scripted grasps don't, so learning has to find the grasp.
