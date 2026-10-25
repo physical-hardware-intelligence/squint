@@ -456,3 +456,16 @@ class Handover(BimanualWristCameraEnv):
 @register_env("SO101HandoverBar-v1", max_episode_steps=120)
 class HandoverBar(Handover):
     pass
+
+
+@register_env("SO101HandoverBarBinInState-v1", max_episode_steps=120)
+class HandoverBarBinInState(Handover):
+    """B004 diagnostic, simulation only: the bin's position and heading are added to the policy's state input
+    (4 numbers: x, y, cos yaw, sin yaw), so the bin is known even when no camera sees it. Everything else as v1."""
+
+    def _get_obs_extra(self, info: dict):
+        obs = super()._get_obs_extra(info)
+        q = self.bin.pose.q
+        yaw = 2 * torch.atan2(q[:, 3], q[:, 0])  # the bin only turns about z
+        obs["bin_xy_yaw"] = torch.stack([self.bin.pose.p[:, 0], self.bin.pose.p[:, 1], torch.cos(yaw), torch.sin(yaw)], dim=1)
+        return obs

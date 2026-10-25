@@ -52,11 +52,12 @@ def bin_points_in_view(u, width=128, height=128):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--checkpoint", required=True)
+    ap.add_argument("--env_id", default="SO101HandoverBar-v1")
     ap.add_argument("--num_envs", type=int, default=128)
     ap.add_argument("--seed", type=int, default=7)
     args = ap.parse_args()
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    env = gym.make("SO101HandoverBar-v1", num_envs=args.num_envs, obs_mode="rgb+segmentation", sim_backend="gpu",
+    env = gym.make(args.env_id, num_envs=args.num_envs, obs_mode="rgb+segmentation", sim_backend="gpu",
                    sensor_configs=dict(width=128, height=128), domain_randomization=True,
                    domain_randomization_config={"background_level_range": [0, 50], "background_tint": 6})
     env = FlattenActionSpaceWrapper(FlattenRGBDObservationWrapper(env, rgb=True, depth=False, state=True))
