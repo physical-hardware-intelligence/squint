@@ -1,6 +1,6 @@
 # B007: Does remembering the first frame get the bar to the bin?
 
-**Status:** run 1 stopped at 2.0M (invalid: the kept frame was stale, A1); fixed and restarted 2026-10-25 02:15.
+**Status:** done 2026-10-25 04:46. Memory never got tested: neither B007 seed learned the handover (6 and 0 of 256), while B003 seed 2 did (88). Every run with an extra input has now failed at the handover.
 
 ## Question
 B003-B006 ruled out the release payoff, a flat carry reward and plain extra training: the receiver carries the bar but stops about 21-23 cm from the bin. The receiver's camera sees the bin at step 0 in 99% of episodes and in 2% of carry steps (B003 A2). If the policy keeps the first frame, does the bar reach the bin?
@@ -37,4 +37,27 @@ If the missing view of the bin is the stall:
 - B003 seed 2 does not release: B003's release was seed luck; the release itself needs fixing first (mid-task starts, then SGS).
 
 ## Results
-_Not run._
+All on commit `2f94d84` (the reset fix), exit 0. Counts: seeds 7 + 8, 256 episodes.
+
+| At 3M | B003 seed 2 (no memory) | B007 seed 1 | B007 seed 2 |
+|---|---|---|---|
+| picker grasps | 253 | 205 | 222 |
+| receiver within 3 cm of the bar | 179 | 48 | 37 |
+| mid-air handover | 88 | 6 | 0 |
+| receiver carries | 66 | 0 | 0 |
+| carry: bar-to-bin at start → closest (median) | 30 → 29 cm | — | — |
+| bar in bin, success | 0, 0 | 0, 0 | 0, 0 |
+
+At 1.5M: B003 seed 2 32 handovers, 1 carry; B007 seed 1 6, 0; seed 2 3, 0.
+
+Evaluation returns 250k-3M, B003 seed 2: 7.8, 29.2, 36.0, 35.5, 38.6, 36.5, 38.5, 37.9, 37.8, 36.6, 35.2, 40.2. B007 seed 1: 8.4, 19.5, 22.9, 26.5, 31.8, 17.4, 28.9, 31.6, 23.9, 28.7, 25.2, 16.4. Seed 2: 6.3, 17.5, 20.9, 28.9, 21.0, 20.5, 22.1, 25.9, 26.5, 22.9, 24.0, 25.8. Success 0 throughout.
+
+**Predictions:** 1 and 2 failed: no B007 carry at all, so no distance to measure. 3 held (B003 seed 2: 0 in the bin).
+
+**Reading:**
+- B003's release reproduces: seed 2 hands over (88) and carries (66) like seed 1. Its carry also stalls (30 → 29 cm).
+- B007 fails earlier than the carry: the receiver rarely gets near the bar (37-48 of 256 within 3 cm, against 179). Memory never got the chance to help.
+- Pattern across experiments: every run with an extra input failed at the handover (B004 ×2 and B005 with the bin position, B007 ×2 with the first frame); every run without one handed over and carried (B003 ×2, B005 control, B006). 5 against 4. Both added inputs are constant within an episode and change between episodes; why that would hurt the handover is not known.
+
+**Decision (rule: neither B007 seed releases while B003 seed 2 does):** the extra input hinders learning before the carry, as the bin input did. The question "does seeing the bin unblock the carry?" is still open, and adding inputs to the whole task from scratch cannot answer it. Next: test the carry on its own (episodes that start with the receiver already holding the bar), where the handover cannot get in the way.
+
