@@ -499,7 +499,14 @@ class HandoverBarFirstFrame(Handover):
         super()._initialize_episode(env_idx, options)
         if not hasattr(self, "_first_pending"):
             self._first_pending = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
-        self._first_pending[env_idx] = True  # the next observation of these envs is their episode's first
+        self._first_pending[env_idx] = True  # capture these envs' frames until reset() ends (after the camera sync)
+
+    def reset(self, *args, **kwargs):
+        # The base reset observes twice: before and after syncing the wrist cameras. Keep capturing until the
+        # second (synced) observation has been stored, then stop.
+        obs, info = super().reset(*args, **kwargs)
+        self._first_pending[:] = False
+        return obs, info
 
     def _get_obs_sensor_data(self, apply_texture_transforms: bool = True):
         obs = super()._get_obs_sensor_data(apply_texture_transforms)
@@ -510,7 +517,6 @@ class HandoverBarFirstFrame(Handover):
             for k, v in obs[name].items():
                 pending = self._first_pending.to(v.device)
                 self._first_frames[name][k][pending] = v[pending]
-        self._first_pending[:] = False
         for name in cams:
             obs[f"{name}_first"] = {k: v.clone() for k, v in self._first_frames[name].items()}
         return obs

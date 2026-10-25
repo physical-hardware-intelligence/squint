@@ -1,6 +1,6 @@
 # B007: Does remembering the first frame get the bar to the bin?
 
-**Status:** protocol written 2026-10-25, before the runs.
+**Status:** run 1 stopped at 2.0M (invalid: the kept frame was stale, A1); fixed and restarted 2026-10-25 02:15.
 
 ## Question
 B003-B006 ruled out the release payoff, a flat carry reward and plain extra training: the receiver carries the bar but stops about 21-23 cm from the bin. The receiver's camera sees the bin at step 0 in 99% of episodes and in 2% of carry steps (B003 A2). If the policy keeps the first frame, does the bar reach the bin?
@@ -20,6 +20,9 @@ From scratch, 3M steps, evaluation every 250k, run on the box overnight in this 
 3. B007 seed 2
 
 Stage counts at 1.5M and 3M for each (seeds 7 + 8, 256 episodes), with the carry's bar-to-bin distance. Queue: `runs/overnight_2026-10-25.sh` on the box, counts in `runs/overnight_counts.txt`.
+
+## Amendments
+- **A1, 2026-10-25 02:10, during run 1.** Run 1's 1.5M count disagreed with its training returns (picker grasps 43 of 128 and return 3 in the counter, against return 34 in training). Cause: `BimanualWristCameraEnv.reset` rendered its observation before moving the wrist cameras to the new arm pose and returned that frame. A memoryless policy loses one frame per episode; B007 kept it all episode. The kept "first frame" showed the previous episode's last gripper view in training, and a different view in the counter. My first check compared the kept frame with the step-0 frame, and both were stale, so it passed. Fix: reset observes again after the camera sync (`bimanual_base.py`), and the first-frame env captures that synced frame. New check `experiments/bimanual/check_reset_frames.py` compares reset frames with a fresh render: 6 of 9 on the old code, 9 of 9 after; the plain env 3 of 3. Run 1 (2.0M steps) is kept but not used. All three runs restart on the fixed code; B003 seed 2 now also gets a correct step-0 frame (one frame per episode; B003 seed 1 had the stale one). The single-arm `WristCameraEnv.reset` has the same stale-frame pattern (not changed here).
 
 ## Predictions
 If the missing view of the bin is the stall:
