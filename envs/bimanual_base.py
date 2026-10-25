@@ -6,6 +6,7 @@ so a flattened observation stacks the left camera's 3 channels before the right 
 real frames the same way.
 """
 
+import math
 from typing import Union
 
 import numpy as np
@@ -37,6 +38,7 @@ class BimanualWristCameraEnv(BaseRandomEnv):
     TOP_CAMERA_EYE = [0.17, 0.0, 0.90]  # overhead: from behind, the arms hid the bins
     TOP_CAMERA_TARGET = [0.20, 0.0, 0.0]
     TOP_CAMERA_FOV = np.deg2rad(55)
+    TOP_CAMERA_INTRINSIC = None  # a 3x3 matrix instead of TOP_CAMERA_FOV (a wide lens squeezed into the square image)
 
     agent: MultiAgent
 
@@ -97,8 +99,9 @@ class BimanualWristCameraEnv(BaseRandomEnv):
         if self.TOP_CAMERA:
             # Fixed, about 90 cm above the table, looking down at both arms, the bar and the bin. No noise: drawing it
             # from the episode generator would shift the per-env object sizes drawn after it.
+            lens = dict(intrinsic=self.TOP_CAMERA_INTRINSIC) if self.TOP_CAMERA_INTRINSIC is not None else dict(fov=self.TOP_CAMERA_FOV)
             configs.append(CameraConfig("top", pose=sapien_utils.look_at(self.TOP_CAMERA_EYE, self.TOP_CAMERA_TARGET),
-                                        width=128, height=128, fov=self.TOP_CAMERA_FOV, near=0.01, far=100))
+                                        width=128, height=128, near=0.01, far=100, **lens))
         return configs
 
     def _randomize_robot_color(self):
@@ -208,3 +211,22 @@ def arm_yaw_pose(x: torch.Tensor, y: torch.Tensor, yaw: torch.Tensor, z: torch.T
 def nominal_yaw_quat(yaw: float) -> list:
     """(w, x, y, z) for a rotation of yaw radians about z."""
     return [float(np.cos(yaw / 2)), 0.0, 0.0, float(np.sin(yaw / 2))]
+
+
+def lehome_top_intrinsic(size=128, hfov_deg=67.2, vfov_deg=52.9):
+    """LeHome's top camera lens (4:3; focal 28.7 mm, aperture 38.11 mm: 67.2° wide, 52.9° tall), its full frame squeezed
+    into a square image, as a real 4:3 frame resized to square would be."""
+    fx = (size / 2) / math.tan(math.radians(hfov_deg / 2))
+    fy = (size / 2) / math.tan(math.radians(vfov_deg / 2))
+    return [[fx, 0.0, size / 2], [0.0, fy, size / 2], [0.0, 0.0, 1.0]]
+
+
+class LeHomeTopCamera:
+    """Mixin: the top camera placed as LeHome's (lehome-challenge garment_bi_cfg_v2.py, the competition's rig, arms 46 cm
+    apart as ours): centred between the arms, 44 cm in front of their bases, 56 cm above the table, looking down and back
+    toward the robots at 19° from vertical. LeHome's README gives ~65 cm for the real rig: measure ours."""
+
+    TOP_CAMERA = True
+    TOP_CAMERA_EYE = [0.44, 0.0, 0.56]
+    TOP_CAMERA_TARGET = [0.44 - 0.56 * math.tan(math.radians(19.0)), 0.0, 0.0]
+    TOP_CAMERA_INTRINSIC = lehome_top_intrinsic()

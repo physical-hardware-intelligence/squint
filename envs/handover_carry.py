@@ -14,6 +14,7 @@ import torch
 from mani_skill.utils.registration import register_env
 from mani_skill.utils.structs.pose import Pose
 
+from .bimanual_base import LeHomeTopCamera
 from .handover import Handover, HandoverBarBinInState, HandoverBarFirstFrame
 
 def controllers_of(arm):
@@ -148,3 +149,9 @@ class HandoverCarryBinInStateRewardV1(CarryStartMixin, HandoverBarBinInState):
     """B008 comparison: the bin-state ceiling with reward v1, to measure what v2's fixes change."""
 
     REWARD_VERSION = 1
+
+
+
+@register_env("SO101HandoverCarryTopCamLeHome-v1", max_episode_steps=CARRY_EPISODE_STEPS)
+class HandoverCarryTopCamLeHome(CarryStartMixin, LeHomeTopCamera, Handover):
+    """B009: the top-camera condition with the camera placed as LeHome's rig (`LeHomeTopCamera`)."""

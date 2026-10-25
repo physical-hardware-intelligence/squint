@@ -1,0 +1,44 @@
+{
+ "checkpoint": "runs/b008_wrist_s1/ckpt_1M.pt",
+ "episodes": 128,
+ "seed": 7,
+ "reached": {
+  "picker_grasp": 0,
+  "both_hold": 0,
+  "handed_over": 128,
+  "receiver_grasp": 128,
+  "bar_in_bin": 58,
+  "success": 47,
+  "arms_touching": 0,
+  "robot_touching_table": 4,
+  "robot_touching_bin": 0,
+  "carrying": 128
+ },
+ "best_stage": {
+  "reaching": 0,
+  "picker holds, carrying": 0,
+  "at handover point, receiver reaching": 0,
+  "both hold": 0,
+  "receiver carries to bin": 70,
+  "in bin": 58
+ },
+ "receiver_closest_cm": {
+  "median": 1.9,
+  "under_3cm": 117,
+  "under_6cm": 128
+ },
+ "carry_bar_to_bin_cm": {
+  "episodes": 128,
+  "start_median": 26.6,
+  "closest_median": 3.5,
+  "closest_under_10cm": 128,
+  "closest_under_5cm": 105
+ },
+ "bin_in_receiver_view": {
+  "at_start_episodes": 0,
+  "both_hold_steps": 0,
+  "of_which_bin_seen": 0,
+  "carry_steps": 6005,
+  "of_which_bin_seen_carry": 1828
+ }
+}

@@ -1,0 +1,64 @@
+# start 2026-10-25 11:54:22 commit 25688f0dd9ced8ce96da95530f36f3a45fbb96e3
+# start 2026-10-25 12:22:48 commit c1e5c41a77f250ad4a160a6b5179af645e9b6f46
+preflight: 48 of 48 passed
+wrist_s1 500k seed 7 carry 127 bin 48 success 40 | start 26.6 closest 3.8 under10 124 under5 84
+wrist_s1 500k seed 8 carry 128 bin 48 success 40 | start 26.3 closest 3.8 under10 125 under5 87
+EXIT 0
+wrist_s1 1M seed 7 carry 128 bin 58 success 47 | start 26.6 closest 3.5 under10 128 under5 105
+wrist_s1 1M seed 8 carry 128 bin 61 success 46 | start 26.3 closest 3.4 under10 128 under5 97
+memory_s1 500k seed 7 carry 126 bin 0 success 0 | start 27.2 closest 3.8 under10 111 under5 88
+memory_s1 500k seed 8 carry 128 bin 1 success 1 | start 27.1 closest 3.5 under10 111 under5 89
+EXIT 0
+memory_s1 1M seed 7 carry 127 bin 11 success 2 | start 26.8 closest 2.9 under10 119 under5 88
+memory_s1 1M seed 8 carry 128 bin 12 success 0 | start 26.5 closest 2.8 under10 124 under5 95
+top_s1 500k seed 7 carry 128 bin 45 success 29 | start 26.4 closest 2.1 under10 124 under5 106
+top_s1 500k seed 8 carry 128 bin 43 success 26 | start 25.9 closest 1.8 under10 123 under5 107
+EXIT 0
+top_s1 1M seed 7 carry 127 bin 109 success 84 | start 26.4 closest 4.6 under10 127 under5 79
+top_s1 1M seed 8 carry 128 bin 123 success 98 | start 25.8 closest 4.5 under10 128 under5 87
+binstate_s1 500k seed 7 carry 127 bin 43 success 35 | start 26.4 closest 4.6 under10 122 under5 68
+binstate_s1 500k seed 8 carry 127 bin 46 success 35 | start 25.8 closest 5.2 under10 120 under5 61
+EXIT 0
+binstate_s1 1M seed 7 carry 127 bin 112 success 75 | start 26.4 closest 4.5 under10 126 under5 83
+binstate_s1 1M seed 8 carry 128 bin 111 success 73 | start 26.1 closest 4.7 under10 126 under5 73
+binstate_g090_s1 500k seed 7 carry 127 bin 56 success 52 | start 26.7 closest 2.9 under10 126 under5 105
+binstate_g090_s1 500k seed 8 carry 128 bin 58 success 54 | start 26.3 closest 3.5 under10 125 under5 103
+EXIT 0
+binstate_g090_s1 1M seed 7 carry 127 bin 67 success 59 | start 26.6 closest 3.9 under10 127 under5 85
+binstate_g090_s1 1M seed 8 carry 128 bin 68 success 59 | start 26.0 closest 4.1 under10 126 under5 76
+binstate_rv1_s1 500k seed 7 carry 128 bin 0 success 0 | start 26.3 closest 9.0 under10 90 under5 2
+binstate_rv1_s1 500k seed 8 carry 128 bin 1 success 0 | start 26.1 closest 9.2 under10 88 under5 2
+EXIT 0
+binstate_rv1_s1 1M seed 7 carry 128 bin 0 success 0 | start 26.3 closest 7.9 under10 118 under5 0
+binstate_rv1_s1 1M seed 8 carry 127 bin 0 success 0 | start 26.1 closest 8.0 under10 114 under5 0
+wrist_s2 500k seed 7 carry 127 bin 5 success 3 | start 26.9 closest 2.2 under10 125 under5 115
+wrist_s2 500k seed 8 carry 128 bin 6 success 5 | start 26.7 closest 2.2 under10 125 under5 115
+EXIT 0
+wrist_s2 1M seed 7 carry 127 bin 43 success 29 | start 27.0 closest 5.6 under10 76 under5 57
+wrist_s2 1M seed 8 carry 127 bin 40 success 27 | start 26.6 closest 5.3 under10 78 under5 61
+memory_s2 500k seed 7 carry 127 bin 9 success 0 | start 26.9 closest 3.3 under10 120 under5 82
+memory_s2 500k seed 8 carry 127 bin 10 success 1 | start 26.6 closest 3.4 under10 119 under5 84
+EXIT 0
+memory_s2 1M seed 7 carry 127 bin 23 success 2 | start 26.7 closest 1.7 under10 123 under5 106
+memory_s2 1M seed 8 carry 128 bin 21 success 5 | start 26.3 closest 2.4 under10 122 under5 97
+top_s2 500k seed 7 carry 127 bin 63 success 48 | start 26.4 closest 3.5 under10 124 under5 98
+top_s2 500k seed 8 carry 128 bin 67 success 52 | start 26.3 closest 3.8 under10 124 under5 86
+EXIT 0
+top_s2 1M seed 7 carry 127 bin 118 success 87 | start 26.4 closest 5.0 under10 126 under5 63
+top_s2 1M seed 8 carry 128 bin 111 success 78 | start 26.1 closest 5.2 under10 127 under5 56
+binstate_s2 500k seed 7 carry 128 bin 11 success 10 | start 26.8 closest 2.9 under10 123 under5 94
+binstate_s2 500k seed 8 carry 128 bin 19 success 16 | start 26.5 closest 2.6 under10 121 under5 99
+EXIT 0
+binstate_s2 1M seed 7 carry 128 bin 110 success 88 | start 26.5 closest 5.0 under10 127 under5 64
+binstate_s2 1M seed 8 carry 128 bin 110 success 91 | start 26.2 closest 4.8 under10 128 under5 69
+binstate_g090_s2 500k seed 7 carry 127 bin 100 success 73 | start 26.7 closest 3.6 under10 125 under5 98
+binstate_g090_s2 500k seed 8 carry 128 bin 101 success 84 | start 26.0 closest 3.8 under10 125 under5 86
+EXIT 0
+binstate_g090_s2 1M seed 7 carry 128 bin 112 success 85 | start 26.5 closest 5.2 under10 126 under5 53
+binstate_g090_s2 1M seed 8 carry 128 bin 106 success 83 | start 26.1 closest 5.4 under10 124 under5 55
+binstate_rv1_s2 500k seed 7 carry 128 bin 0 success 0 | start 26.7 closest 8.8 under10 96 under5 1
+binstate_rv1_s2 500k seed 8 carry 128 bin 0 success 0 | start 26.7 closest 8.9 under10 97 under5 0
+EXIT 0
+binstate_rv1_s2 1M seed 7 carry 127 bin 43 success 21 | start 26.8 closest 6.6 under10 125 under5 54
+binstate_rv1_s2 1M seed 8 carry 128 bin 44 success 18 | start 26.5 closest 6.9 under10 122 under5 53
+# DONE 2026-10-25 16:32:23
