@@ -6,10 +6,10 @@
 In every run that hands over, the receiver then holds the bar and barely moves it (28-30 cm from the bin → 23-29 cm). The reward has measured dips after the handover, γ = 0.9 hides the bin's payoff, and the bin is in the receiver's camera only 2% of the carry ([reward-design](../reward-design.md)). Trained on the carry alone: does it work, and which of the three matters?
 
 ## Intuition
-Start every episode at the moment the receiver has just taken the bar. The handover cannot get in the way, and every episode is practice at the part that never worked. Change one thing per comparison.
+Start every episode just after the receiver has taken the bar. The handover cannot get in the way, and every episode is practice at the part that never worked. Change one thing per comparison.
 
 ## Design
-Episodes start from 3,000+ carry starts saved from B003's two seeds at 3M (`harvest_carry_starts.py`, 512 envs × 10 episodes each): the receiver holds the bar alone, the handover latched, each start with its episode's background colour, gripper drive and opening wrist frames. Episode 60 steps (6 s). From scratch.
+Episodes start from carry starts saved from B003's two seeds at 3M (`harvest_carry_starts.py`, 512 envs × 10 episodes each): saved 5 steps into a carry and kept only if the carry was unbroken 10 steps later (see Pre-launch findings), the receiver holding the bar alone, the handover latched, each start with its episode's background colour, gripper drive and opening wrist frames. Episode 60 steps (6 s). From scratch.
 
 | Condition | Env | Inputs | Reward | γ | Critic support |
 |---|---|---|---|---|---|
@@ -29,6 +29,11 @@ Settings for every run (`train_squint.py` defaults unless listed): 512 envs, 1M 
 - the restore check (`check_carry_starts.py`): bar pose restored exactly, gripper drive and background restored, carries after one still step, no slip while still, reset frame = fresh render, the condition's inputs;
 - a 20k-step training run with the condition's exact arguments: exit 0; channels, state size, γ and support as printed by the trainer;
 - the counter running that checkpoint.
+
+## Pre-launch findings (2026-10-25, before any B008 training)
+- **Preflight 1 failed the restore check:** with every env restored, only 51 of 64 restored carries still held the bar after 10 still steps. The earlier smoke check had passed because it counted envs without a saved start as passing (fixed: rates are now over restored envs only).
+- **Restores were less stable than the originals:** under B003's own policy, 94% of original carries (188/200) were still held 10 steps after they began, against 83% (377/452) after a restore. Poses, gripper drive, background and object sizes are restored exactly; PhysX's contact cache is not saved by any state save (ManiSkill's own reset-to-state included), and the starts were saved at the instant of release, when the grip is barely held.
+- **Change:** starts are now saved 5 steps into a carry and kept only if the original carry was unbroken 10 steps later. The release itself is the full task's job, not B008's.
 
 ## Predictions
 1. binstate: bar in the bin in at least 64 of 256 (25%) at 1M. If not, the carry fails for a reason other than reward dips, horizon or information.

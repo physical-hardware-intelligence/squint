@@ -4,6 +4,7 @@
 For the env indices that have saved states: at reset the receiver holds the bar alone (latched handover); holding still
 for 10 steps keeps it held and the bar within 1 cm; the reset frame equals a fresh render; the first-frame variant shows
 the saved opening images; the top-camera variant has 9 channels; the bin variant has the bin's 4 numbers in its state.
+Rates are over the envs that have a saved start only (envs without one are not counted as passing).
 GPU simulation. Writes the top camera's first frame to experiments/bimanual/out/top_camera_view.png for the top variant.
 """
 
@@ -57,16 +58,16 @@ def main():
     obs, r, term, trunc, info = env.step(zero)
     carry = info["handed_over"] & info["receiver_grasp"] & ~info["picker_touch_bar"]
     check("restored envs are carries after one still step (receiver holds alone, handover latched)",
-          bool((carry | ~has).float().mean() >= 0.9), f"{int((carry & has).sum())} of {int(has.sum())}")
+          bool(carry[has].float().mean() >= 0.95), f"{int((carry & has).sum())} of {int(has.sum())}")
     tcp_r = lambda: u._by_role(u.arms[0].tcp_pos, u.arms[1].tcp_pos, "receiver")
     rel0 = u.bar.pose.p - tcp_r()
     for _ in range(10):
         obs, r, term, trunc, info = env.step(zero)
     carry = info["handed_over"] & info["receiver_grasp"] & ~info["picker_touch_bar"]
     slip = torch.linalg.norm((u.bar.pose.p - tcp_r()) - rel0, dim=1)
-    check("holding still for 10 more steps keeps the carry", bool((carry | ~has).float().mean() >= 0.9),
+    check("holding still for 10 more steps keeps the carry", bool(carry[has].float().mean() >= 0.9),
           f"{int((carry & has).sum())} of {int(has.sum())}")
-    check("bar stays within 1 cm of the receiver's gripper (no slip)", bool(((slip < 0.01) | ~has).float().mean() >= 0.9),
+    check("bar stays within 1 cm of the receiver's gripper (no slip)", bool((slip[has] < 0.01).float().mean() >= 0.9),
           f"median slip {float(slip[has].median()) * 100:.2f} cm, max {float(slip[has].max()) * 100:.2f} cm")
     c = obs["rgb"].shape[-1]
     if "FirstFrame" in args.env_id:
