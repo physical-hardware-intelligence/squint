@@ -1,7 +1,8 @@
 """How far does a handover checkpoint get? Runs it on N simulated episodes and counts, per episode, every stage reached.
 
     python experiments/bimanual/stage_counts.py --checkpoint runs/<run>/ckpt.pt [--num_envs 128] [--seed 7]
-Same environment settings as training's evaluation (domain randomization, backgrounds 0-50 +-6), GPU simulator.
+Domain randomization and backgrounds as training (0-50 +-6), GPU simulator. Unlike training's evaluation: no colour
+jitter, and the scene is not rebuilt between episodes (fixed object sizes per env index).
 Prints and writes experiments/bimanual/out/stages_<run>_<time>.json.
 """
 
@@ -71,7 +72,9 @@ def main():
     min_recv_gap = torch.full((n,), 1e9, device=dev)  # receiver TCP to the bar centre, closest approach (m)
     # Bin in the receiver's wrist view (any of the 5 bin points projected inside the image), by phase
     view = {k: torch.zeros(n, device=dev) for k in ("start", "both_hold_steps", "both_hold_seen", "carry_steps", "carry_seen")}
-    t = 0
+    # Bin in the receiver's view before the first action (the observation the policy starts from)
+    left0, right0 = bin_points_in_view(u)
+    view["start"] = (u._by_role(left0, right0, "receiver").to(dev) > 0).float()
     # Bar to bin centre, horizontal (m): at the first carrying step and the closest during the carry
     carry_start = torch.full((n,), float("nan"), device=dev)
     carry_min = torch.full((n,), float("nan"), device=dev)
@@ -86,8 +89,6 @@ def main():
         centre_seen = u._by_role(left, right, "receiver").to(dev) > 0
         hold = info["both_hold"].to(dev)
         carry = (info["handed_over"] & info["receiver_grasp"] & ~info["picker_touch_bar"]).to(dev)
-        if t == 0:
-            view["start"] = centre_seen.float()
         view["both_hold_steps"] += hold.float()
         view["both_hold_seen"] += (hold & centre_seen).float()
         view["carry_steps"] += carry.float()
@@ -95,7 +96,6 @@ def main():
         carry_start = torch.where(carry & torch.isnan(carry_start), d_xy, carry_start)
         carry_min = torch.where(carry, torch.fmin(carry_min, d_xy), carry_min)
         view["carry_seen"] += (carry & centre_seen).float()
-        t += 1
         tcp_r = u._by_role(u.arms[0].tcp_pos, u.arms[1].tcp_pos, "receiver")
         min_recv_gap = torch.minimum(min_recv_gap, torch.linalg.norm(tcp_r - u.bar.pose.p, dim=1).to(dev))
     out = dict(checkpoint=args.checkpoint, episodes=n, seed=args.seed,

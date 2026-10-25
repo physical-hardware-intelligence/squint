@@ -15,6 +15,7 @@ from sapien.render import RenderBodyComponent
 
 from mani_skill.agents.multi_agent import MultiAgent
 from mani_skill.sensors.camera import CameraConfig
+from mani_skill.utils import sapien_utils
 from mani_skill.utils.structs import Pose
 from mani_skill.utils.structs.types import GPUMemoryConfig, SimConfig
 
@@ -30,6 +31,12 @@ class BimanualWristCameraEnv(BaseRandomEnv):
     WRIST_CAMERA_BASE_POS = WristCameraEnv.WRIST_CAMERA_BASE_POS
     WRIST_CAMERA_BASE_ROT_RAD = WristCameraEnv.WRIST_CAMERA_BASE_ROT_RAD
     WRIST_CAMERA_FOV = WristCameraEnv.WRIST_CAMERA_FOV
+
+    # Optional fixed top camera (B008): off by default, so existing envs keep two cameras
+    TOP_CAMERA = False
+    TOP_CAMERA_EYE = [0.17, 0.0, 0.90]  # overhead: from behind, the arms hid the bins
+    TOP_CAMERA_TARGET = [0.20, 0.0, 0.0]
+    TOP_CAMERA_FOV = np.deg2rad(55)
 
     agent: MultiAgent
 
@@ -87,6 +94,11 @@ class BimanualWristCameraEnv(BaseRandomEnv):
                     mount=mount,
                 )
             )
+        if self.TOP_CAMERA:
+            # Fixed, about 90 cm above the table, looking down at both arms, the bar and the bin. No noise: drawing it
+            # from the episode generator would shift the per-env object sizes drawn after it.
+            configs.append(CameraConfig("top", pose=sapien_utils.look_at(self.TOP_CAMERA_EYE, self.TOP_CAMERA_TARGET),
+                                        width=128, height=128, fov=self.TOP_CAMERA_FOV, near=0.01, far=100))
         return configs
 
     def _randomize_robot_color(self):
@@ -162,6 +174,7 @@ class BimanualWristCameraEnv(BaseRandomEnv):
         observation before the cameras move, so its first frame shows the view from the previous episode's last
         gripper pose (WristCameraEnv.reset returns that stale frame; found 2026-10-25, B007)."""
         obs, info = super().reset(*args, **kwargs)
+        self._after_reset_before_observe()
         if self.gpu_sim_enabled:
             self.scene._gpu_fetch_all()
         self._update_wrist_camera_pose()
@@ -171,6 +184,10 @@ class BimanualWristCameraEnv(BaseRandomEnv):
         obs = self.get_obs(info)
         self._last_obs = obs
         return obs, info
+
+    def _after_reset_before_observe(self):
+        """Hook for subclasses: runs after the parent reset (controllers already reset), before the cameras are synced
+        and the returned observation is rendered."""
 
     def _after_control_step(self):
         """Update both wrist camera poses after the physics step."""

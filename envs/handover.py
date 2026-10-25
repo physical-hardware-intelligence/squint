@@ -79,6 +79,9 @@ class Handover(BimanualWristCameraEnv):
     # "linear" = 1 - d / 40 cm, the same pull at every distance (B006). 40 cm covers the handover point to any goal
     CARRY_DISTANCE_SHAPE = "tanh"
     CARRY_LINEAR_RANGE = 0.40
+    # Reward version. 1: B001-B007. 2 (B008): the same up to the handover; after it, scores follow the bar's progress
+    # instead of contact flags, so the intended path never dips (see docs/bimanual/reward-design.md)
+    REWARD_VERSION = 1
 
     def __init__(
         self,
@@ -424,6 +427,9 @@ class Handover(BimanualWristCameraEnv):
         # Stage 4, 6-7: both hold the lifted bar; the picker is paid to let go
         reward = torch.where(info["both_hold"], 6 + picker_open, reward)
 
+        if self.REWARD_VERSION == 2:
+            return self._reward_after_handover_v2(reward, info, bar_p, axis, receiver_open)
+
         # Stage 5, 8-10: after a mid-air handover, the receiver alone carries the bar over the bin. Starts a full
         # point above stage 4's top (7): B002 stalled with both arms holding when release paid only ~0.4 more
         goal = self.bin.pose.p.clone()
@@ -456,6 +462,53 @@ class Handover(BimanualWristCameraEnv):
         reward -= 3 * info["robot_touching_bin"].float()
         reward -= 2 * info["arms_touching"].float()
         reward -= 1 * (~info["bar_lifted"] & ~self.handed_over).float()  # pick it up promptly
+        return reward
+
+    def _reward_after_handover_v2(self, reward, info, bar_p, axis, receiver_open):
+        """Reward v2 after the latched handover (stages 1-4 as v1, already in `reward`).
+
+        v1 gated each stage on contact flags. Between two stages the flags of neither held, so the score fell back to
+        stage 1 (about 0-2): while the picker's jaws open but still touch, while a released bar falls into the bin.
+        Its height target also jumped at the bin's rim. Here every state on the path both hold -> release -> carry ->
+        over the bin -> lowered or dropped in -> let go scores at least the one before (checked in reward_probe.py).
+        """
+        left, right = self.arms
+        # Progress of the bar toward the bin: horizontal pull, the same at every distance (B006), and height
+        bin_mat = self.bin.pose.to_transformation_matrix()
+        local = (bin_mat[..., :3, :3].transpose(-1, -2) @ (bar_p - self.bin.pose.p)[..., None])[..., 0]
+        over_bin = ((torch.abs(local[:, 0]) < self.bin_half_sizes_x - self.bin_thickness)
+                    & (torch.abs(local[:, 1]) < self.bin_half_sizes_y - self.bin_thickness))
+        near = 1 - torch.clamp(torch.linalg.norm((bar_p - self.bin.pose.p)[:, :2], axis=1) / self.CARRY_LINEAR_RANGE, 0, 1)
+        ends_z = torch.stack([bar_p[:, 2] + s * axis[:, 2] * self.bar_half_lengths for s in (1.0, -1.0)])
+        bar_low = ends_z.min(dim=0).values - self.bar_half_widths  # as evaluate()'s bin test
+        z_clear = self.bin_thickness + 2 * self.bin_half_sizes_z + 0.01  # 1 cm above the walls
+        clearance = 1 - torch.tanh(10 * torch.clamp(z_clear - bar_low, min=0))  # outside: keep above the walls
+        lowered = torch.clamp((z_clear - bar_low) / (z_clear - self.bin_thickness), 0, 1)  # inside: lower toward the floor
+        height = torch.where(over_bin, 1 + lowered, clearance)  # 0-2; 1 on both sides of the rim at wall-top height
+        place = 1.2 * near + 0.4 * height  # 0-2
+
+        # Stage 5, 7-10: handover done, the picker no longer squeezing; +1 once it is off the bar. Includes a bar
+        # released over the bin and falling in (v1 scored that about 0)
+        holding = self.handed_over & info["receiver_grasp"] & ~info["picker_grasp"]
+        falling_in = self.handed_over & ~info["receiver_grasp"] & ~info["picker_grasp"] & over_bin & ~info["bar_in_bin"]
+        reward = torch.where(holding | falling_in, 7 + (~info["picker_touch_bar"]).float() + place, reward)
+
+        # Stage 6, 12-15: the bar in the bin; let go and keep both arms still
+        arm_speed = torch.linalg.norm(left.robot.get_qvel()[:, :-1], axis=1) + torch.linalg.norm(right.robot.get_qvel()[:, :-1], axis=1)
+        settled = 1 - torch.tanh(10 * arm_speed)
+        released = (~info["receiver_touch_bar"]).float()
+        in_bin = self.handed_over & info["bar_in_bin"]
+        reward = torch.where(in_bin, 10 + place + released + receiver_open + settled, reward)
+
+        # Success, 16
+        reward = torch.where(info["success"], torch.full_like(reward, self.MAX_REWARD), reward)
+
+        # Penalties as v1, except touching the bin once the bar is in it: placing it there brushes the walls, and
+        # success still requires letting go of everything
+        reward -= 6 * info["robot_touching_table"].float()
+        reward -= 3 * (info["robot_touching_bin"] & ~in_bin).float()
+        reward -= 2 * info["arms_touching"].float()
+        reward -= 1 * (~info["bar_lifted"] & ~self.handed_over).float()
         return reward
 
     def compute_normalized_dense_reward(self, obs: Any, action: torch.Tensor, info: dict):
@@ -495,6 +548,8 @@ class HandoverBarFirstFrame(Handover):
     left first, right first (12 RGB channels). At step 0 the receiver's camera sees the bin in 99% of episodes
     (B003 A2); the kept frame holds that view after the bin leaves the camera. On the real rig: store one frame."""
 
+    IMAGE_CHUNK_CAMERAS = ("left", "right", "left", "right")  # colour jitter: a camera's kept frame jitters with it
+
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
         super()._initialize_episode(env_idx, options)
         if not hasattr(self, "_first_pending"):
@@ -520,3 +575,10 @@ class HandoverBarFirstFrame(Handover):
         for name in cams:
             obs[f"{name}_first"] = {k: v.clone() for k, v in self._first_frames[name].items()}
         return obs
+
+
+@register_env("SO101HandoverBarV2-v1", max_episode_steps=120)
+class HandoverBarV2(Handover):
+    """Task 1 with reward v2 (after the handover, scores follow the bar's progress; no dips)."""
+
+    REWARD_VERSION = 2
