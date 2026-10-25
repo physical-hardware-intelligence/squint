@@ -1,6 +1,6 @@
 # B002: Does Squint learn the handover?
 
-**Status:** protocol written 2026-10-24, before the run.
+**Status:** running since 2026-10-24 20:21 (box, tmux `b002`).
 
 ## Question
 Does Squint, unchanged, learn `SO101HandoverBar-v1` from scratch in simulation, and where does it stall if it does not?
@@ -27,4 +27,6 @@ Pure RL on a long, three-stage task, with no curriculum:
 - **A1, 2026-10-24, before the run.** Pre-flight added: `experiments/bimanual/check_reward.py` checks the reward stages and the success flag on constructed states, since B001 never got past the grasp. Result: 16 of 16 passed (bands 0.5, 4.2, 6.5, 7.7, 12.2, 15 in order; normalized maximum 1; the handover latch; the bin test lying, standing, outside, and on a rotated bin).
 
 ## Results
-_Not run._
+**Smoke test** (2026-10-24, commit `3d7dec9`): 64 envs, 50k steps in 6 min, exit 0, checkpoint and 3 evaluation videos saved; evaluation return −53.6 at step 0, +2.7 at 50k. The first launch (commit `57284e2`) crashed at the action size: the trainer read the two-arm Dict action space from the unwrapped env. Fixed in `train_squint.py` (`single_action_box`); single-arm training unchanged.
+
+**Main run** (commit `3d7dec9`, `runs/handover_b002_2026-10-24` on the box): 512 envs at about 1,140 steps/s, 8.6 GB of GPU memory; about 2.4 h for 10M steps.
