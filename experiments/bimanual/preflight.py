@@ -50,8 +50,8 @@ def main():
         results.append(ok)
         print(f"{'PASS' if ok else 'FAIL'}  {name}  {detail}", flush=True)
 
-    for env_id, train_args in a.run:
-        tag = env_id.replace("-", "_")
+    for i, (env_id, train_args) in enumerate(a.run, start=1):
+        tag = f"{i}_{env_id.replace('-', '_')}"  # numbered: two runs may share an env (B008's binstate and binstate_g090)
         ch, state = expected(env_id)
         # 1. env checks
         check = "check_carry_starts.py" if "Carry" in env_id else "check_reset_frames.py"

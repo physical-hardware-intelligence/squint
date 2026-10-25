@@ -27,7 +27,7 @@ from mani_skill.utils.structs.pose import Pose
 from transforms3d.euler import euler2quat
 
 from .base_random_env import DefaultRandomizationConfig
-from .bimanual_base import ARM_NAMES, BimanualWristCameraEnv, arm_yaw_pose, nominal_yaw_quat
+from .bimanual_base import ARM_NAMES, BimanualWristCameraEnv, LeHomeTopCamera, arm_yaw_pose, nominal_yaw_quat
 from .robot.so101 import SO101
 
 PAN_AXIS_X = 0.0388  # the pan axis sits 3.88 cm in front of the base origin (so101.urdf L439)
@@ -580,5 +580,12 @@ class HandoverBarFirstFrame(Handover):
 @register_env("SO101HandoverBarV2-v1", max_episode_steps=120)
 class HandoverBarV2(Handover):
     """Task 1 with reward v2 (after the handover, scores follow the bar's progress; no dips)."""
+
+    REWARD_VERSION = 2
+
+
+@register_env("SO101HandoverBarV2TopCamLeHome-v1", max_episode_steps=120)
+class HandoverBarV2TopCamLeHome(LeHomeTopCamera, Handover):
+    """Task 1 with reward v2 and a top camera placed as LeHome's rig (B010)."""
 
     REWARD_VERSION = 2

@@ -1,4 +1,5 @@
-"""How far does a handover checkpoint get? Runs it on N simulated episodes and counts, per episode, every stage reached.
+"""How far does a handover checkpoint get? Runs it on N simulated episodes and counts, per episode, every stage reached
+(at any step: `reached`) and the bar-in-bin and success flags at the episode's last step (`at_end`).
 
     python experiments/bimanual/stage_counts.py --checkpoint runs/<run>/ckpt.pt [--num_envs 128] [--seed 7]
 Domain randomization and backgrounds as training (0-50 +-6), GPU simulator. Unlike training's evaluation: no colour
@@ -98,8 +99,10 @@ def main():
         view["carry_seen"] += (carry & centre_seen).float()
         tcp_r = u._by_role(u.arms[0].tcp_pos, u.arms[1].tcp_pos, "receiver")
         min_recv_gap = torch.minimum(min_recv_gap, torch.linalg.norm(tcp_r - u.bar.pose.p, dim=1).to(dev))
-    out = dict(checkpoint=args.checkpoint, episodes=n, seed=args.seed,
+    # The last step's flags: an outcome reached at some step can be undone later (a bar knocked out of the bin)
+    out = dict(checkpoint=args.checkpoint, env_id=args.env_id, episodes=n, seed=args.seed,
                reached={k: int(v.sum()) for k, v in ever.items()},
+               at_end={k: int(info[k].sum()) for k in ("bar_in_bin", "success")},
                best_stage={name: int(((best >= lo) & (best < hi)).sum()) for lo, hi, name in BANDS},
                receiver_closest_cm=dict(median=round(float(min_recv_gap.median()) * 100, 1),
                                         under_3cm=int((min_recv_gap < 0.03).sum()), under_6cm=int((min_recv_gap < 0.06).sum())),

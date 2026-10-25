@@ -7,7 +7,6 @@ object sizes are drawn once per env index when the scene is built, and are check
 An env index with no saved state starts a normal episode (counted in `carry_start_misses`).
 """
 
-import math
 import os
 
 import torch
@@ -15,6 +14,7 @@ import torch
 from mani_skill.utils.registration import register_env
 from mani_skill.utils.structs.pose import Pose
 
+from .bimanual_base import LeHomeTopCamera
 from .handover import Handover, HandoverBarBinInState, HandoverBarFirstFrame
 
 def controllers_of(arm):
@@ -151,21 +151,7 @@ class HandoverCarryBinInStateRewardV1(CarryStartMixin, HandoverBarBinInState):
     REWARD_VERSION = 1
 
 
-def lehome_top_intrinsic(size=128, hfov_deg=67.2, vfov_deg=52.9):
-    """LeHome's top camera (4:3; focal 28.7 mm, aperture 38.11 mm: 67.2° wide, 52.9° tall), its full frame squeezed into
-    a square image, as a real 4:3 frame resized to square would be."""
-    fx = (size / 2) / math.tan(math.radians(hfov_deg / 2))
-    fy = (size / 2) / math.tan(math.radians(vfov_deg / 2))
-    return [[fx, 0.0, size / 2], [0.0, fy, size / 2], [0.0, 0.0, 1.0]]
-
 
 @register_env("SO101HandoverCarryTopCamLeHome-v1", max_episode_steps=CARRY_EPISODE_STEPS)
-class HandoverCarryTopCamLeHome(CarryStartMixin, Handover):
-    """As the top-camera condition, with the camera placed as LeHome's (lehome-challenge garment_bi_cfg_v2.py, the
-    competition's rig): centred between the arms, 44 cm in front of their bases, 56 cm above the table, looking down and
-    back toward the robots at 19° from vertical. The README gives ~65 cm for the real rig: measure ours."""
-
-    TOP_CAMERA = True
-    TOP_CAMERA_EYE = [0.44, 0.0, 0.56]
-    TOP_CAMERA_TARGET = [0.44 - 0.56 * math.tan(math.radians(19.0)), 0.0, 0.0]
-    TOP_CAMERA_INTRINSIC = lehome_top_intrinsic()
+class HandoverCarryTopCamLeHome(CarryStartMixin, LeHomeTopCamera, Handover):
+    """B009: the top-camera condition with the camera placed as LeHome's rig (`LeHomeTopCamera`)."""
