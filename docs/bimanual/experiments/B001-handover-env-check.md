@@ -1,6 +1,6 @@
 # B001: Is the handover doable in simulation?
 
-**Status:** run 1 done (0 of 10); amendment A2 written before run 2.
+**Status:** done 2026-10-24: 0 of 10 in both runs. The layout checks out; my scripted grasp does not (see Conclusion).
 
 ## Question
 Can a scripted controller (inverse kinematics, top-down grasps) complete `SO101HandoverBar-v1`, and do the reward stages and the success flag fire in the intended order?
@@ -36,3 +36,15 @@ A training run costs about an hour of GPU. If the task is impossible (reach, col
 | the picker never grasps | 1 (seed 2) | not yet diagnosed |
 
 The env is not at fault: these are the oracle's choices. Hence A2.
+
+**Run 2** (A2, commit `3de31bd`, `experiments/bimanual/out/B001_20261024-195633.json`): **0 of 10.** The picker never holds the bar through the lift; an arm touches the table in all 10.
+
+**Diagnosis** (exploratory, scratch scripts, 2026-10-24):
+- Joint solutions are exact (error ≤ 5 mm) and the jaws do straddle the bar's width when closing. But a wide opening (45°) makes the moving jaw push the bar 15-25 mm before clamping, and pushed near its end the bar turns out of the jaws. Narrow openings (8-18°) land a jaw on the bar's top. 0 of 7 grasps held in every one of 24 opening, offset and height combinations.
+- The trained PlaceCube policy grasps the same 25 mm section from straight above in 8 of 8 sim runs, so the simulator can grasp it: what fails is my scripted grasp, not the env.
+
+## Conclusion
+- **Checked:** both arms reach the handover point, and only the receiver reaches the bin (reach ≤ 43 cm, sampled). Two top-down grippers on a 60 mm bar collide. Presenting the bar upright solves the joints (error ≤ 3 mm).
+- **Not established:** that a full handover works in this simulator. Scripted grasping of the bar does not work, and fixing it means modelling the jaws' real contact geometry.
+- **Decision:** test feasibility with learning instead (B002). A curriculum from scripted mid-task states waits for a working scripted grasp.
+

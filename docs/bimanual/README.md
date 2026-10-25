@@ -13,7 +13,7 @@ One Squint policy drives two SO-101 arms from their two wrist cameras: trained i
 
 | # | Task | Env | Status |
 |---|---|---|---|
-| 1 | Handover: one arm picks a 25 × 25 × 60 mm red bar, hands it to the other in mid-air, which puts it in the bin. Either arm may pick; neither can reach both bar and bin | `SO101HandoverBar-v1` | built; checking (B001) |
+| 1 | Handover: one arm picks a 25 × 25 × 60 mm red bar, hands it to the other in mid-air, which puts it in the bin. Either arm may pick; neither can reach both bar and bin | `SO101HandoverBar-v1` | built; layout checked (B001); training next (B002) |
 | 2 | Insertion in mid-air: one arm picks a socket, the other a peg; insert until seated, about 5 mm clearance (as ALOHA's Bimanual Insertion) | — | draft |
 | 3 | Hold and open: one arm holds a hinged box, the other lifts the lid past 60° | — | draft |
 
@@ -23,7 +23,7 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 
 | # | Question | Status |
 |---|---|---|
-| [B001](experiments/B001-handover-env-check.md) | Is the handover doable in simulation; do the stages and success fire in order? | protocol written |
+| [B001](experiments/B001-handover-env-check.md) | Is the handover doable in simulation; do the stages and success fire in order? | done: layout checks out; scripted grasp fails (0/10) |
 | B002 | Does Squint learn task 1, and how fast? | planned |
 
 ## Rules
