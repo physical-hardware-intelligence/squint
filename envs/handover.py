@@ -486,3 +486,31 @@ class HandoverBarLinearCarry(Handover):
     almost flat beyond ~20 cm, where the carry starts). Stages, bands and success unchanged."""
 
     CARRY_DISTANCE_SHAPE = "linear"
+
+
+@register_env("SO101HandoverBarFirstFrame-v1", max_episode_steps=120)
+class HandoverBarFirstFrame(Handover):
+    """B007, first-frame memory: each wrist camera's image from the episode's first step is kept and given to the
+    policy at every step beside the current one. Sensor order, so channel order after flattening: left now, right now,
+    left first, right first (12 RGB channels). At step 0 the receiver's camera sees the bin in 99% of episodes
+    (B003 A2); the kept frame holds that view after the bin leaves the camera. On the real rig: store one frame."""
+
+    def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
+        super()._initialize_episode(env_idx, options)
+        if not hasattr(self, "_first_pending"):
+            self._first_pending = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        self._first_pending[env_idx] = True  # the next observation of these envs is their episode's first
+
+    def _get_obs_sensor_data(self, apply_texture_transforms: bool = True):
+        obs = super()._get_obs_sensor_data(apply_texture_transforms)
+        cams = [name for name in obs if name.endswith("_wrist")]
+        if not hasattr(self, "_first_frames"):
+            self._first_frames = {name: {k: v.clone() for k, v in obs[name].items()} for name in cams}
+        for name in cams:
+            for k, v in obs[name].items():
+                pending = self._first_pending.to(v.device)
+                self._first_frames[name][k][pending] = v[pending]
+        self._first_pending[:] = False
+        for name in cams:
+            obs[f"{name}_first"] = {k: v.clone() for k, v in self._first_frames[name].items()}
+        return obs
