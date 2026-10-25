@@ -24,7 +24,7 @@ from scipy.optimize import least_squares  # noqa: E402
 import envs  # noqa: E402,F401
 
 REPO = Path(__file__).resolve().parents[2]
-CHAIN = pk.build_chain_from_urdf((REPO / "envs/robot/so101.urdf").read_bytes())
+CHAIN = pk.build_chain_from_urdf((REPO / "envs/robot/so101.urdf").read_bytes()).to(dtype=torch.float64)
 DELTA = np.array([0.1] * 5 + [0.2])  # rad per step at action 1 (pd_joint_target_delta_pos, envs/robot/so101.py L97-106)
 OPEN, CLOSED = np.deg2rad(45.0), np.deg2rad(-10.0)
 GRASP_LIFT = 0.006  # TCP this far above the bar's centre: the URDF fingertips sit short of the jaws' real ends
