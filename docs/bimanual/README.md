@@ -38,7 +38,7 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 3. **B003.** Pay more for letting go: the receiver now takes the bar, but carries it nowhere. The receiver's own camera almost never sees the bin while carrying (2%); the picker's camera does (40%), but using it means translating another arm's view. No memory.
 4. **B004.** Tell it where the bin is (sim only), to test whether missing information is the stall. Neither seed let go, so it could not answer. Lesson: from scratch, whether the release is learned varies more between runs than the effect being tested. Next: start from B003's checkpoint, which already lets go.
 5. **B005.** From B003's checkpoint: the bin input broke the handover (as in all B004 runs). The control carries but moves the bar only ~5 cm toward the bin (28 → 23 cm). The carry reward is almost flat at that distance (30 → 20 cm pays 0.14 of 16 points), a second suspect besides vision.
-6. **B006.** Make the carry reward pull equally at every distance (0.25 per 10 cm). Running. If it works, the real fix is one of: memory, a top camera, or a layout that keeps the bin in view.
+6. **B006.** Make the carry reward pull equally at every distance (0.25 per 10 cm). Running. If the bar still stalls far from the bin, vision is the suspect, and the fix is one of: memory, a top camera, or a layout that keeps the bin in view.
 
 ## Rules
 - Each experiment has a protocol written before it runs: question, predictions, method, decision rule. Changes after that are dated amendments. Results, including negative ones, go in the same file with the command and the commit.
