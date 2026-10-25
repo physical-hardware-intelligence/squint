@@ -75,6 +75,10 @@ class Handover(BimanualWristCameraEnv):
 
     # Reward stages (see compute_dense_reward); the maximum normalizes the reward to 1
     MAX_REWARD = 16.0
+    # How the carry is paid for its distance d to the goal: "tanh" = 1 - tanh(5 d), steep only within ~15 cm (B001-B005);
+    # "linear" = 1 - d / 40 cm, the same pull at every distance (B006). 40 cm covers the handover point to any goal
+    CARRY_DISTANCE_SHAPE = "tanh"
+    CARRY_LINEAR_RANGE = 0.40
 
     def __init__(
         self,
@@ -428,7 +432,12 @@ class Handover(BimanualWristCameraEnv):
         bin_radius = torch.linalg.norm(self.bin_dimensions[:, :2], axis=1)
         z_far = goal[:, 2] + 2 * self.bin_half_sizes_z + 0.03  # above the walls until it is over the bin
         bar_to_goal_z = torch.where(bar_to_goal_xy <= bin_radius, torch.abs(goal[:, 2] - bar_p[:, 2]), torch.abs(z_far - bar_p[:, 2]))
-        place = (1 - torch.tanh(5 * torch.linalg.norm(goal - bar_p, axis=1))) + (1 - torch.tanh(10 * bar_to_goal_z))
+        bar_to_goal = torch.linalg.norm(goal - bar_p, axis=1)
+        if self.CARRY_DISTANCE_SHAPE == "linear":
+            near = 1 - torch.clamp(bar_to_goal / self.CARRY_LINEAR_RANGE, 0, 1)
+        else:
+            near = 1 - torch.tanh(5 * bar_to_goal)
+        place = near + (1 - torch.tanh(10 * bar_to_goal_z))
         carrying = self.handed_over & info["receiver_grasp"] & ~info["picker_touch_bar"]
         reward = torch.where(carrying, 8 + place, reward)
 
@@ -469,3 +478,11 @@ class HandoverBarBinInState(Handover):
         yaw = 2 * torch.atan2(q[:, 3], q[:, 0])  # the bin only turns about z
         obs["bin_xy_yaw"] = torch.stack([self.bin.pose.p[:, 0], self.bin.pose.p[:, 1], torch.cos(yaw), torch.sin(yaw)], dim=1)
         return obs
+
+
+@register_env("SO101HandoverBarLinearCarry-v1", max_episode_steps=120)
+class HandoverBarLinearCarry(Handover):
+    """B006: as v1, but the carry is paid 1 - d / 40 cm for the bar's distance d to the goal (v1: 1 - tanh(5 d),
+    almost flat beyond ~20 cm, where the carry starts). Stages, bands and success unchanged."""
+
+    CARRY_DISTANCE_SHAPE = "linear"

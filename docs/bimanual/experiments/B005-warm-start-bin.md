@@ -50,7 +50,7 @@ Both runs exit 0 (commit `20f4637`). Evaluation returns 0-1.5M, control: 46.2, 2
 
 **What the carry does** (control 1.5M; `stage_counts.py` now reports the horizontal bar-to-bin distance during the carry; 89 carrying episodes): median 28.5 cm at the start of the carry, closest 23 cm; none within 10 cm. The receiver holds the bar and barely moves it toward the bin.
 
-**Why it might not move:** stage 5 pays `1 − tanh(5 d)` for the distance d to the bin (`handover.py`, `place`). That term is 0.09 at 30 cm, and 10 cm closer adds 0.09 of 16 points (computed): almost flat where the carry starts, so moving toward the bin barely changes the reward.
+**Why it might not move:** stage 5 pays `1 − tanh(5 d)` for the distance d to the bin (`handover.py`, `place`). That term is 0.09 at 30 cm; moving from 30 to 20 cm adds 0.14 of 16 points, from 40 to 30 cm 0.06 (measured in [B006](B006-linear-carry.md)'s pre-flight): almost flat where the carry starts, so moving toward the bin barely changes the reward.
 
 **Decision (rule: neither gets the bar in, look at the carry):** two explanations remain, vision (the bin is mostly out of the receiver's camera) and a flat reward at the carry's distance. The reward one is a one-line change and cheaper to test, so it goes first (B006, proposed).
 
