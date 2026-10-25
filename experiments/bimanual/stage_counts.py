@@ -72,6 +72,9 @@ def main():
     # Bin in the receiver's wrist view (any of the 5 bin points projected inside the image), by phase
     view = {k: torch.zeros(n, device=dev) for k in ("start", "both_hold_steps", "both_hold_seen", "carry_steps", "carry_seen")}
     t = 0
+    # Bar to bin centre, horizontal (m): at the first carrying step and the closest during the carry
+    carry_start = torch.full((n,), float("nan"), device=dev)
+    carry_min = torch.full((n,), float("nan"), device=dev)
     for _ in range(steps):
         obs, r, term, trunc, info = env.step(agent.get_action(obs))
         for k in FLAGS:
@@ -88,6 +91,9 @@ def main():
         view["both_hold_steps"] += hold.float()
         view["both_hold_seen"] += (hold & centre_seen).float()
         view["carry_steps"] += carry.float()
+        d_xy = torch.linalg.norm((u.bar.pose.p - u.bin.pose.p)[:, :2], dim=1).to(dev)
+        carry_start = torch.where(carry & torch.isnan(carry_start), d_xy, carry_start)
+        carry_min = torch.where(carry, torch.fmin(carry_min, d_xy), carry_min)
         view["carry_seen"] += (carry & centre_seen).float()
         t += 1
         tcp_r = u._by_role(u.arms[0].tcp_pos, u.arms[1].tcp_pos, "receiver")
@@ -97,6 +103,11 @@ def main():
                best_stage={name: int(((best >= lo) & (best < hi)).sum()) for lo, hi, name in BANDS},
                receiver_closest_cm=dict(median=round(float(min_recv_gap.median()) * 100, 1),
                                         under_3cm=int((min_recv_gap < 0.03).sum()), under_6cm=int((min_recv_gap < 0.06).sum())),
+               carry_bar_to_bin_cm=dict(
+                   episodes=int((~torch.isnan(carry_start)).sum()),
+                   start_median=round(float(carry_start.nanmedian()) * 100, 1) if (~torch.isnan(carry_start)).any() else None,
+                   closest_median=round(float(carry_min.nanmedian()) * 100, 1) if (~torch.isnan(carry_min)).any() else None,
+                   closest_under_10cm=int((carry_min < 0.10).sum()), closest_under_5cm=int((carry_min < 0.05).sum())),
                bin_in_receiver_view=dict(
                    at_start_episodes=int(view["start"].sum()),
                    both_hold_steps=int(view["both_hold_steps"].sum()), of_which_bin_seen=int(view["both_hold_seen"].sum()),

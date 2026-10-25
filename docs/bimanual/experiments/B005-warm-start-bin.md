@@ -1,6 +1,6 @@
 # B005: From a policy that already lets go, does knowing the bin's position get the bar in?
 
-**Status:** protocol written 2026-10-24, before the run.
+**Status:** done 2026-10-25 00:35. The bin input broke the handover (7 of 256, 0 carries); the control relearned the release (87 of 256 carry) but no bar reached the bin. The carry barely moves toward the bin, where its reward is almost flat.
 
 ## Question
 B004 asked this from scratch and could not answer: neither seed learned to let go. Here both arms start from B003's 3M checkpoint, which already carries in 39 of 128 episodes, so the comparison begins after the release.
@@ -34,4 +34,23 @@ If missing information is the stall:
 - Either run loses the release (carries below 10): note it; a warm start can forget, and the comparison is then read from the earlier count (750k).
 
 ## Results
-_Not run._
+Both runs exit 0 (commit `20f4637`). Evaluation returns 0-1.5M, control: 46.2, 26.4, 33.6, 37.6, 38.6, 35.8, 42.2; bin: 46.2, 30.9, 38.2, 32.5, 39.6, 36.0, 39.6. Success 0 throughout.
+
+| Stage (of 256, seeds 7 + 8) | control 750k | control 1.5M | bin 750k | bin 1.5M |
+|---|---|---|---|---|
+| mid-air handover | 103 | 120 | 1 | 7 |
+| receiver carries | 1 | 87 | 0 | 0 |
+| bar in bin | 0 | 0 | 0 | 0 |
+
+**Predictions:** 1 failed (0 in the bin). 2 held (0 in the bin), but trivially.
+
+**Reading:**
+- Restarting training alone made the control forget the release for a while (1 carry at 750k), then relearn it (87 at 1.5M).
+- Adding the bin's position broke the handover and it did not recover. With B004, all three runs given the bin's position failed to release; both runs without it released. The mechanism is unknown. Giving the policy privileged state is therefore not a clean probe of "missing information" here.
+
+**What the carry does** (control 1.5M; `stage_counts.py` now reports the horizontal bar-to-bin distance during the carry; 89 carrying episodes): median 28.5 cm at the start of the carry, closest 23 cm; none within 10 cm. The receiver holds the bar and barely moves it toward the bin.
+
+**Why it might not move:** stage 5 pays `1 − tanh(5 d)` for the distance d to the bin (`handover.py`, `place`). That term is 0.09 at 30 cm, and 10 cm closer adds 0.09 of 16 points (computed): almost flat where the carry starts, so moving toward the bin barely changes the reward.
+
+**Decision (rule: neither gets the bar in, look at the carry):** two explanations remain, vision (the bin is mostly out of the receiver's camera) and a flat reward at the carry's distance. The reward one is a one-line change and cheaper to test, so it goes first (B006, proposed).
+
