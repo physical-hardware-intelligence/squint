@@ -1,0 +1,30 @@
+{
+ "checkpoint": "runs/handover_b003_2026-10-24/ckpt_1.5M.pt",
+ "episodes": 128,
+ "seed": 7,
+ "reached": {
+  "picker_grasp": 128,
+  "both_hold": 33,
+  "handed_over": 33,
+  "receiver_grasp": 33,
+  "bar_in_bin": 0,
+  "success": 0,
+  "arms_touching": 8,
+  "robot_touching_table": 10,
+  "robot_touching_bin": 1,
+  "carrying": 1
+ },
+ "best_stage": {
+  "reaching": 2,
+  "picker holds, carrying": 0,
+  "at handover point, receiver reaching": 93,
+  "both hold": 32,
+  "receiver carries to bin": 1,
+  "in bin": 0
+ },
+ "receiver_closest_cm": {
+  "median": 1.7,
+  "under_3cm": 119,
+  "under_6cm": 126
+ }
+}

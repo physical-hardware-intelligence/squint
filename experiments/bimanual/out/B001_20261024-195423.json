@@ -1,0 +1,260 @@
+{
+ "experiment": "B001",
+ "date": "2026-10-24T19:54:23-07:00",
+ "commit": "b9bad971b13c553ef8164038120622a5d073dd20",
+ "dirty": "M run_real.sh",
+ "command": "python experiments/bimanual/handover_oracle.py --seeds 1 2 3 4 5 6 7 8 9 10",
+ "successes": 0,
+ "n": 10,
+ "runs": [
+  {
+   "seed": 1,
+   "picker": "right",
+   "steps": 349,
+   "success": false,
+   "first_step": {
+    "picker_grasp": 41,
+    "arms_touching": 126,
+    "robot_touching_bin": 299
+   },
+   "reward_max": 0.0742,
+   "reward_end": -0.0261,
+   "ik_error_mm": {
+    "picker_above": 0.0,
+    "picker_grasp": 0.0,
+    "picker_lift": 1.05,
+    "picker_handover": 3.27,
+    "receiver_above": 3.82,
+    "receiver_grasp": 1.06,
+    "picker_retreat": 1.94,
+    "receiver_over_bin": 0.52,
+    "receiver_lower": 0.0,
+    "receiver_retreat": 0.51
+   }
+  },
+  {
+   "seed": 2,
+   "picker": "right",
+   "steps": 360,
+   "success": false,
+   "first_step": {
+    "arms_touching": 146,
+    "robot_touching_bin": 316
+   },
+   "reward_max": 0.0557,
+   "reward_end": 0.0032,
+   "ik_error_mm": {
+    "picker_above": 0.0,
+    "picker_grasp": 0.0,
+    "picker_lift": 1.04,
+    "picker_handover": 3.27,
+    "receiver_above": 3.82,
+    "receiver_grasp": 1.06,
+    "picker_retreat": 1.94,
+    "receiver_over_bin": 0.4,
+    "receiver_lower": 0.0,
+    "receiver_retreat": 0.41
+   }
+  },
+  {
+   "seed": 3,
+   "picker": "left",
+   "steps": 386,
+   "success": false,
+   "first_step": {
+    "picker_grasp": 30,
+    "arms_touching": 151,
+    "robot_touching_bin": 288
+   },
+   "reward_max": 0.0806,
+   "reward_end": -0.0052,
+   "ik_error_mm": {
+    "picker_above": 0.0,
+    "picker_grasp": 0.0,
+    "picker_lift": 1.48,
+    "picker_handover": 2.28,
+    "receiver_above": 3.77,
+    "receiver_grasp": 1.08,
+    "picker_retreat": 2.03,
+    "receiver_over_bin": 0.53,
+    "receiver_lower": 0.0,
+    "receiver_retreat": 0.79
+   }
+  },
+  {
+   "seed": 4,
+   "picker": "left",
+   "steps": 336,
+   "success": false,
+   "first_step": {
+    "picker_grasp": 29,
+    "arms_touching": 110,
+    "robot_touching_bin": 294
+   },
+   "reward_max": 0.0772,
+   "reward_end": -0.016,
+   "ik_error_mm": {
+    "picker_above": 0.0,
+    "picker_grasp": 0.0,
+    "picker_lift": 1.07,
+    "picker_handover": 3.27,
+    "receiver_above": 3.77,
+    "receiver_grasp": 1.08,
+    "picker_retreat": 1.98,
+    "receiver_over_bin": 0.84,
+    "receiver_lower": 0.0,
+    "receiver_retreat": 0.79
+   }
+  },
+  {
+   "seed": 5,
+   "picker": "left",
+   "steps": 390,
+   "success": false,
+   "first_step": {
+    "picker_grasp": 31,
+    "arms_touching": 111,
+    "robot_touching_bin": 297
+   },
+   "reward_max": 0.0788,
+   "reward_end": -0.0108,
+   "ik_error_mm": {
+    "picker_above": 0.0,
+    "picker_grasp": 0.0,
+    "picker_lift": 1.24,
+    "picker_handover": 3.27,
+    "receiver_above": 3.77,
+    "receiver_grasp": 1.08,
+    "picker_retreat": 1.98,
+    "receiver_over_bin": 0.45,
+    "receiver_lower": 0.0,
+    "receiver_retreat": 0.68
+   }
+  },
+  {
+   "seed": 6,
+   "picker": "left",
+   "steps": 337,
+   "success": false,
+   "first_step": {
+    "picker_grasp": 38,
+    "arms_touching": 151,
+    "robot_touching_bin": 289
+   },
+   "reward_max": 0.0842,
+   "reward_end": 0.0074,
+   "ik_error_mm": {
+    "picker_above": 0.0,
+    "picker_grasp": 0.0,
+    "picker_lift": 1.33,
+    "picker_handover": 2.28,
+    "receiver_above": 3.77,
+    "receiver_grasp": 1.08,
+    "picker_retreat": 2.03,
+    "receiver_over_bin": 0.5,
+    "receiver_lower": 0.0,
+    "receiver_retreat": 0.42
+   }
+  },
+  {
+   "seed": 7,
+   "picker": "left",
+   "steps": 339,
+   "success": false,
+   "first_step": {
+    "picker_grasp": 27,
+    "arms_touching": 111,
+    "robot_touching_bin": 296
+   },
+   "reward_max": 0.076,
+   "reward_end": -0.0237,
+   "ik_error_mm": {
+    "picker_above": 0.0,
+    "picker_grasp": 0.0,
+    "picker_lift": 1.09,
+    "picker_handover": 3.27,
+    "receiver_above": 3.77,
+    "receiver_grasp": 1.08,
+    "picker_retreat": 1.98,
+    "receiver_over_bin": 0.61,
+    "receiver_lower": 0.0,
+    "receiver_retreat": 0.59
+   }
+  },
+  {
+   "seed": 8,
+   "picker": "left",
+   "steps": 365,
+   "success": false,
+   "first_step": {
+    "picker_grasp": 24,
+    "arms_touching": 150,
+    "robot_touching_bin": 286
+   },
+   "reward_max": 0.0786,
+   "reward_end": -0.0667,
+   "ik_error_mm": {
+    "picker_above": 0.0,
+    "picker_grasp": 0.0,
+    "picker_lift": 1.66,
+    "picker_handover": 2.28,
+    "receiver_above": 3.77,
+    "receiver_grasp": 1.08,
+    "picker_retreat": 2.03,
+    "receiver_over_bin": 0.58,
+    "receiver_lower": 0.0,
+    "receiver_retreat": 0.48
+   }
+  },
+  {
+   "seed": 9,
+   "picker": "left",
+   "steps": 269,
+   "success": false,
+   "first_step": {
+    "picker_grasp": 22,
+    "arms_touching": 101,
+    "robot_touching_bin": 223
+   },
+   "reward_max": 0.0739,
+   "reward_end": -0.0255,
+   "ik_error_mm": {
+    "picker_above": 0.0,
+    "picker_grasp": 0.0,
+    "picker_lift": 1.18,
+    "picker_handover": 2.36,
+    "receiver_above": 3.77,
+    "receiver_grasp": 1.08,
+    "picker_retreat": 2.57,
+    "receiver_over_bin": 1.08,
+    "receiver_lower": 0.0,
+    "receiver_retreat": 0.65
+   }
+  },
+  {
+   "seed": 10,
+   "picker": "right",
+   "steps": 277,
+   "success": false,
+   "first_step": {
+    "picker_grasp": 48,
+    "arms_touching": 120,
+    "robot_touching_bin": 219
+   },
+   "reward_max": 0.0796,
+   "reward_end": -0.0083,
+   "ik_error_mm": {
+    "picker_above": 0.0,
+    "picker_grasp": 0.0,
+    "picker_lift": 1.15,
+    "picker_handover": 2.4,
+    "receiver_above": 3.82,
+    "receiver_grasp": 1.06,
+    "picker_retreat": 2.57,
+    "receiver_over_bin": 0.48,
+    "receiver_lower": 0.0,
+    "receiver_retreat": 0.69
+   }
+  }
+ ]
+}

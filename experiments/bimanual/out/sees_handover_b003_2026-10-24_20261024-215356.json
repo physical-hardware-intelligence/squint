@@ -1,0 +1,45 @@
+{
+ "checkpoint": "runs/handover_b003_2026-10-24/ckpt_3M.pt",
+ "env_id": "SO101HandoverBar-v1",
+ "episodes": 128,
+ "seed": 7,
+ "min_pixels": 64,
+ "steps_where_seen": {
+  "start": {
+   "picker cam sees bar": 123,
+   "picker cam sees bin": 0,
+   "receiver cam sees bar": 0,
+   "receiver cam sees bin": 127,
+   "either cam sees bar": 123,
+   "either cam sees bin": 127,
+   "steps": 128
+  },
+  "picker holds": {
+   "picker cam sees bar": 7964,
+   "picker cam sees bin": 1110,
+   "receiver cam sees bar": 4593,
+   "receiver cam sees bin": 84,
+   "either cam sees bar": 7964,
+   "either cam sees bin": 1194,
+   "steps": 7964
+  },
+  "both hold": {
+   "picker cam sees bar": 96,
+   "picker cam sees bin": 16,
+   "receiver cam sees bar": 94,
+   "receiver cam sees bin": 0,
+   "either cam sees bar": 96,
+   "either cam sees bin": 16,
+   "steps": 96
+  },
+  "receiver carries": {
+   "picker cam sees bar": 738,
+   "picker cam sees bin": 1829,
+   "receiver cam sees bar": 4582,
+   "receiver cam sees bin": 96,
+   "either cam sees bar": 4582,
+   "either cam sees bin": 1923,
+   "steps": 4582
+  }
+ }
+}
