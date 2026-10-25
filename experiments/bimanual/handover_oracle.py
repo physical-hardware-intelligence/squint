@@ -44,7 +44,7 @@ def tcp_and_rot(q: np.ndarray, T: np.ndarray):
     return (T @ np.r_[tcp, 1.0])[:3], T[:3, :3] @ m["gripper_link"][:3, :3]
 
 
-def ik(q0, T, limits, pos, jaw_across=None, carry=None, w=0.03):
+def ik(q0, T, limits, pos, jaw_across=None, carry=None, w=0.03, down=True):
     """Arm joints putting the TCP at pos with the fingers pointing straight down (gripper z up).
     jaw_across: the jaws close along the gripper's x axis (fingertip to fingertip, measured in sim), so x must be
     perpendicular to this direction (a bar's long axis) to close across the bar.
@@ -53,7 +53,7 @@ def ik(q0, T, limits, pos, jaw_across=None, carry=None, w=0.03):
 
     def res(x):
         tcp, R = tcp_and_rot(np.r_[x, q0[5]], T)
-        r = [tcp - pos, w * (R[:, 2] - np.array([0, 0, 1.0]))]
+        r = [tcp - pos] + ([w * (R[:, 2] - np.array([0, 0, 1.0]))] if down else [])
         if jaw_across is not None:
             r.append([w * float(R[:, 0] @ jaw_across)])
         if carry is not None:
@@ -138,52 +138,45 @@ def run(seed: int) -> dict:
     v_g[2] = 0.0
     v_g /= np.linalg.norm(v_g)
 
-    # Lift, then bring the bar to the handover point with its free end toward the receiver
+    # A2: lift, then present the bar upright at the handover point: free end up, bar centre at H
     H = u.handover_point.numpy()
-    q, errs["picker_lift"] = ik(q, Tp, limits, np.r_[grasp_pt[:2], 0.12], carry=(v_g, toward_r))
+    up = np.array([0.0, 0.0, 1.0])
+    q, errs["picker_lift"] = ik(q, Tp, limits, np.r_[grasp_pt[:2], 0.12], jaw_across=axis)
     run_.go(p, q)
-    q, errs["picker_handover"] = ik(q, Tp, limits, H - toward_r * g, carry=(v_g, toward_r))
+    q, errs["picker_handover"] = ik(q, Tp, limits, H - up * g, carry=(v_g, up), down=False)
     run_.go(p, q)
     run_.wait(5)
 
-    # The receiver grasps the free end from above
+    # The receiver grasps the top end from above
     q2 = run_.qpos(r)
     q2[5] = OPEN
-    free_now = H + toward_r * g
-    q2, errs["receiver_above"] = ik(q2, Tr, limits, free_now + [0, 0, 0.06], jaw_across=toward_r)
+    top = H + up * g
+    q2, errs["receiver_above"] = ik(q2, Tr, limits, top + [0, 0, 0.06])
     run_.go(r, q2)
-    q2, errs["receiver_grasp"] = ik(q2, Tr, limits, free_now + [0, 0, GRASP_LIFT], jaw_across=toward_r)
+    q2, errs["receiver_grasp"] = ik(q2, Tr, limits, top + [0, 0, GRASP_LIFT])
     run_.go(r, q2)
     q2[5] = CLOSED
     run_.go(r, q2, steps_max=15)
     run_.wait(5)
 
-    # The picker lets go and goes back to its start pose
+    # The picker lets go, backs away horizontally, and returns to its start pose
     q[5] = OPEN
     run_.go(p, q, steps_max=15)
     run_.wait(5)
-    q, errs["picker_retreat"] = ik(q, Tp, limits, tcp_and_rot(run_.qpos(p), Tp)[0] + [0, 0, 0.08])
+    away = tcp_and_rot(run_.qpos(p), Tp)[0] - toward_r * 0.06
+    q, errs["picker_retreat"] = ik(q, Tp, limits, away, carry=(v_g, up), down=False)
     run_.go(p, q)
     rest = u.rest_qpos.numpy().copy()
     run_.go(p, rest)
 
-    # The receiver carries the bar over the bin, along the bin's long side, lowers it and lets go
-    c_g = tcp_and_rot(run_.qpos(r), Tr)[1].T @ (-toward_r)  # bar centre direction from the receiver's grip
-    c_g[2] = 0.0
-    c_g /= np.linalg.norm(c_g)
+    # The receiver carries the hanging bar over the bin centre, high enough to clear the walls, lowers it
+    # until its bottom is just above the floor, lets go, and returns
     bin_p = u.bin.pose.p[0].numpy()
-    bin_long = u.bin.pose.to_transformation_matrix()[0, :3, 1].numpy()
-    best = None
-    for want in (bin_long, -bin_long):
-        tgt = bin_p - want * g
-        qq, e = ik(q2, Tr, limits, np.r_[tgt[:2], 0.10], carry=(c_g, want))
-        if best is None or e < best[1]:
-            best = (qq, e, want)
-    q2, errs["receiver_over_bin"], want = best
+    hang = g + float(u.bar_half_lengths[0])  # from the top grip point down to the bar's bottom end
+    clear = float(u.bin_thickness) + 2 * float(u.bin_half_sizes_z[0]) + 0.02
+    q2, errs["receiver_over_bin"] = ik(q2, Tr, limits, np.r_[bin_p[:2], clear + hang + GRASP_LIFT])
     run_.go(r, q2)
-    tgt = bin_p - want * g
-    q2, errs["receiver_lower"] = ik(q2, Tr, limits, np.r_[tgt[:2], float(u.bin_thickness) + hw + GRASP_LIFT + 0.004],
-                                     carry=(c_g, want))
+    q2, errs["receiver_lower"] = ik(q2, Tr, limits, np.r_[bin_p[:2], float(u.bin_thickness) + 0.004 + hang + GRASP_LIFT])
     run_.go(r, q2)
     q2[5] = OPEN
     run_.go(r, q2, steps_max=15)
