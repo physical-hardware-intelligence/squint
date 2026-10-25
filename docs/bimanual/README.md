@@ -29,6 +29,7 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | [B002](experiments/B002-handover-train.md) | Does Squint learn task 1, and where does it stall? | stopped at 1.5M: 99% grasp, 13% handovers, 0 releases |
 | [B003](experiments/B003-release-payoff.md) | Does paying for the release get past the stall? | done: release learned (39/128 carry at 3M), 0 in bin; bin in the receiver's camera 2% of carry steps, the picker's 40% |
 | [B004](experiments/B004-bin-in-state.md) | Is the stall missing information (tell the policy where the bin is)? | inconclusive: neither seed released (0 carries), so the bin question was never tested; from-scratch runs vary too much at the release |
+| [B005](experiments/B005-warm-start-bin.md) | From B003's checkpoint (already lets go), does knowing the bin's position get the bar in? | protocol written |
 
 ## Story so far
 1. **B001.** The layout works; scripted grasps don't, so learning has to find the grasp.
