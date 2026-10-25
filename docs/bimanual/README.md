@@ -1,0 +1,31 @@
+# Bimanual Squint
+
+One Squint policy drives two SO-101 arms from their two wrist cameras: trained in simulation, run on the real pair with no demonstrations.
+
+| | |
+|---|---|
+| Rig | two SO-101 followers side by side, facing forward, pan axes 46 cm apart; one wrist camera each |
+| Policy input | left then right wrist image (16×16, 6 channels); 24 joint numbers (per arm: 6 noisy angles, 6 targets) |
+| Policy output | 12 joint deltas, `pd_joint_target_delta_pos` |
+| Code | `envs/bimanual_base.py` (two arms, two cameras), `envs/handover.py` (task 1) |
+
+## Tasks
+
+| # | Task | Env | Status |
+|---|---|---|---|
+| 1 | Handover: one arm picks a 25 × 25 × 60 mm red bar, hands it to the other in mid-air, which puts it in the bin. Either arm may pick; neither can reach both bar and bin | `SO101HandoverBar-v1` | built; checking (B001) |
+| 2 | Insertion in mid-air: one arm picks a socket, the other a peg; insert until seated, about 5 mm clearance (as ALOHA's Bimanual Insertion) | — | draft |
+| 3 | Hold and open: one arm holds a hinged box, the other lifts the lid past 60° | — | draft |
+
+ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the left gripper) and Bimanual Insertion in simulation. Task 1 adds a random direction and the bin; task 2 is the same concept. ALOHA used 6-joint arms, more cameras and 50 demonstrations; we use 5-joint arms, wrist cameras and RL.
+
+## Experiments
+
+| # | Question | Status |
+|---|---|---|
+| [B001](experiments/B001-handover-env-check.md) | Is the handover doable in simulation; do the stages and success fire in order? | protocol written |
+| B002 | Does Squint learn task 1, and how fast? | planned |
+
+## Rules
+- Each experiment has a protocol written before it runs: question, predictions, method, decision rule. Changes after that are dated amendments. Results, including negative ones, go in the same file with the command and the commit.
+- Every number comes from code (file:line), a measurement (date, data), or is marked [estimate].
