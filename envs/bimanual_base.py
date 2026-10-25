@@ -158,7 +158,9 @@ class BimanualWristCameraEnv(BaseRandomEnv):
             mount.set_pose(arm.robot.links_map["gripper_link"].pose * self._random_wrist_offset())
 
     def reset(self, *args, **kwargs):
-        """Reset and sync both wrist cameras for a correct first frame (as WristCameraEnv.reset)."""
+        """Reset, sync both wrist cameras to the new arm poses, then observe again. The parent's reset renders its
+        observation before the cameras move, so its first frame shows the view from the previous episode's last
+        gripper pose (WristCameraEnv.reset returns that stale frame; found 2026-10-25, B007)."""
         obs, info = super().reset(*args, **kwargs)
         if self.gpu_sim_enabled:
             self.scene._gpu_fetch_all()
@@ -166,6 +168,8 @@ class BimanualWristCameraEnv(BaseRandomEnv):
         if self.gpu_sim_enabled:
             self.scene._gpu_apply_all()
             self.scene._gpu_fetch_all()
+        obs = self.get_obs(info)
+        self._last_obs = obs
         return obs, info
 
     def _after_control_step(self):
