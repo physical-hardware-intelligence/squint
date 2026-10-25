@@ -22,8 +22,10 @@ from train_squint import DeployAgent  # noqa: E402
 
 FLAGS = ("picker_grasp", "both_hold", "handed_over", "receiver_grasp", "bar_in_bin", "success",
          "arms_touching", "robot_touching_table", "robot_touching_bin")
+# Reward bands of the current envs/handover.py (B003: stage 5 from 8, stage 6 from 10, success 16). Penalties can
+# push an episode into a lower band, so the flags above and `carrying` below are the authoritative counts.
 BANDS = ((0, 2, "reaching"), (2, 4, "picker holds, carrying"), (4, 6, "at handover point, receiver reaching"),
-         (6, 7, "both hold"), (7, 9, "receiver carries to bin"), (9, 15.01, "in bin"))
+         (6, 8, "both hold"), (8, 10, "receiver carries to bin"), (10, 16.01, "in bin"))
 
 
 def main():
@@ -42,13 +44,15 @@ def main():
     agent.load_checkpoint(args.checkpoint)
     u = env.unwrapped
     n, steps = args.num_envs, u.spec.max_episode_steps or 120
-    ever = {k: torch.zeros(n, dtype=torch.bool, device=dev) for k in FLAGS}
+    ever = {k: torch.zeros(n, dtype=torch.bool, device=dev) for k in FLAGS + ("carrying",)}
     best = torch.full((n,), -1e9, device=dev)
     min_recv_gap = torch.full((n,), 1e9, device=dev)  # receiver TCP to the bar centre, closest approach (m)
     for _ in range(steps):
         obs, r, term, trunc, info = env.step(agent.get_action(obs))
         for k in FLAGS:
             ever[k] |= info[k].to(dev)
+        # Stage 5's condition (handover.py): latched handover, receiver holds, picker no longer touches the bar
+        ever["carrying"] |= (info["handed_over"] & info["receiver_grasp"] & ~info["picker_touch_bar"]).to(dev)
         best = torch.maximum(best, u.compute_dense_reward(None, None, info).to(dev))
         tcp_r = u._by_role(u.arms[0].tcp_pos, u.arms[1].tcp_pos, "receiver")
         min_recv_gap = torch.minimum(min_recv_gap, torch.linalg.norm(tcp_r - u.bar.pose.p, dim=1).to(dev))
