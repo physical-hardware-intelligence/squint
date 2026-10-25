@@ -1,6 +1,6 @@
 # B003: Does paying for the release get past the stall?
 
-**Status:** done 2026-10-24 21:45. The release is learned (39 of 128 carry); nothing reaches the bin. The bin is out of the receiver's view for 88% of carry steps.
+**Status:** done 2026-10-24 21:45. The release is learned (39 of 128 carry); nothing reaches the bin. During the carry the bin is almost never in the receiver's own camera (2%), but is in the picker's camera 40% of the time (A2).
 
 ## Question
 B002 stalled with both grippers on the bar (17 of 128 episodes) and no releases. If a clean release pays a full point more, does the policy let go and carry on to the bin?
@@ -23,6 +23,17 @@ B002's settings and seed, 3M steps (about 50 min), evaluation every 250k; stage 
 
 ## Amendments
 - **A1, 2026-10-24 21:20, after the 1.5M counts and before any 3M data.** The rule leaves a gap: releases above 0 but far below prediction 2. Added: at 3M, fewer than 10 carries in 128 counts as "releases not learned", and the curriculum follows. The counter now counts the carry from stage 5's own condition (`handed_over & receiver_grasp & ~picker_touch_bar`, commit `ce3f407`) rather than from reward bands, which penalties can shift.
+
+- **A2, 2026-10-24 22:05, correction after the run.** The table below counted only the receiver's camera, but the policy gets both images. Exact count (`experiments/bimanual/who_sees_what.py`, segmentation pixels with occlusion, at least 64 pixels = one policy pixel; 3M checkpoint, 128 episodes, seed 7):
+
+  | Phase (steps) | Picker cam: bar, bin | Receiver cam: bar, bin | Bin in either |
+  |---|---|---|---|
+  | start (128) | 96%, 0% | 0%, 99% | 99% |
+  | picker holds (7,964) | 100%, 14% | 58%, 1% | 15% |
+  | both hold (96) | 100%, 17% | 98%, 0% | 17% |
+  | receiver carries (4,582) | 16%, 40% | 100%, 2% | 42% |
+
+  At the start each camera sees one object. During the carry the bin is mostly visible through the *other* arm's camera, so the policy must map the picker camera's view to the receiver's motion. B004 still tests whether the bin's position, given directly, unblocks the carry. Carry steps here (4,582) differ from the stage count (3,746) on the same checkpoint and seed: GPU simulation is not reproducible, so read percentages, not counts.
 
 ## Results
 **Main run** (commit `455fafa`, `runs/handover_b003_2026-10-24` on the box): 512 envs at about 1,050-1,140 steps/s.
@@ -70,7 +81,7 @@ Both-hold lasts 115 steps in total over 48 episodes (about 2 steps each): the pi
 | both hold | 0 of 115 steps |
 | receiver carries | 437 of 3,746 steps (12%) |
 
-The policy has no memory and no bin position in its input: once the bin leaves the image, nothing tells it where the bin is. Yash noted this from the 2.5M video before the count.
+The policy has no memory and no bin position in its input. Yash noted the receiver losing the bin in the 2.5M video before the count. (Corrected by A2: the policy gets both images, and the picker's camera often sees the bin.)
 
 **Predictions:** 1 held. 2 failed at 1.5M (1 carry) but was met by 3M (39). 3 failed (0 in bin, 0% success).
 
