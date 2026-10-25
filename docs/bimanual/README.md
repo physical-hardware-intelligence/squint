@@ -24,7 +24,8 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | # | Question | Status |
 |---|---|---|
 | [B001](experiments/B001-handover-env-check.md) | Is the handover doable in simulation; do the stages and success fire in order? | done: layout checks out; scripted grasp fails (0/10) |
-| [B002](experiments/B002-handover-train.md) | Does Squint learn task 1, and where does it stall? | running (smoke test passed) |
+| [B002](experiments/B002-handover-train.md) | Does Squint learn task 1, and where does it stall? | stopped at 1.5M: 99% grasp, 13% handovers, 0 releases |
+| [B003](experiments/B003-release-payoff.md) | Does paying for the release get past the stall? | protocol written |
 
 ## Rules
 - Each experiment has a protocol written before it runs: question, predictions, method, decision rule. Changes after that are dated amendments. Results, including negative ones, go in the same file with the command and the commit.

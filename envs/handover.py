@@ -74,7 +74,7 @@ class Handover(BimanualWristCameraEnv):
                            "rgb+depth+segmentation", "rgb+depth+segmentation+state"]
 
     # Reward stages (see compute_dense_reward); the maximum normalizes the reward to 1
-    MAX_REWARD = 15.0
+    MAX_REWARD = 16.0
 
     def __init__(
         self,
@@ -420,7 +420,8 @@ class Handover(BimanualWristCameraEnv):
         # Stage 4, 6-7: both hold the lifted bar; the picker is paid to let go
         reward = torch.where(info["both_hold"], 6 + picker_open, reward)
 
-        # Stage 5, 7-9: after a mid-air handover, the receiver alone carries the bar over the bin
+        # Stage 5, 8-10: after a mid-air handover, the receiver alone carries the bar over the bin. Starts a full
+        # point above stage 4's top (7): B002 stalled with both arms holding when release paid only ~0.4 more
         goal = self.bin.pose.p.clone()
         goal[:, 2] = self.bin_thickness + self.bar_half_widths
         bar_to_goal_xy = torch.linalg.norm(goal[:, :2] - bar_p[:, :2], axis=1)
@@ -429,16 +430,16 @@ class Handover(BimanualWristCameraEnv):
         bar_to_goal_z = torch.where(bar_to_goal_xy <= bin_radius, torch.abs(goal[:, 2] - bar_p[:, 2]), torch.abs(z_far - bar_p[:, 2]))
         place = (1 - torch.tanh(5 * torch.linalg.norm(goal - bar_p, axis=1))) + (1 - torch.tanh(10 * bar_to_goal_z))
         carrying = self.handed_over & info["receiver_grasp"] & ~info["picker_touch_bar"]
-        reward = torch.where(carrying, 7 + place, reward)
+        reward = torch.where(carrying, 8 + place, reward)
 
-        # Stage 6, 9-14: the bar is in the bin; release and keep both arms still
+        # Stage 6, 10-15: the bar is in the bin; release and keep both arms still
         arm_speed = torch.linalg.norm(left.robot.get_qvel()[:, :-1], axis=1) + torch.linalg.norm(right.robot.get_qvel()[:, :-1], axis=1)
         settled = 1 - torch.tanh(10 * arm_speed)
         released = (~info["receiver_touch_bar"]).float()
         in_bin = self.handed_over & info["bar_in_bin"]
-        reward = torch.where(in_bin, 9 + place + released + receiver_open + settled, reward)
+        reward = torch.where(in_bin, 10 + place + released + receiver_open + settled, reward)
 
-        # Success, 15
+        # Success, 16
         reward = torch.where(info["success"], torch.full_like(reward, self.MAX_REWARD), reward)
 
         # Penalties
