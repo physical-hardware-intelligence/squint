@@ -46,6 +46,13 @@ torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
 
 
+def single_action_box(env):
+    """Phi: the flat Box action space. A multi-agent env's Dict of Boxes is flattened in the same order as
+    FlattenActionSpaceWrapper, so its bounds and size match the 12-number actions the wrapper takes."""
+    space = env.unwrapped.single_action_space
+    return gym.spaces.utils.flatten_space(space) if isinstance(space, gym.spaces.Dict) else space
+
+
 @dataclass
 class Args:
     exp_name: Optional[str] = "baseline"
@@ -295,7 +302,7 @@ class Actor(nn.Module):
         self.fc_mean = nn.Linear(hidden_dim, n_act, device=device)
         self.fc_logstd = nn.Linear(hidden_dim, n_act, device=device)
 
-        action_space = env.unwrapped.single_action_space
+        action_space = single_action_box(env)
         self.register_buffer("action_scale",
             torch.tensor((action_space.high - action_space.low) / 2.0, dtype=torch.float32, device=device))
         self.register_buffer("action_bias",
@@ -466,7 +473,7 @@ class DeployAgent(nn.Module):
         self.device = device
         self.target_image_size = target_image_size
 
-        n_act = np.prod(sim_env.unwrapped.single_action_space.shape)
+        n_act = np.prod(single_action_box(sim_env).shape)
         n_obs_shape = sample_obs['rgb'].shape
         c = n_obs_shape[3] if len(n_obs_shape) == 4 else n_obs_shape[2]
         n_obs = (target_image_size, target_image_size, c)
@@ -632,11 +639,11 @@ if __name__ == "__main__":
     envs = ManiSkillVectorEnv(envs, args.num_envs, ignore_terminations=not args.partial_reset, record_metrics=True)
     eval_envs = ManiSkillVectorEnv(eval_envs, args.num_eval_envs, ignore_terminations=not args.eval_partial_reset, record_metrics=True)
 
-    n_act = math.prod(envs.unwrapped.single_action_space.shape)
+    n_act = math.prod(single_action_box(envs).shape)
     n_channels = envs.unwrapped.single_observation_space['rgb'].shape[2]
     n_obs = (args.image_size, args.image_size, n_channels)
     n_state = math.prod(envs.unwrapped.single_observation_space['state'].shape)
-    assert isinstance(envs.unwrapped.single_action_space, gym.spaces.Box), "only continuous action space is supported"
+    assert isinstance(single_action_box(envs), gym.spaces.Box), "only continuous action space is supported"
 
     # ── Logger ─────────────────────────────────────────────────────────────
     if not args.evaluate:
@@ -664,7 +671,7 @@ if __name__ == "__main__":
 
     # Entropy tuning
     if args.autotune:
-        target_entropy = -torch.prod(torch.Tensor(envs.unwrapped.single_action_space.shape).to(device)).item()
+        target_entropy = -torch.prod(torch.Tensor(single_action_box(envs).shape).to(device)).item()
         log_alpha = torch.zeros(1, requires_grad=True, device=device)
         alpha = log_alpha.detach().exp()
         alpha_optimizer = optim.Adam([log_alpha], lr=args.alpha_lr, capturable=args.cudagraphs and not args.compile)
