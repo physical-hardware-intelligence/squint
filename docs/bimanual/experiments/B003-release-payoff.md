@@ -1,6 +1,6 @@
 # B003: Does paying for the release get past the stall?
 
-**Status:** running (launched 2026-10-24, commit `455fafa`); 1.5M counts in, 3M due about 21:45.
+**Status:** done 2026-10-24 21:45. The release is learned (39 of 128 carry); nothing reaches the bin. The bin is out of the receiver's view for 88% of carry steps.
 
 ## Question
 B002 stalled with both grippers on the bar (17 of 128 episodes) and no releases. If a clean release pays a full point more, does the policy let go and carry on to the bin?
@@ -48,4 +48,30 @@ Two counts of the same checkpoint and seed gave 127/31 and 128/33 (grasp/handove
 
 **Predictions at 1.5M:** 1 held (33 ≥ 17 handovers, about twice B002). 2 failed (1 carry, predicted ≥ 10).
 
-**Decision at 1.5M (rule: curriculum only if releases are still 0):** 1 release, so the run continues to 3M as planned. 3M results go below.
+**Decision at 1.5M (rule: curriculum only if releases are still 0):** 1 release, so the run continued to 3M.
+
+**3M** (training exit 0; evaluation returns 2.25M-3M: 37.1, 49.2, 40.0, 41.7; success 0 throughout). Stage counts, 128 episodes, seed 7, counter `54ba49f`:
+
+| Stage | 1.5M | 3M |
+|---|---|---|
+| picker grasps | 128 | 128 |
+| both hold (mid-air handover) | 33 | 48 |
+| picker lets go, receiver carries | 1 | 39 |
+| bar in bin, success | 0, 0 | 0, 0 |
+| arms touching / robot touching table | 8 / 10 | 24 / 22 |
+
+Both-hold lasts 115 steps in total over 48 episodes (about 2 steps each): the picker now lets go almost at once. Carrying lasts 3,746 steps over 39 episodes (about 96 each): the receiver holds the bar until the episode ends.
+
+**Bin in the receiver's wrist view** (bin centre or a rim corner projected inside the 128 × 128 image; geometry only, occlusion ignored, so an upper bound; agrees with the segmentation image on 98.2% of 3,840 camera-steps):
+
+| Phase | Bin in view |
+|---|---|
+| first step | 125 of 128 episodes |
+| both hold | 0 of 115 steps |
+| receiver carries | 437 of 3,746 steps (12%) |
+
+The policy has no memory and no bin position in its input: once the bin leaves the image, nothing tells it where the bin is. Yash noted this from the 2.5M video before the count.
+
+**Predictions:** 1 held. 2 failed at 1.5M (1 carry) but was met by 3M (39). 3 failed (0 in bin, 0% success).
+
+**Decision (rule: releases but nothing in the bin by 3M, look at what follows the release):** what follows is a carry with the bin out of view. This is a correlation; the causal test is B004: give the policy the bin's position (simulation only, a diagnostic, not deployable) and change nothing else. If carries then reach the bin, missing information is the stall, and the deployable fix is memory or a layout that keeps the bin in view. The mid-air start curriculum is not triggered (39 ≥ 10).
