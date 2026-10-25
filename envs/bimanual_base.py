@@ -37,6 +37,7 @@ class BimanualWristCameraEnv(BaseRandomEnv):
     TOP_CAMERA_EYE = [0.17, 0.0, 0.90]  # overhead: from behind, the arms hid the bins
     TOP_CAMERA_TARGET = [0.20, 0.0, 0.0]
     TOP_CAMERA_FOV = np.deg2rad(55)
+    TOP_CAMERA_INTRINSIC = None  # a 3x3 matrix instead of TOP_CAMERA_FOV (a wide lens squeezed into the square image)
 
     agent: MultiAgent
 
@@ -97,8 +98,9 @@ class BimanualWristCameraEnv(BaseRandomEnv):
         if self.TOP_CAMERA:
             # Fixed, about 90 cm above the table, looking down at both arms, the bar and the bin. No noise: drawing it
             # from the episode generator would shift the per-env object sizes drawn after it.
+            lens = dict(intrinsic=self.TOP_CAMERA_INTRINSIC) if self.TOP_CAMERA_INTRINSIC is not None else dict(fov=self.TOP_CAMERA_FOV)
             configs.append(CameraConfig("top", pose=sapien_utils.look_at(self.TOP_CAMERA_EYE, self.TOP_CAMERA_TARGET),
-                                        width=128, height=128, fov=self.TOP_CAMERA_FOV, near=0.01, far=100))
+                                        width=128, height=128, near=0.01, far=100, **lens))
         return configs
 
     def _randomize_robot_color(self):
