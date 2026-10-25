@@ -13,7 +13,7 @@ One Squint policy drives two SO-101 arms from their two wrist cameras: trained i
 
 | # | Task | Env | Status |
 |---|---|---|---|
-| 1 | Handover: one arm picks a 25 × 25 × 60 mm red bar, hands it to the other in mid-air, which puts it in the bin. Either arm may pick; neither can reach both bar and bin | `SO101HandoverBar-v1` | built; layout checked (B001); training next (B002) |
+| 1 | Handover: one arm picks a 25 × 25 × 60 mm red bar, hands it to the other in mid-air, which puts it in the bin. Either arm may pick; neither can reach both bar and bin | `SO101HandoverBar-v1` | built; layout checked (B001); training (B002, B003) |
 | 2 | Insertion in mid-air: one arm picks a socket, the other a peg; insert until seated, about 5 mm clearance (as ALOHA's Bimanual Insertion) | — | draft |
 | 3 | Hold and open: one arm holds a hinged box, the other lifts the lid past 60° | — | draft |
 
@@ -25,7 +25,7 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 |---|---|---|
 | [B001](experiments/B001-handover-env-check.md) | Is the handover doable in simulation; do the stages and success fire in order? | done: layout checks out; scripted grasp fails (0/10) |
 | [B002](experiments/B002-handover-train.md) | Does Squint learn task 1, and where does it stall? | stopped at 1.5M: 99% grasp, 13% handovers, 0 releases |
-| [B003](experiments/B003-release-payoff.md) | Does paying for the release get past the stall? | protocol written |
+| [B003](experiments/B003-release-payoff.md) | Does paying for the release get past the stall? | running: at 1.5M, handovers 17 → 33, carries 0 → 1 |
 
 ## Rules
 - Each experiment has a protocol written before it runs: question, predictions, method, decision rule. Changes after that are dated amendments. Results, including negative ones, go in the same file with the command and the commit.
