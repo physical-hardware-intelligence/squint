@@ -2,7 +2,7 @@
 
 Places the bar and the arms directly, then checks: each stage's reward band, that the bands rise in order, the
 mid-air-handover latch, the bar-in-bin test (lying, standing, outside, and on a rotated bin), and the maximum.
-Run from the repository root after `source env.sh`: .venv/bin/python experiments/bimanual/check_reward.py
+Run from the repository root after `source env.sh`: .venv/bin/python experiments/bimanual/check_reward.py [env_id]
 """
 
 import sys
@@ -17,7 +17,9 @@ import torch  # noqa: E402
 import envs  # noqa: E402,F401
 from envs.bimanual_base import arm_yaw_pose  # noqa: E402
 
-env = gym.make("SO101HandoverBar-v1", num_envs=1, obs_mode="state_dict", sim_backend="cpu")
+ENV_ID = sys.argv[1] if len(sys.argv) > 1 else "SO101HandoverBar-v1"
+env = gym.make(ENV_ID, num_envs=1, obs_mode="state_dict", sim_backend="cpu")
+print(ENV_ID)
 env.reset(seed=3)
 u = env.unwrapped
 T, F = torch.tensor([True]), torch.tensor([False])
@@ -97,6 +99,20 @@ info = info_with(success=True, bar_in_bin=True, robot_touching_table=False, arms
 check("normalized maximum = 1", abs(float(u.compute_normalized_dense_reward(None, None, info)[0]) - 1) < 1e-6)
 rp = reward(info_with(success=True, bar_in_bin=True, robot_touching_table=True, arms_touching=True, robot_touching_bin=False))
 check("penalties apply: table -6, arms -2", abs(rp - 8) < 1e-6, f"{rp:.2f}")
+
+# The carry's pull: reward gained for 10 cm closer to the goal, bar carried at the goal's height (informational)
+u.handed_over[:] = True
+gp = u.bin.pose.p[0].numpy()
+goal_z = float(u.bin_thickness) + hw
+carry = dict(picker_grasp=False, both_hold=False, receiver_grasp=True, picker_touch_bar=False, bar_in_bin=False,
+             robot_touching_table=False, arms_touching=False)
+pull = {}
+for d in (0.30, 0.20, 0.10):
+    place_bar(gp[0], gp[1] + d, goal_z)
+    pull[d] = reward(info_with(**carry))
+print(f"INFO  carry reward at 30 / 20 / 10 cm from the goal: {pull[0.30]:.2f} / {pull[0.20]:.2f} / {pull[0.10]:.2f}"
+      f"  (gain 30->20 cm: {pull[0.20] - pull[0.30]:.2f}, 20->10 cm: {pull[0.10] - pull[0.20]:.2f})")
+check("carry reward rises as the bar nears the goal", pull[0.30] < pull[0.20] < pull[0.10])
 
 env.close()
 print(f"{sum(results)} of {len(results)} checks passed")
