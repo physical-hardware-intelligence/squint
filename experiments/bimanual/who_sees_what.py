@@ -3,7 +3,7 @@
     python experiments/bimanual/who_sees_what.py --checkpoint runs/<run>/ckpt.pt [--env_id ...] [--num_envs 128] [--seed 7]
 Exact: counts the bar's and the bin's pixels in each 128 x 128 segmentation image (occlusion included). "Seen" means at
 least 64 pixels, one pixel's worth of the policy's 16 x 16 input. The policy gets both images, so "either" is what it has.
-Prints and writes experiments/bimanual/out/sees_<run>_<time>.json.
+No colour jitter; the scene is not rebuilt between episodes. Prints and writes experiments/bimanual/out/sees_<run>_<time>.json.
 """
 
 import argparse

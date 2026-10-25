@@ -2,7 +2,7 @@
 
 One Squint policy drives two SO-101 arms from their two wrist cameras: trained in simulation with RL, no demonstrations, to run on the real pair.
 
-**New here, or adding a task?** Read this page, then [GUIDE.md](GUIDE.md) (files, setup, recipe, lessons).
+**New here, or adding a task?** Read this page, then [GUIDE.md](GUIDE.md) (files, setup, recipe, lessons) and [reward-design.md](reward-design.md) (why the reward is shaped as it is).
 
 | | |
 |---|---|
@@ -32,6 +32,7 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | [B005](experiments/B005-warm-start-bin.md) | From B003's checkpoint (already lets go), does knowing the bin's position get the bar in? | no: the bin input broke the handover; the control carries but moves the bar only ~5 cm toward the bin, where the carry reward is almost flat |
 | [B006](experiments/B006-linear-carry.md) | Does a carry reward that pulls at every distance get the bar to the bin? | no: closest 21 cm (control 23), 0 in the bin; the reward is not the main stall |
 | [B007](experiments/B007-first-frame-memory.md) | Does remembering the first frame (bin in view) get the bar to the bin? | untested: neither memory seed learned the handover (6, 0 of 256); B003 seed 2 did (88). Every run with an extra input has failed at the handover |
+| [B008](experiments/B008-carry-alone.md) | Trained on the carry alone: do reward dips, horizon or seeing the bin decide it? | protocol written |
 
 ## Story so far
 1. **B001.** The layout works; scripted grasps don't, so learning has to find the grasp.
@@ -41,6 +42,7 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 5. **B005.** From B003's checkpoint: the bin input broke the handover (as in all B004 runs). The control carries but moves the bar only ~5 cm toward the bin (28 → 23 cm). The carry reward is almost flat at that distance (30 → 20 cm pays 0.14 of 16 points), a second suspect besides vision.
 6. **B006.** Make the carry reward pull equally at every distance (0.25 per 10 cm): the bar gets only ~1.5 cm closer (21 cm), 0 in the bin. The reward is not the main stall; vision is the remaining suspect. Fixes: memory, a top camera, or a layout that keeps the bin in view.
 7. **B007.** First-frame memory (after fixing a stale reset frame): neither seed learned the handover, so memory never reached the carry. B003 seed 2 reproduces B003. Pattern: every run given an extra input (5) failed at the handover; every run without (4) carried. Next: test the carry on its own.
+8. **Reward review** ([reward-design](reward-design.md)): v1 has measured dips after the handover (release, rim, drop, final let-go), and γ 0.9 sees about 1 s ahead. A blind upright placement lands in the bin in 62% of layouts, so seeing the bin is not the main blocker. Reward v2 removes the dips. **B008** tests v2, γ 0.97 and the inputs on the carry alone.
 
 ## Rules
 - Each experiment has a protocol written before it runs: question, predictions, method, decision rule. Changes after that are dated amendments. Results, including negative ones, go in the same file with the command and the commit.

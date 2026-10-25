@@ -9,12 +9,16 @@ For people and coding agents. Read [README.md](README.md) first (what exists, wh
 | `envs/bimanual_base.py` | Two SO-101s side by side, one wrist camera each, domain randomization, sim settings (100 Hz physics, 10 Hz control, larger contact buffers) | Rarely. Shared by every two-arm task |
 | `envs/handover.py` | Task 1: objects, layout, `evaluate()` flags, staged reward, `_get_obs_agent` (the 24-number state), env registration | **Your template**: copy its structure for a new task |
 | `envs/__init__.py` | Imports each task module so `gym.make` finds it | Add one import per new task file |
+| `envs/handover_carry.py` | Task 1's carry alone: episodes start from saved simulator states (B008) | Pattern for training one stage of a long task |
 | `train_squint.py` | Squint's trainer. Only change for two arms: `single_action_box` flattens the two-arm action space | Not for a new task |
 | `utils.py` | Colour jitter, applied to each camera separately | No |
 | `experiments/bimanual/check_reward.py` | Pre-flight: puts objects in chosen states, checks each reward stage and the success flag | Write one per task |
 | `experiments/bimanual/stage_counts.py` | Runs a checkpoint on 128 episodes, counts how many reach each stage | Adapt the flags per task |
 | `experiments/bimanual/who_sees_what.py` | Per phase: which camera sees which object (exact, from segmentation) | Adapt the objects and phases |
 | `experiments/bimanual/handover_oracle.py` | B001's scripted inverse-kinematics controller | Reference for IK on the SO-101; its scripted grasps did not work |
+| `experiments/bimanual/reward_probe.py` | Scores the reward on hand-set states along the intended path: finds dips | Before every reward change |
+| `experiments/bimanual/harvest_carry_starts.py`, `check_carry_starts.py` | Save mid-task states from a trained policy; check that restoring them is exact | Mid-task starts, curricula |
+| `experiments/bimanual/preflight.py` | Runs every check plus a short training and a count per run; nothing launches unless it passes | Before every launch |
 | `experiments/bimanual/launch.sh` | Starts a training run with a log of commit, GPU, command and exit code | Use for every run |
 | `experiments/bimanual/out/` | Raw outputs behind every number in the experiment files | Add yours |
 | `docs/bimanual/experiments/` | One file per experiment: protocol first, results after | One per experiment |
@@ -74,6 +78,8 @@ Protocol template:
 
 | Lesson | Evidence |
 |---|---|
+| No dips: on the intended path every state must score at least the one before. Score the reward on hand-set states along the path (`reward_probe.py`) before training; contact flags flicker between stages | [reward-design](reward-design.md): v1 dropped to ≈ 0 mid-release and while a bar fell into the bin |
+| Look far enough ahead: γ's horizon (≈ 1/(1−γ) steps) must cover the longest stage; widen the critic support (v_min, v_max) to match | γ 0.9 ≈ 10 steps; the carry takes 20-30 |
 | Each stage must pay clearly more than the one before (≥ 1 point). If the next stage pays little and failing costs a lot, the policy parks at the safe stage | B002: letting go paid +0.4, 0 releases. B003: +1, then 39/128 carry ([B002](experiments/B002-handover-train.md), [B003](experiments/B003-release-payoff.md)) |
 | Latch milestones and gate later stages on the latch, so a stage cannot be reached by a shortcut | `handed_over` in `handover.py` |
 | Count stages from flags, not from reward bands: penalties move an episode into a lower band | B003 A1 |

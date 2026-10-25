@@ -66,9 +66,19 @@ class ColorJitterWrapper(gym.ObservationWrapper):
 
         # (B, H, W, C) -> (B, C, H, W) for ColorJitter
         rgb = rgb.permute(0, 3, 1, 2)
-        # Phi: one camera = 3 channels; with several cameras stacked (bimanual) jitter each on its own, as the
-        # real cameras differ. ColorJitter's saturation and hue need exactly 3 channels.
-        rgb = torch.cat([self.jitter(c.float() / 255.0) for c in rgb.split(3, dim=1)], dim=1)
+        # Phi: one camera = 3 channels; with several cameras stacked (bimanual) jitter each camera on its own, as the
+        # real cameras differ. ColorJitter's saturation and hue need exactly 3 channels. Chunks from the same camera
+        # (a first-frame memory keeps an earlier frame of a camera, IMAGE_CHUNK_CAMERAS) get the same jitter: one
+        # ColorJitter call draws one set of parameters for its whole batch.
+        chunks = list(rgb.split(3, dim=1))
+        cameras = getattr(self.env.unwrapped, "IMAGE_CHUNK_CAMERAS", None) or list(range(len(chunks)))
+        out = [None] * len(chunks)
+        for cam in dict.fromkeys(cameras):
+            idx = [i for i, c in enumerate(cameras) if c == cam]
+            jittered = self.jitter(torch.cat([chunks[i].float() / 255.0 for i in idx], dim=0))
+            for i, j in zip(idx, jittered.split(chunks[0].shape[0], dim=0)):
+                out[i] = j
+        rgb = torch.cat(out, dim=1)
         # (B, C, H, W) -> (B, H, W, C)
         rgb = rgb.permute(0, 2, 3, 1)
 
