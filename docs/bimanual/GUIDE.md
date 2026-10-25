@@ -81,6 +81,7 @@ Protocol template:
 | Scripted grasps on the simulated jaws failed; the learned policy grasps fine. Do not plan a curriculum on scripted grasps without testing them | [B001](experiments/B001-handover-env-check.md) |
 | GPU simulation is not reproducible: the same checkpoint and seed can differ by about 10 of 128 episodes. Count over 2+ seeds (256+ episodes) and read percentages | B003 3M: 39 then 52 carries on two counts ([B005](experiments/B005-warm-start-bin.md) A1) |
 | One seed per condition cannot separate an effect from luck | [B004](experiments/B004-bin-in-state.md) run 1: 21 handovers vs B003's 48, before the change could matter |
+| On this task, adding inputs to the whole task from scratch broke the handover every time (5 runs: bin position, first frame). Test a new input on the stage it is meant for first | B004, B005, B007 |
 | A check must fail on the broken code, not only pass on the fixed one. Compare against an exact source (segmentation, a fresh render) | B007 A1: the first-frame check passed while both frames were stale; `check_reset_frames.py` fails on that code |
 | Check a new measurement tool against an exact source before trusting it | the geometric bin check agreed with segmentation on 98.2% of camera-steps |
 
