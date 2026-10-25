@@ -23,5 +23,8 @@ Pure RL on a long, three-stage task, with no curriculum:
 - 10-50%: continue to 30M steps.
 - Below 10%: add a curriculum or reward change aimed at the stage where the counts stall.
 
+## Amendments
+- **A1, 2026-10-24, before the run.** Pre-flight added: `experiments/bimanual/check_reward.py` checks the reward stages and the success flag on constructed states, since B001 never got past the grasp. Result: 16 of 16 passed (bands 0.5, 4.2, 6.5, 7.7, 12.2, 15 in order; normalized maximum 1; the handover latch; the bin test lying, standing, outside, and on a rotated bin).
+
 ## Results
 _Not run._
