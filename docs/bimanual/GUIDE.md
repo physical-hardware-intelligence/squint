@@ -79,7 +79,7 @@ Protocol template:
 | Count stages from flags, not from reward bands: penalties move an episode into a lower band | B003 A1 |
 | Check what each camera sees in each phase. The policy has no memory: if an object leaves both images, the policy cannot know where it is | B003 A2: during the carry, the bin is in the receiver's camera 2% of steps, the picker's 40% |
 | Scripted grasps on the simulated jaws failed; the learned policy grasps fine. Do not plan a curriculum on scripted grasps without testing them | [B001](experiments/B001-handover-env-check.md) |
-| GPU simulation is not reproducible: the same checkpoint and seed differ by a few episodes. Read percentages | B003: 127/31 vs 128/33 on two counts |
+| GPU simulation is not reproducible: the same checkpoint and seed can differ by about 10 of 128 episodes. Count over 2+ seeds (256+ episodes) and read percentages | B003 3M: 39 then 52 carries on two counts ([B005](experiments/B005-warm-start-bin.md) A1) |
 | One seed per condition cannot separate an effect from luck | [B004](experiments/B004-bin-in-state.md) run 1: 21 handovers vs B003's 48, before the change could matter |
 | Check a new measurement tool against an exact source before trusting it | the geometric bin check agreed with segmentation on 98.2% of camera-steps |
 

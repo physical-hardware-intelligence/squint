@@ -19,10 +19,13 @@ Both: 1.5M more steps, seed 1, B003's settings, evaluation every 250k; stage cou
 ## Pre-flight
 The widened checkpoint, before training, counted in the bin env: carries and handovers within noise of B003's 3M count (39, 48). This checks that the widening changes nothing.
 
+## Amendments
+- **A1, 2026-10-24 23:50, after the pre-flight, before training.** The pre-flight count gave 55 handovers / 48 carries for the widened checkpoint. An exact check shows the widening changes nothing (52 tensors identical, new columns zero, identical outputs on 1,000 random states). The gap is counting noise: the *unwidened* B003 checkpoint, recounted now, gives 60 / 52 (seed 7; B003's own count was 48 / 39) and 68 / 51 (seed 8). Counts of 128 episodes vary by about 10. So every count in B005 uses seeds 7 and 8 (256 episodes), and the decision reads bin counts per 256.
+
 ## Predictions
 If missing information is the stall:
-1. bin run at 1.5M: bar in the bin in at least 10 of 128.
-2. control at 1.5M: bar in the bin in fewer than 5 of 128.
+1. bin run at 1.5M: bar in the bin in at least 20 of 256 (seeds 7 + 8).
+2. control at 1.5M: bar in the bin in fewer than 10 of 256.
 
 ## Decision rule
 - Prediction 1 and 2 hold: information is the stall. Next: a real-rig fix (memory, top camera or layout), each tested against this bin run.
