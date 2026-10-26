@@ -1,6 +1,6 @@
 # B014: Does a carry policy trained on the handover policy's own handovers carry them as well as its saved starts?
 
-**Status:** protocol written 2026-10-25 23:50, before the runs.
+**Status:** done 2026-10-26 00:45. Trained on B011's own handovers, the carry policy puts 90-92% of the carries it is handed in the bin (B013: 52-71%). Chained: 99 of 256 in the bin on both seeds (39%).
 
 ## Question
 In B013 the top-camera carry policies put the bar in the bin from 93-95% of their saved starts, but from only 52-71% of the carries B011's handover policy hands them. Their saved starts came from B003's policies. Trained on starts saved from B011's own handovers, does the carry policy keep its rate when chained?
@@ -23,4 +23,17 @@ Carry starts harvested from B011 seed 1 (3M), the policy it will follow; otherwi
 - 2 fails: the drop is not about whose handovers the starts came from; look at the failed carries in video before changing anything.
 
 ## Results
-_Not run._
+Run 2026-10-25 23:48 - 2026-10-26 00:45, commit `be3000c`. Harvest: 2,831 carry starts, every one of the 512 env indices covered (median 5). Preflight 8 of 8 (restored starts are carries 64 of 64, still 10 steps later 64 of 64, bar slip median 0.03 cm). Raw: `experiments/bimanual/out/b014_counts.txt`.
+
+| 256 episodes (seeds 7 + 8) | carry s1 | carry s2 |
+|---|---|---|
+| from its saved starts: in the bin / at the end | 239 / 221 | 239 / 215 |
+| from its saved starts: success at the end | 109 | 131 |
+| **chained: handovers / switched** | 197 / 108 | 205 / 110 |
+| **chained: in the bin (all episodes)** | **99** | **99** |
+| chained: of the switched, in the bin | **92%** | **90%** |
+| chained: success, ever / at step 120 | 57 / 36 | 79 / 51 |
+
+**Predictions.** 1 holds (92%, 90%; 80% needed). 2 holds (93% → 92%, 93% → 90%). 3 holds (99 and 99; 80 needed).
+
+**Decision (rule "1 and 2 hold").** The carry side of the chain is solved: train the carry policy on starts from the handover policy it follows. The real-rig carry policy will be trained this way once the top camera is calibrated. The limit is now the handover policy: only 42-43% of episodes reach a carry. Second: the clean finish (success at the end 36 and 51 of the 99 in the bin).

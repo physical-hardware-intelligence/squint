@@ -1,0 +1,25 @@
+# B015: Does more training lift the handover policy's carries, and does the chain follow?
+
+**Status:** protocol written 2026-10-26 01:30, before the run.
+
+## Question
+In the chain (B014) the carry policy puts 90-92% of carried bars in the bin; the limit is the handover policy: only about 42% of episodes reach a carry. B011 seed 1's carries were still rising fast (1 at 1.5M, 101 at 3M). Trained 3M steps more, does it reach more carries, and does the chained in-bin count rise with them?
+
+## Change
+Continue B011 seed 1 from its 3M checkpoint, everything else as B011: `python train_squint.py --exp_name=b015_s1 --env_id=SO101HandoverBarV2-v1 --seed=1 --num_envs=512 --total_timesteps=3000000 --eval_freq=250000 --env_background_level 0 50 --env_background_tint 6 --gamma=0.9 --v_min=-20 --v_max=20 --checkpoint=runs/b011_wrist_s1/ckpt_3M.pt`. Loading restores the encoder, actor, critic (the target critic is copied from it) and the entropy weight; the optimizers and the replay buffer start empty, and the first 5,000 steps act randomly (`learning_starts`), as any run.
+
+## Method
+Preflight first. At +1.5M and +3M: stage counts (seeds 7 + 8, 256 episodes) and the chain with B014's carry policies, seeds 1 and 2 (`chain_eval.py`, env `SO101HandoverBarV2TopCamLeHome-v2`).
+
+## Predictions
+1. Carries at +3M at least 130 of 256 (B011 at 3M: 101).
+2. Chained, the bar in the bin in at least 110 of 256 for each carry seed (B014: 99 and 99).
+3. The carry policy keeps at least 80% of the carries it is handed. Below that, the handover policy's handovers changed away from the ones the carry starts were saved from (B013's problem again).
+
+## Decision rule
+- 1 and 2 hold: longer training is the lever for the handover; continue it, and harvest new carry starts when 3 starts to slip.
+- 1 fails: the handover's release has plateaued; look at the failed releases in video before changing the reward.
+- 1 holds, 3 fails: harvest carry starts from the new policy and retrain the carry (B014's recipe, 35 min).
+
+## Results
+_Not run._
