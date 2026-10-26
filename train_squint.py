@@ -146,6 +146,9 @@ class Args:
     """the learning rate of alpha for policy"""
     policy_frequency: int = 4
     """the frequency of training policy (delayed)"""
+    actor_update_starts: int = 0
+    """timestep from which the actor and alpha are trained; before it only the critic and encoder learn. For a warm start
+    under a changed reward: the loaded actor keeps acting while the critic relearns values for the new reward"""
     target_network_frequency: int = 1
     """the frequency of updates for the target networks"""
     alpha: float = 0.2
@@ -770,6 +773,11 @@ if __name__ == "__main__":
 
     # ── Update functions ───────────────────────────────────────────────────
 
+    # WHY a tensor: update_main is compiled and captured as a CUDA graph, so a Python branch on the step would be frozen
+    # at capture. Alpha is held while the actor is (its entropy is fixed then, so alpha would drift one way)
+    alpha_on = args.actor_update_starts <= 0
+    alpha_gate = torch.tensor(float(alpha_on), device=device)
+
     def update_main(data):
         with torch.amp.autocast('cuda', dtype=torch.bfloat16):
             with torch.no_grad():
@@ -818,7 +826,7 @@ if __name__ == "__main__":
             with torch.amp.autocast('cuda', dtype=torch.bfloat16):
                 with torch.no_grad():
                     _, log_pi, _ = actor.get_action(obs, state)
-                alpha_loss = (-log_alpha.exp() * (log_pi + target_entropy)).mean()
+                alpha_loss = alpha_gate * (-log_alpha.exp() * (log_pi + target_entropy)).mean()
 
             # Update actor entropy
             alpha_optimizer.zero_grad()
@@ -933,6 +941,9 @@ if __name__ == "__main__":
         obs = next_obs
 
         # Training updates
+        if not alpha_on and global_step >= args.actor_update_starts:
+            alpha_gate.fill_(1.0)
+            alpha_on = True
         if global_step > args.learning_starts:
             for grad_step in range(args.num_updates):
                 data = rb.sample(args.batch_size)
@@ -942,7 +953,7 @@ if __name__ == "__main__":
                 encoded_rgb = out_main.pop("encoded_rgb", None)
 
                 # update actor (policy)
-                if grad_step % args.policy_frequency == 0:
+                if grad_step % args.policy_frequency == 0 and global_step >= args.actor_update_starts:
                     out_main.update(update_actor(data, encoded_rgb))
 
                 # update target networks
