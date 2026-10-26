@@ -42,6 +42,7 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | [B015](experiments/B015-handover-longer.md) | Does more training lift the handover policy's carries, and the chain with them? | done: no, carries flat then lower (101, 104, 91); the release has plateaued under v2 |
 | [B016](experiments/B016-release-slope.md) | Does paying the picker's way off the bar (reward v4) raise the clean releases? | done: no, v4 collapsed the clean releases on all 5 seeds (carries 3-12; chained 0-1 in the bin) |
 | [B017](experiments/B017-carry-from-b016.md) | Carry policy retrained on B016's handovers: does the chain keep the gain? | not a valid test: B016 left 10 carry starts |
+| [B018](experiments/B018-practise-the-release.md) | Second policy practising the release from where the picker stops squeezing: does it fix the chain's weak step? | protocol written |
 
 ## Story so far
 1. **B001.** The layout works; scripted grasps don't, so learning has to find the grasp.

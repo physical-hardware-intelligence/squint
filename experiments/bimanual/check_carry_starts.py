@@ -53,19 +53,24 @@ def main():
     if "background" in bank and u._background_colors is not None:
         want = bank["background"][rows.cpu()].to(u.device)
         check("restored background colour = saved", torch.allclose(u._background_colors[has], want[has]))
-    # Grasp flags read contact forces, which exist only after a physics step: judge the carry after one still step
+    # Grasp flags read contact forces, which exist only after a physics step: judge the start after one still step.
+    # A bank saved --at holding starts with the receiver gripping and the picker no longer squeezing (its jaws may touch)
+    at = bank.get("meta", {}).get("at", "carry")
+    started = (lambda i: i["handed_over"] & i["receiver_grasp"] & ~i["picker_grasp"]) if at == "holding" else \
+              (lambda i: i["handed_over"] & i["receiver_grasp"] & ~i["picker_touch_bar"])
+    what = "holding (receiver grips, picker not squeezing" if at == "holding" else "carries (receiver holds alone"
     zero = torch.zeros((args.num_envs, 12), device=u.device)
     obs, r, term, trunc, info = env.step(zero)
-    carry = info["handed_over"] & info["receiver_grasp"] & ~info["picker_touch_bar"]
-    check("restored envs are carries after one still step (receiver holds alone, handover latched)",
+    carry = started(info)
+    check(f"restored envs are {what}, handover latched) after one still step",
           bool(carry[has].float().mean() >= 0.95), f"{int((carry & has).sum())} of {int(has.sum())}")
     tcp_r = lambda: u._by_role(u.arms[0].tcp_pos, u.arms[1].tcp_pos, "receiver")
     rel0 = u.bar.pose.p - tcp_r()
     for _ in range(10):
         obs, r, term, trunc, info = env.step(zero)
-    carry = info["handed_over"] & info["receiver_grasp"] & ~info["picker_touch_bar"]
+    carry = started(info)
     slip = torch.linalg.norm((u.bar.pose.p - tcp_r()) - rel0, dim=1)
-    check("holding still for 10 more steps keeps the carry", bool(carry[has].float().mean() >= 0.9),
+    check(f"holding still for 10 more steps keeps the start's condition ({at})", bool(carry[has].float().mean() >= 0.9),
           f"{int((carry & has).sum())} of {int(has.sum())}")
     check("bar stays within 1 cm of the receiver's gripper (no slip)", bool((slip[has] < 0.01).float().mean() >= 0.9),
           f"median slip {float(slip[has].median()) * 100:.2f} cm, max {float(slip[has].max()) * 100:.2f} cm")
