@@ -39,7 +39,7 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | [B012](experiments/B012-v3-carry-practice.md) | Does the whole task reach the bin with reward v3 and carry practice? | stopped after A seed 1: 8 handovers of 256 (v3's grip paid away from the handover point too); B runs not done |
 | [B013](experiments/B013-chain-skills.md) | Chain the learned handover and carry policies: does the bar reach the bin? | done: yes with the top-camera carry, 71 of 256 in the bin (success at the end up to 38); wrist-only 0 and 21 |
 | [B014](experiments/B014-carry-from-own-handovers.md) | Trained on the handover policy's own handovers, does the carry policy hold its rate when chained? | done: yes, 90-92% of carries in the bin; 99 of 256 end to end on both seeds |
-| [B015](experiments/B015-handover-longer.md) | Does more training lift the handover policy's carries, and the chain with them? | running |
+| [B015](experiments/B015-handover-longer.md) | Does more training lift the handover policy's carries, and the chain with them? | done: no, carries flat then lower (101, 104, 91); the release has plateaued under v2 |
 | [B016](experiments/B016-release-slope.md) | Does paying the picker's way off the bar (reward v4) raise the clean releases? | protocol written |
 | [B017](experiments/B017-carry-from-b016.md) | Carry policy retrained on B016's handovers: does the chain keep the gain? | protocol written |
 
