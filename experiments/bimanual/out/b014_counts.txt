@@ -1,0 +1,14 @@
+# start 2026-10-25 23:48:14 commit be3000c7558ecde5bda094f93868d69320e8b0c4
+saved 2831 carry starts; env indices with none: 0 of 512; median per index 5
+preflight: 8 of 8 passed
+EXIT 0
+b014_top_s1 from saved starts seed 7 carry 128 bin 118 success 79 | at end: bin 110 success 53
+b014_top_s1 chained seed 7 handover 105 switched 55 bin 51 success 27 | at end: bin 45 success 13
+b014_top_s1 from saved starts seed 8 carry 128 bin 121 success 79 | at end: bin 111 success 56
+b014_top_s1 chained seed 8 handover 92 switched 53 bin 48 success 30 | at end: bin 47 success 23
+EXIT 0
+b014_top_s2 from saved starts seed 7 carry 128 bin 120 success 96 | at end: bin 106 success 66
+b014_top_s2 chained seed 7 handover 106 switched 55 bin 47 success 36 | at end: bin 44 success 21
+b014_top_s2 from saved starts seed 8 carry 128 bin 119 success 101 | at end: bin 109 success 65
+b014_top_s2 chained seed 8 handover 99 switched 55 bin 52 success 43 | at end: bin 46 success 30
+# DONE 2026-10-26 00:45:01
