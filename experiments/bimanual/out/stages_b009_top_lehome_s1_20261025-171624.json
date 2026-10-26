@@ -1,0 +1,49 @@
+{
+ "checkpoint": "runs/b009_top_lehome_s1/ckpt_500k.pt",
+ "env_id": "SO101HandoverCarryTopCamLeHome-v1",
+ "episodes": 128,
+ "seed": 7,
+ "reached": {
+  "picker_grasp": 0,
+  "both_hold": 0,
+  "handed_over": 128,
+  "receiver_grasp": 127,
+  "bar_in_bin": 115,
+  "success": 84,
+  "arms_touching": 0,
+  "robot_touching_table": 7,
+  "robot_touching_bin": 10,
+  "carrying": 127
+ },
+ "at_end": {
+  "bar_in_bin": 103,
+  "success": 47
+ },
+ "best_stage": {
+  "reaching": 1,
+  "picker holds, carrying": 0,
+  "at handover point, receiver reaching": 0,
+  "both hold": 0,
+  "receiver carries to bin": 12,
+  "in bin": 115
+ },
+ "receiver_closest_cm": {
+  "median": 1.7,
+  "under_3cm": 122,
+  "under_6cm": 128
+ },
+ "carry_bar_to_bin_cm": {
+  "episodes": 127,
+  "start_median": 26.5,
+  "closest_median": 3.6,
+  "closest_under_10cm": 125,
+  "closest_under_5cm": 105
+ },
+ "bin_in_receiver_view": {
+  "at_start_episodes": 0,
+  "both_hold_steps": 0,
+  "of_which_bin_seen": 0,
+  "carry_steps": 1578,
+  "of_which_bin_seen_carry": 783
+ }
+}
