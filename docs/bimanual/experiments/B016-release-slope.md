@@ -24,5 +24,8 @@ Continue B011 seed 1 from its 3M checkpoint with reward v4, 3M steps, everything
 - 1 fails, 2 holds: the picker clears but something else breaks the carry: look at the videos.
 - 1 and 2 fail: the slope is not the missing piece; the second policy has to practise the release itself (starts saved where the picker stops squeezing).
 
+## Amendment
+- **A1, 2026-10-26 02:40, before the runs: seeds 3, 4 and 5 on Northeastern's Explorer cluster.** Same command, measurements and predictions (per seed), one A100 each, started only if the A100 renders the scene and finishes a speed check. The cluster env pins the RTX box's versions (python 3.10, torch 2.6.0+cu124, mani_skill_nightly 2026.8.2.400, sapien 3.0.3, tensordict 0.7.2); the starting checkpoint was copied with a matching SHA-256. The H200 could not create the GPU camera renderer (Vulkan device lost at 4 envs); being re-checked with the node's own Vulkan driver file.
+
 ## Results
 _Not run._
