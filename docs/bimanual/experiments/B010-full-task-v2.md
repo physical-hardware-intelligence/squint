@@ -30,5 +30,8 @@ As B003 otherwise: 512 envs, 3M steps, evaluation every 250k on 16 envs (scene r
 - 3 fails: an added input costs the handover again; find out why (an input of pure noise as a control) before the real rig uses a top camera.
 - 1 fails with carries present: the whole task does not reach the carry enough to learn it; next, mix saved carry starts into whole-task training (curriculum, then SGS).
 
+## Amendment
+- **A1, 2026-10-25 19:10, camera roll.** Checked against a real frame from the organisers' recordings (`observation.images.right_front`): the real image has the arms at the bottom edge; this run's camera renders them at the top (LeHome's sim camera is rolled the same way, and LeHome's code rotates its image 180°). Placement and lens are LeHome's; only the roll differs, a fixed rotation of every image, so the run's sim results stand. A policy from it would see the real camera upside down: real-rig runs use `...TopCamLeHome-v2` (rolled to match: arm bases at pixels (31, 109) and (97, 109) of 128, the workspace centre at (64, 63)). Still unmeasured on the real rig: the lens (the real camera is 16:9; LeHome's sim lens is 4:3) and the height (56 cm in LeHome's sim, ~65 cm in its README).
+
 ## Results
 _Not run._

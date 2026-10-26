@@ -154,4 +154,12 @@ class HandoverCarryBinInStateRewardV1(CarryStartMixin, HandoverBarBinInState):
 
 @register_env("SO101HandoverCarryTopCamLeHome-v1", max_episode_steps=CARRY_EPISODE_STEPS)
 class HandoverCarryTopCamLeHome(CarryStartMixin, LeHomeTopCamera, Handover):
-    """B009: the top-camera condition with the camera placed as LeHome's rig (`LeHomeTopCamera`)."""
+    """B009, as run: placed as LeHome's camera, but rolled the sim's way, so its image is upside down against the real
+    camera's (arms at the top). Kept for reproducing B009; new runs use v2."""
+
+    TOP_CAMERA_UP = (0, 0, 1)
+
+
+@register_env("SO101HandoverCarryTopCamLeHome-v2", max_episode_steps=CARRY_EPISODE_STEPS)
+class HandoverCarryTopCamLeHomeV2(CarryStartMixin, LeHomeTopCamera, Handover):
+    """The carry with the top camera as the organisers' real one: placed and rolled so its image matches theirs."""
