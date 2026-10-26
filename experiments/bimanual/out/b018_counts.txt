@@ -1,0 +1,31 @@
+# start 2026-10-26 10:30:47 commit 99e6f1d18b17767975e7a86b668cc9f4a4e079a8
+saved 3130 carry starts; env indices with none: 0 of 512; median per index 6
+# B018 PREFLIGHT FAILED 2026-10-26 10:38:20: see runs/b018_preflight.log
+FAIL  SO101HandoverCarryTopCamLeHome-v2: check_carry_starts.py  log runs/preflight/1_SO101HandoverCarryTopCamLeHome_v2_envcheck.log
+PASS  SO101HandoverCarryTopCamLeHome-v2: short training exits 0  log runs/preflight/1_SO101HandoverCarryTopCamLeHome_v2_train.log
+PASS  SO101HandoverCarryTopCamLeHome-v2: images 16x16x9, state 24  trainer printed ('16', '16', '9', '24')
+PASS  SO101HandoverCarryTopCamLeHome-v2: gamma = 0.97  trainer printed 0.97
+PASS  SO101HandoverCarryTopCamLeHome-v2: v_min = -25.0  trainer printed -25.0
+PASS  SO101HandoverCarryTopCamLeHome-v2: v_max = 35.0  trainer printed 35.0
+PASS  SO101HandoverCarryTopCamLeHome-v2: checkpoint saved  
+PASS  SO101HandoverCarryTopCamLeHome-v2: stage counter runs the checkpoint  log runs/preflight/1_SO101HandoverCarryTopCamLeHome_v2_count.log
+# relaunch after amendment A1 2026-10-26 10:42:42 commit cdeed59b986e5d9cb6bf553ca5ff8740ca425b89
+(a) own episodes: 585 starts; holding 1 step later 572 (98%), 11 steps later 560 (96%); a bar jump over 5 cm in one step: 2
+(b) restored starts: 768 starts; holding 1 step later 733 (95%), 11 steps later 700 (91%); a bar jump over 5 cm in one step: 18
+PASS  restored starts within 5 points of the own episodes, bar jumps under 3%
+PASS  SO101HandoverCarryTopCamLeHome-v2: check_carry_starts.py  log runs/preflight/1_SO101HandoverCarryTopCamLeHome_v2_envcheck.log
+PASS  SO101HandoverCarryTopCamLeHome-v2: short training exits 0  log runs/preflight/1_SO101HandoverCarryTopCamLeHome_v2_train.log
+PASS  SO101HandoverCarryTopCamLeHome-v2: images 16x16x9, state 24  trainer printed ('16', '16', '9', '24')
+PASS  SO101HandoverCarryTopCamLeHome-v2: gamma = 0.97  trainer printed 0.97
+PASS  SO101HandoverCarryTopCamLeHome-v2: v_min = -25.0  trainer printed -25.0
+PASS  SO101HandoverCarryTopCamLeHome-v2: v_max = 35.0  trainer printed 35.0
+PASS  SO101HandoverCarryTopCamLeHome-v2: checkpoint saved  
+PASS  SO101HandoverCarryTopCamLeHome-v2: stage counter runs the checkpoint  log runs/preflight/1_SO101HandoverCarryTopCamLeHome_v2_count.log
+preflight: 8 of 8 passed
+EXIT 0
+b018_s1 from saved starts seed 7 carry 57 bin 49 success 45 | at end: bin 46 success 37
+b018_s1 chained (holding switch) seed 7 handover 104 switched 101 carry 51 bin 42 success 37 | at end: bin 40 success 26
+b018_s1 from saved starts seed 8 carry 63 bin 49 success 46 | at end: bin 48 success 35
+b018_s1 chained (holding switch) seed 8 handover 95 switched 92 carry 51 bin 44 success 36 | at end: bin 41 success 24
+# stopped 2026-10-26 11:25:07 during seed 2 training (58%): B018 answered by probe_scripted_release.py (fake grips); see B019
+# DONE 2026-10-26 11:25:07

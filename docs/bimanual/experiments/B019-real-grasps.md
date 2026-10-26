@@ -1,6 +1,6 @@
 # B019: With a grasp check that rejects fake grips, does the handover policy make more real handovers?
 
-**Status:** protocol written 2026-10-26 11:35, before the runs.
+**Status:** protocol written 2026-10-26 11:20, before the runs.
 
 ## What B018 found (no learning involved)
 - From the saved "picker stopped squeezing" starts, a scripted release (picker opens, backs away; receiver still) keeps the bar in only 257 of 512 (50%); from clean-carry starts, 506 of 512 (`probe_scripted_release.py`).
