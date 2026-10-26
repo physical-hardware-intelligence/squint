@@ -1,6 +1,6 @@
 # B016: Does paying the picker's way off the bar (reward v4) raise the clean releases?
 
-**Status:** protocol written 2026-10-26 02:45, before the runs.
+**Status:** protocol written 2026-10-26 02:20, before the runs.
 
 ## Question
 In the chain, the carry policy places 90-92% of what it is handed; the handover policy hands it over cleanly in only about 40% of episodes. Of B011's 99 failed releases (256 episodes), 79 end with the receiver gripping and the picker's opened jaws still touching the bar; 5 froze holding, 14 had the receiver let go, 1 dropped it (`release_failures.py`, raw `experiments/bimanual/out/release_failures_b011_wrist_s1_3M.txt`). Switching to the carry policy as soon as the picker stops squeezing did not help (in the bin 93 and 105 vs 99 and 99): it never practised moving the picker off. With a reward that pays the picker for every centimetre it moves off, does the handover policy release cleanly more often?

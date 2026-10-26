@@ -1,6 +1,6 @@
 # B017: Carry policy retrained on B016's handovers: does the chain keep the gain?
 
-**Status:** protocol written 2026-10-26 02:45, before the runs. Runs whatever B016 seed 1 gives.
+**Status:** protocol written 2026-10-26 02:20, before the runs. Runs whatever B016 seed 1 gives.
 
 ## Question
 B014 showed the carry policy must practise from the handover policy it follows (B013: 52-71% of carries placed; B014: 90-92%). B016 changes the handover policy. Retrained on starts saved from B016 seed 1's handovers, does the chain place at least as large a share of its carries, so the gain in carries becomes bars in the bin?
