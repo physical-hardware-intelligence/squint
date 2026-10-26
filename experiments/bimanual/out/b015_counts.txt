@@ -1,0 +1,16 @@
+# start 2026-10-26 01:24:58 commit 4797a3b65bada05dd81eae10a355e8d5d9378114
+preflight: 8 of 8 passed
+b015_s1 +1.5M seed 7 handover 100 carry 48 bin 0
+b015_s1 +1.5M chained with b014_top_s1 seed 7 handover 96 switched 42 bin 40 success 27 | at end: bin 35 success 15
+b015_s1 +1.5M chained with b014_top_s2 seed 7 handover 94 switched 51 bin 46 success 34 | at end: bin 38 success 21
+b015_s1 +1.5M seed 8 handover 99 carry 56 bin 0
+b015_s1 +1.5M chained with b014_top_s1 seed 8 handover 99 switched 57 bin 56 success 30 | at end: bin 54 success 19
+b015_s1 +1.5M chained with b014_top_s2 seed 8 handover 100 switched 54 bin 51 success 35 | at end: bin 46 success 18
+EXIT 0
+b015_s1 +3M seed 7 handover 83 carry 46 bin 0
+b015_s1 +3M chained with b014_top_s1 seed 7 handover 85 switched 45 bin 42 success 27 | at end: bin 40 success 21
+b015_s1 +3M chained with b014_top_s2 seed 7 handover 74 switched 42 bin 35 success 25 | at end: bin 29 success 18
+b015_s1 +3M seed 8 handover 83 carry 45 bin 0
+b015_s1 +3M chained with b014_top_s1 seed 8 handover 84 switched 50 bin 47 success 31 | at end: bin 45 success 23
+b015_s1 +3M chained with b014_top_s2 seed 8 handover 75 switched 39 bin 35 success 30 | at end: bin 33 success 20
+# DONE 2026-10-26 02:27:10
