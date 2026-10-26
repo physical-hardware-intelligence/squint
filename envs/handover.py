@@ -76,6 +76,7 @@ class Handover(BimanualWristCameraEnv):
 
     # Reward stages (see compute_dense_reward); the maximum normalizes the reward to 1
     MAX_REWARD = 16.0
+    PICKER_CLEAR_DISTANCE = 0.06  # reward v4: the picker's release is fully paid 6 cm from its end of the bar
     # How the carry is paid for its distance d to the goal: "tanh" = 1 - tanh(5 d), steep only within ~15 cm (B001-B005);
     # "linear" = 1 - d / 40 cm, the same pull at every distance (B006). 40 cm covers the handover point to any goal
     CARRY_DISTANCE_SHAPE = "tanh"
@@ -458,8 +459,9 @@ class Handover(BimanualWristCameraEnv):
             # Stage 4, 6-7: both hold the lifted bar; the picker is paid to let go
             reward = torch.where(info["both_hold"], 6 + picker_open, reward)
 
-        if self.REWARD_VERSION in (2, 3):
-            return self._reward_after_handover_v2(reward, info, bar_p, axis, receiver_open)
+        if self.REWARD_VERSION in (2, 3, 4):
+            picker_gap = torch.linalg.norm(tcp_p - picker_end, axis=1)  # picker's grip point to its end of the bar
+            return self._reward_after_handover_v2(reward, info, bar_p, axis, receiver_open, picker_gap)
 
         # Stage 5, 8-10: after a mid-air handover, the receiver alone carries the bar over the bin. Starts a full
         # point above stage 4's top (7): B002 stalled with both arms holding when release paid only ~0.4 more
@@ -495,7 +497,7 @@ class Handover(BimanualWristCameraEnv):
         reward -= 1 * (~info["bar_lifted"] & ~self.handed_over).float()  # pick it up promptly
         return reward
 
-    def _reward_after_handover_v2(self, reward, info, bar_p, axis, receiver_open):
+    def _reward_after_handover_v2(self, reward, info, bar_p, axis, receiver_open, picker_gap):
         """Reward v2 after the latched handover (stages 1-4 as v1, already in `reward`).
 
         v1 gated each stage on contact flags. Between two stages the flags of neither held, so the score fell back to
@@ -522,7 +524,13 @@ class Handover(BimanualWristCameraEnv):
         # released over the bin and falling in (v1 scored that about 0)
         holding = self.handed_over & info["receiver_grasp"] & ~info["picker_grasp"]
         falling_in = self.handed_over & ~info["receiver_grasp"] & ~info["picker_grasp"] & over_bin & ~info["bar_in_bin"]
-        reward = torch.where(holding | falling_in, 7 + (~info["picker_touch_bar"]).float() + place, reward)
+        off_bar = (~info["picker_touch_bar"]).float()
+        if self.REWARD_VERSION == 4:
+            # v4: the picker's way off the bar is paid as it goes, not only once its jaws are off: 0.5 for the jaws off
+            # plus 0.5 for its grip point's distance from its end of the bar, full at PICKER_CLEAR_DISTANCE. B011's
+            # failed releases (79 of 99) opened but left a jaw touching: v2's +1 had no slope to follow
+            off_bar = 0.5 * off_bar + 0.5 * torch.clamp(picker_gap / self.PICKER_CLEAR_DISTANCE, 0, 1)
+        reward = torch.where(holding | falling_in, 7 + off_bar + place, reward)
 
         # Stage 6, 12-15: the bar in the bin; let go and keep both arms still
         arm_speed = torch.linalg.norm(left.robot.get_qvel()[:, :-1], axis=1) + torch.linalg.norm(right.robot.get_qvel()[:, :-1], axis=1)
@@ -619,6 +627,13 @@ class HandoverBarV2(Handover):
     """Task 1 with reward v2 (after the handover, scores follow the bar's progress; no dips)."""
 
     REWARD_VERSION = 2
+
+
+@register_env("SO101HandoverBarV4-v1", max_episode_steps=120)
+class HandoverBarV4(Handover):
+    """B016: task 1 with reward v4 = v2 plus a slope for the picker moving off the bar after it lets go."""
+
+    REWARD_VERSION = 4
 
 
 @register_env("SO101HandoverBarV2TopCamLeHome-v1", max_episode_steps=120)

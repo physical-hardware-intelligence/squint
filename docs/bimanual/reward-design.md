@@ -96,7 +96,17 @@ B010/B011 found the handover itself stalls at γ 0.97: closing the grip paid +0.
 
 Code: `REWARD_VERSION = 3`, env `SO101HandoverBarV3-v1`. v1 and v2 are unchanged.
 
-## 8. Known, not changed yet
+## 8. Reward v4: the picker's way off the bar (B016)
+B011's failed releases mostly end with the picker's jaws opened but one still on the bar (79 of 99). v2 pays +1 only once the jaws are off: nothing for the centimetres before. v4 = v2 with that +1 split: 0.5 for the jaws off, 0.5 × the picker's grip point's distance from its end of the bar, full at 6 cm. Only after the handover, with the receiver gripping and the picker not squeezing; everything else is v2.
+
+| Picker after letting go | v2 | v4 |
+|---|---|---|
+| jaw on the bar, 0 / 1 / 2 cm out | 7.71 / 7.71 / 7.71 | 7.71 / 7.79 / 7.88 |
+| jaw off, 2 / 4 / 6 cm out | 8.71 / 8.71 / 8.71 | 8.38 / 8.54 / 8.71 |
+
+Code: `REWARD_VERSION = 4`, `PICKER_CLEAR_DISTANCE`, env `SO101HandoverBarV4-v1`; probe `reward_probe_release.py`; `check_reward.py` 18 of 18 on v1-v4.
+
+## 9. Known, not changed yet
 
 - **Arms touching at the handover:** handled in v3 (§7).
 - **The receiver gets no signal before stage 3:** it wanders (the "visit the bin first" motion seen in the videos). A small term for waiting near the handover point would fix it; left out so that v2 changes only what happens after the handover.
