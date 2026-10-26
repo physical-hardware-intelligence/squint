@@ -34,3 +34,9 @@ EXIT 0
 # handover to the B012 queue 2026-10-25 21:30:01: old queue stopped after b010_wrist_s2 training; B012 next, then B011 seed 2; B010 top seed 2 dropped
 b010_wrist_s2 3M seed 7 handover 30 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
 b010_wrist_s2 3M seed 8 handover 23 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+b011_wrist_s2 1.5M seed 7 handover 0 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+b011_wrist_s2 1.5M seed 8 handover 1 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+EXIT 0
+b011_wrist_s2 3M seed 7 handover 7 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+b011_wrist_s2 3M seed 8 handover 6 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+# DONE 2026-10-25 23:25:35
