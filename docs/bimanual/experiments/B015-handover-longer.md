@@ -29,7 +29,7 @@ Run 2026-10-26 01:25-02:27, commit `4797a3b`, preflight 8 of 8 (the checkpoint l
 | handovers | 193 | 199 | 166 |
 | **carries** | 101 | 104 | **91** |
 | chained, in the bin (carry s1 / s2) | 99 / 99 | 96 / 97 | 89 / 70 |
-| of the switched, in the bin (s1 / s2) | 92% / 90% | 97% / 92% | 93% / 86% |
+| of the switched, in the bin (s1 / s2) | 92% / 90% | 97% / 92% | 94% / 86% |
 
 **Predictions.** 1 fails (91, not 130). 2 fails (89 and 70, not 110). 3 holds (86-97%).
 
