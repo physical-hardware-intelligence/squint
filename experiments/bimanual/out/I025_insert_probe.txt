@@ -1,0 +1,84 @@
+    1.20  both reaching
+    6.00  both held, lifted
+    7.10  up, tip 15 cm out, crooked
+    8.10  up, tip 15 cm out, crooked, mouth up 20
+    9.64  up, tip 3 cm out, straight, mouth up 20
+   10.00  at the mouth, straight, mouth up 20
+   10.80  in 5 mm
+   14.00  in 25 mm
+   15.30  in 40 mm
+   15.83  in 46 mm, seated
+   16.00  in 48 mm (full)
+   16.25  48 mm, jaw half open
+   16.50  48 mm, jaw open
+   16.50  let go, arm at the grip point
+   16.90  let go, 2 cm away
+   18.00  let go, 4 cm away: success
+PASS retain: the intended path never decreases
+PASS retain: stage 2 at the mouth (straight, tilted) = 10 = stage 3 at 0 mm
+PASS retain: held 25 mm = 14, held at full depth = 16
+PASS retain: depth pays all the way, 25 -> 48 mm strictly rising
+PASS retain: success (18) beats every other state
+PASS retain: a seated peg the arm still holds (16) is 2 below success
+PASS retain: opening at 30 mm adds nothing
+PASS retain: opening seated, mouth level, adds nothing
+PASS retain: opening seated, mouth 10 deg down, adds nothing
+PASS retain: opening seated with the socket dropped adds nothing
+PASS retain: letting go seated with the mouth level or 10 deg down pays no more than holding
+PASS retain: the peg falling out after the release scores below anything held and lifted  [3.76]
+PASS retain: released at 30 mm and still in scores as stage 1 (no release pay)
+PASS retain: mouth tilt is worth at most 1 in stage 2
+PASS retain: entering the hole keeps the tilt term (mouth level and 20 deg up: at the mouth = at 0 mm)
+PASS retain: inserted 25 mm, mouth 40 deg down scores 1 below mouth 20 deg up
+PASS v1: mouth 10, 25 mm success 16, rising in between
+PASS both: table -2, arms touching -1
+PASS geometry: on the axis 10 mm in: in the hole, axial 10 mm, fit -5 mm  [{'in_hole': 1.0, 'seated': 0.0, 'axial': 0.009999997913837433, 'fit': -0.005000000819563866, 'align': 1.0, 'socket_pitch': -0.0}]
+PASS geometry: 6.5 mm off along one socket axis (face overlaps the wall 1.5 mm): not in the hole  [fit 0.0015]
+PASS geometry: 4.9 mm off on both axes (a resting corner, 6.9 mm from the axis): in the hole  [fit -0.0001]
+PASS geometry: rolled 45 deg, centred (diagonal 31.1 mm in a 32 mm hole): in the hole  [fit -0.0004]
+PASS geometry: rolled 45 deg, 2 mm off: not in the hole  [fit 0.0016]
+PASS geometry: 46 mm in (past half the peg) reads 46 mm, pointing in  [{'in_hole': 1.0, 'seated': 1.0, 'axial': 0.04599999636411667, 'fit': -0.005000000819563866, 'align': 1.0, 'socket_pitch': -0.0}]
+PASS geometry: the peg's other end leading reads the same  [{'in_hole': 1.0, 'seated': 0.0, 'axial': 0.019999999552965164, 'fit': -0.005000000819563866, 'align': 1.0, 'socket_pitch': -0.0}]
+PASS geometry: a tip 8 mm behind the hole floor is not in the hole  [axial 0.0580]
+PASS geometry: seated at 46 mm; socket pitch reads +20  [{'in_hole': 1.0, 'seated': 1.0, 'axial': 0.04600001126527786, 'fit': -0.005000000819563866, 'align': 1.0000001192092896, 'socket_pitch': 20.000001907348633}]
+PASS geometry: 44 mm is not seated (floor 50, margin 5)
+PASS reward: on the axis 40 cm behind the closed end is as far from the mouth as 40 cm in front (near), not at it  [near 40 cm behind 0.078, 40 cm out 0.078, 1 cm out 0.960]
+  friction 0.3 mouth -10 deg, released 25 mm -> seated, depth mm, fit mm: (False, -66.0, 82.72)
+  friction 0.3 mouth -10 deg, released 42 mm -> seated, depth mm, fit mm: (False, -54.0, 84.86)
+  friction 0.3 mouth -10 deg, released 46 mm -> seated, depth mm, fit mm: (False, -57.4, 84.27)
+  friction 0.3 mouth -10 deg, released 48 mm -> seated, depth mm, fit mm: (False, -59.5, 84.0)
+  friction 0.3 mouth  +0 deg, released 25 mm -> seated, depth mm, fit mm: (False, -51.1, 93.02)
+  friction 0.3 mouth  +0 deg, released 42 mm -> seated, depth mm, fit mm: (False, -40.1, 93.02)
+  friction 0.3 mouth  +0 deg, released 46 mm -> seated, depth mm, fit mm: (True, 50.5, 0.25)
+  friction 0.3 mouth  +0 deg, released 48 mm -> seated, depth mm, fit mm: (True, 50.5, 0.24)
+  friction 0.3 mouth +10 deg, released 25 mm -> seated, depth mm, fit mm: (False, -28.4, 99.44)
+  friction 0.3 mouth +10 deg, released 42 mm -> seated, depth mm, fit mm: (True, 50.6, 0.28)
+  friction 0.3 mouth +10 deg, released 46 mm -> seated, depth mm, fit mm: (True, 50.6, 0.28)
+  friction 0.3 mouth +10 deg, released 48 mm -> seated, depth mm, fit mm: (True, 50.6, 0.28)
+  friction 0.3 mouth +20 deg, released 25 mm -> seated, depth mm, fit mm: (False, 4.7, 102.13)
+  friction 0.3 mouth +20 deg, released 42 mm -> seated, depth mm, fit mm: (True, 50.6, 0.29)
+  friction 0.3 mouth +20 deg, released 46 mm -> seated, depth mm, fit mm: (True, 50.6, 0.29)
+  friction 0.3 mouth +20 deg, released 48 mm -> seated, depth mm, fit mm: (True, 50.6, 0.29)
+  friction 0.7 mouth -10 deg, released 25 mm -> seated, depth mm, fit mm: (False, -46.3, 86.21)
+  friction 0.7 mouth -10 deg, released 42 mm -> seated, depth mm, fit mm: (False, -15.9, 2.53)
+  friction 0.7 mouth -10 deg, released 46 mm -> seated, depth mm, fit mm: (True, 50.5, 0.25)
+  friction 0.7 mouth -10 deg, released 48 mm -> seated, depth mm, fit mm: (True, 50.5, 0.24)
+  friction 0.7 mouth  +0 deg, released 25 mm -> seated, depth mm, fit mm: (False, -45.6, 93.02)
+  friction 0.7 mouth  +0 deg, released 42 mm -> seated, depth mm, fit mm: (True, 50.6, 0.26)
+  friction 0.7 mouth  +0 deg, released 46 mm -> seated, depth mm, fit mm: (True, 50.6, 0.26)
+  friction 0.7 mouth  +0 deg, released 48 mm -> seated, depth mm, fit mm: (True, 50.6, 0.27)
+  friction 0.7 mouth +10 deg, released 25 mm -> seated, depth mm, fit mm: (False, -9.3, 98.28)
+  friction 0.7 mouth +10 deg, released 42 mm -> seated, depth mm, fit mm: (True, 50.6, 0.28)
+  friction 0.7 mouth +10 deg, released 46 mm -> seated, depth mm, fit mm: (True, 50.6, 0.28)
+  friction 0.7 mouth +10 deg, released 48 mm -> seated, depth mm, fit mm: (True, 50.6, 0.28)
+  friction 0.7 mouth +20 deg, released 25 mm -> seated, depth mm, fit mm: (False, -2.9, 104.96)
+  friction 0.7 mouth +20 deg, released 42 mm -> seated, depth mm, fit mm: (True, 50.6, 0.28)
+  friction 0.7 mouth +20 deg, released 46 mm -> seated, depth mm, fit mm: (True, 50.6, 0.28)
+  friction 0.7 mouth +20 deg, released 48 mm -> seated, depth mm, fit mm: (True, 50.6, 0.28)
+PASS physics: released 25 mm deep, the peg is not seated after 2 s at any pitch or friction
+PASS physics: mouth up 10-20 deg, released 46-48 mm deep: still seated after 2 s at both frictions
+PASS physics: mouth up 10-20 deg, released 42 mm deep (not yet seated): slides in and is seated after 2 s
+PASS physics: every seated peg passes the hole fit test (fit <= 1 mm)
+PASS jaw: fingertip distance = 14.9 mm + 65 mm/rad within 0.5 mm at 0-0.4 rad  [0.04 0.17 0.16 0.15 0.16 mm]
+34 of 34 pass
+ALL PASS

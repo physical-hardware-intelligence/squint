@@ -100,6 +100,10 @@ check("retain: the peg falling out after the release scores below anything held 
 check("retain: released at 30 mm and still in scores as stage 1 (no release pay)",
       r(prog=(3, reach(5)), up=False, pitch=20, depth_mm=30, released=True, retreat_cm=5) <= 4 + 1e-6)
 check("retain: mouth tilt is worth at most 1 in stage 2", abs((P[3] - P[2]) - 1) < 1e-3)
+check("retain: entering the hole keeps the tilt term (mouth level and 20 deg up: at the mouth = at 0 mm)",
+      all(abs(r(near=1.0, pitch=pt) - r(near=1.0, pitch=pt, depth_mm=0.01)) < 0.01 for pt in (0, 20)))
+check("retain: inserted 25 mm, mouth 40 deg down scores 1 below mouth 20 deg up",
+      abs(held(25) - r(near=1.0, pitch=-40, depth_mm=25) - 1) < 1e-3)
 v1 = [r(retain=False, near=1.0), r(retain=False, near=1.0, depth_mm=12), r(retain=False, near=1.0, depth_mm=24.9),
       r(retain=False, near=1.0, depth_mm=25, success=True)]
 check("v1: mouth 10, 25 mm success 16, rising in between", v1 == sorted(v1) and abs(v1[0] - 10) < 1e-3 and v1[-1] == 16)

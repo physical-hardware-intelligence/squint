@@ -87,7 +87,8 @@ def dense_reward(s: dict) -> torch.Tensor:
     counted double (`near`, 0-1), and points into it (`align`, counted only as the tip nears). v1: 2.5 near + 1.5 align.
     Retain: 1.75 near + 1.25 align + 1 for the mouth tilted up (0-20 deg), so the socket is presented the way that keeps
     a released peg in. No fixed meeting point: the arms choose where to meet.
-    Stage 3, from 10, both held and the tip in the hole: depth 0-25 mm pays 0-4 (scaled by alignment).
+    Stage 3, from 10, both held and the tip in the hole: depth 0-25 mm pays 0-4 (scaled by alignment). Retain: the
+        stage 2 mouth-up term carries on (9 + tilt at 0 mm), so inserting mouth-down pays 1 less all the way in.
         v1: success (25 mm, aligned, both held) pays 16.
         Retain: 25 mm to full depth (48 mm) pays 14-16, so the peg is pushed to the floor, where it stays when released.
     Retain stage 4, seated (within 5 mm of the floor, 15.7-16) with the socket held up: opening the peg jaw adds up to
@@ -106,13 +107,18 @@ def dense_reward(s: dict) -> torch.Tensor:
     reward = torch.where(up, torch.maximum(stage2, reward), reward)
     stage3 = 10 + 4 * (s["axial"] / INSERT_DEPTH).clamp(0, 1) * align
     if s["retain"]:
+        # WHY: stage 2 pays the mouth-up term (9 + tilt at the mouth); with a flat 10 here, entering the hole erased it,
+        # so for the ~125 steps in the hole mouth-down paid the same as mouth-up, and I024 inserted 36-53 deg mouth-down,
+        # a pose in which a released peg falls out. Keeping it makes stage 3 continuous with stage 2 for any tilt
+        stage3 = stage3 - 1 + s["tilt"]
         deep = ((s["axial"] - INSERT_DEPTH) / (s["full_depth"] - INSERT_DEPTH)).clamp(0, 1)
         stage3 = stage3 + 2 * deep * align
         stage3 = stage3 + 0.5 * s["opened"] * s["tilt_ok"] * (s["seated"] & s["socket_up"]).float()
     reward = torch.where(up & in_hole, torch.maximum(stage3, reward), reward)
     if s["retain"]:
         # scaled by the same mouth-up factor as opening, so letting go mouth-level or mouth-down pays no more than holding
-        stage5 = 16 + s["tilt_ok"] * (0.5 + (s["retreat"] / RETREAT_FULL).clamp(0, 1))
+        # the base carries stage 3's tilt term too (15 + tilt), so letting go level still pays no more than holding level
+        stage5 = 15 + s["tilt"] + s["tilt_ok"] * (0.5 + (s["retreat"] / RETREAT_FULL).clamp(0, 1))
         reward = torch.where(s["released"] & s["seated"] & s["socket_up"], torch.maximum(stage5, reward), reward)
     reward = torch.where(s["success"], torch.full_like(reward, s["max_reward"]), reward)
     return reward - 2 * s["robot_touching_table"].float() - 1 * s["arms_touching"].float()
