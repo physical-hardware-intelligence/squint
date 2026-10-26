@@ -1,0 +1,49 @@
+{
+ "checkpoint": "runs/b010_wrist_s1/ckpt_3M.pt",
+ "env_id": "SO101HandoverBarV2-v1",
+ "episodes": 128,
+ "seed": 7,
+ "reached": {
+  "picker_grasp": 128,
+  "both_hold": 13,
+  "handed_over": 13,
+  "receiver_grasp": 14,
+  "bar_in_bin": 0,
+  "success": 0,
+  "arms_touching": 7,
+  "robot_touching_table": 6,
+  "robot_touching_bin": 0,
+  "carrying": 1
+ },
+ "at_end": {
+  "bar_in_bin": 0,
+  "success": 0
+ },
+ "best_stage": {
+  "reaching": 0,
+  "picker holds, carrying": 0,
+  "at handover point, receiver reaching": 115,
+  "both hold": 12,
+  "receiver carries to bin": 1,
+  "in bin": 0
+ },
+ "receiver_closest_cm": {
+  "median": 2.1,
+  "under_3cm": 89,
+  "under_6cm": 128
+ },
+ "carry_bar_to_bin_cm": {
+  "episodes": 1,
+  "start_median": 28.5,
+  "closest_median": 28.0,
+  "closest_under_10cm": 0,
+  "closest_under_5cm": 0
+ },
+ "bin_in_receiver_view": {
+  "at_start_episodes": 126,
+  "both_hold_steps": 104,
+  "of_which_bin_seen": 0,
+  "carry_steps": 83,
+  "of_which_bin_seen_carry": 0
+ }
+}
