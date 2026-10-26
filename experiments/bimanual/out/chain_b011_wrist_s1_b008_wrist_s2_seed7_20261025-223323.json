@@ -1,0 +1,69 @@
+{
+ "handover": "runs/b011_wrist_s1/ckpt_3M.pt",
+ "carry": "runs/b008_wrist_s2/ckpt_1M.pt",
+ "env_id": "SO101HandoverBarV2-v1",
+ "channels": {
+  "handover": 6,
+  "carry": 6,
+  "env": 6,
+  "cameras": [
+   "left_wrist",
+   "right_wrist"
+  ]
+ },
+ "episodes": 128,
+ "seed": 7,
+ "settle_steps": 5,
+ "steps": 180,
+ "reports": {
+  "120": {
+   "reached": {
+    "picker_grasp": 126,
+    "both_hold": 105,
+    "bar_in_bin": 13,
+    "success": 7,
+    "robot_touching_table": 13,
+    "arms_touching": 35,
+    "carrying": 55,
+    "switched": 55
+   },
+   "at_end": {
+    "bar_in_bin": 10,
+    "success": 4
+   },
+   "after_switch": {
+    "episodes": 55,
+    "bar_in_bin": 13,
+    "success": 7,
+    "bar_in_bin_at_end": 10
+   }
+  },
+  "180": {
+   "reached": {
+    "picker_grasp": 126,
+    "both_hold": 106,
+    "bar_in_bin": 14,
+    "success": 10,
+    "robot_touching_table": 15,
+    "arms_touching": 41,
+    "carrying": 56,
+    "switched": 55
+   },
+   "at_end": {
+    "bar_in_bin": 11,
+    "success": 3
+   },
+   "after_switch": {
+    "episodes": 55,
+    "bar_in_bin": 14,
+    "success": 10,
+    "bar_in_bin_at_end": 11
+   }
+  }
+ },
+ "switch_step": {
+  "median": 27,
+  "over_100": 1
+ },
+ "first_in_bin_step_median": 54
+}

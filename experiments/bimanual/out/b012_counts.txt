@@ -1,0 +1,8 @@
+# start 2026-10-25 21:31:03 commit 7ff1f578f5f6845bee2be990d513942180c11c1d
+preflight: 17 of 17 passed
+b012_A_s1 1.5M seed 7 handover 1 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+b012_A_s1 1.5M seed 8 handover 2 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+EXIT 0
+b012_A_s1 3M seed 7 handover 6 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+b012_A_s1 3M seed 8 handover 2 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+# stopped 2026-10-25 22:30:53 after A s1: B s1, A s2, B s2 not run (decision: chain the learned skills instead, B013)
