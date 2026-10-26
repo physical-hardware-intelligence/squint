@@ -35,6 +35,7 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | [B008](experiments/B008-carry-alone.md) | Trained on the carry alone: do reward dips, horizon or seeing the bin decide it? | done: reward v2 is the fix (in bin 87% vs v1 17%); top camera 90% (= sim-only bin position); wrist-only 39%; γ no consistent effect; memory hurts |
 | [B009](experiments/B009-lehome-top-camera.md) | Does the top camera placed as on Ilia's rig work as well on the carry? | done: yes, in bin 94% (90 cm camera: 88%); clean finishes similar (35% at the end) |
 | [B010](experiments/B010-full-task-v2.md) | Does the whole task learn with reward v2, from wrist cameras or with a top camera? | running |
+| [B011](experiments/B011-full-task-gamma-090.md) | Is γ 0.97 what stalls the handover in the whole task? | protocol written |
 
 ## Story so far
 1. **B001.** The layout works; scripted grasps don't, so learning has to find the grasp.
