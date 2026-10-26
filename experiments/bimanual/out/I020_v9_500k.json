@@ -1,0 +1,31 @@
+{
+ "checkpoint": "/scratch/patodia.pa/squint-bimanual/ckpts/i020_v9_from_v1/ckpt_500224.pt",
+ "env_id": "SO101InsertPeg-v9",
+ "episodes": 256,
+ "seed": 8,
+ "reached": {
+  "socket_grasp": 252,
+  "peg_grasp": 231,
+  "both_lifted": 200,
+  "in_hole": 2,
+  "peg_in": 0,
+  "released": 256,
+  "success": 0,
+  "socket_up": 236
+ },
+ "peg_in_while_held": 0,
+ "released_with_peg_in": 0,
+ "fell_out_after_release": 0,
+ "success_once": 0,
+ "success_at_end": 0,
+ "success_last_10_steps_all": 0,
+ "first_success_step": null,
+ "max_depth_mm": [
+  -51.5,
+  -0.9,
+  331.1
+ ],
+ "socket_pitch_at_release_deg": null,
+ "depth_at_release_mm": null,
+ "retreat_at_end_cm": null
+}

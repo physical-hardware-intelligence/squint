@@ -104,3 +104,5 @@ Reference: ALOHA's Bimanual Insertion (Zhao et al. 2023, ACT): left arm picks a 
 | Success flag | Must be exact and frame-independent | Measure depth along the socket's own axis (as Task 1 tests the bar in the bin's own frame) |
 
 Suggested stages (a starting point, not a decision): both reach → both grasp → both lifted → peg tip near the hole (distance) → aligned (axis angle) → inserted (depth) → seated, still, success.
+
+**Settled 2026-10-25** ([I001-I020](experiments/I001-I020-insertion-dev.md)): clearance 5 mm a side (10 mm total); parts in `envs/insertion_parts.py`, printable with `experiments/bimanual/make_insert_stl.py`; layout as above, both grasps learned by I001; depth and fit measured in the socket's own frame (`Insertion.geometry`); success = the peg retained after release (`SO101InsertPegRetain-v1`). Visibility at insertion not yet checked.

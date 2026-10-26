@@ -1,0 +1,59 @@
+{
+ "checkpoint": "/scratch/patodia.pa/squint-bimanual/ckpts/i001_insert_s1/ckpt_3500032.pt",
+ "env_id": "SO101InsertPeg-v1",
+ "episodes": 256,
+ "seed": 8,
+ "reached": {
+  "socket_grasp": 255,
+  "peg_grasp": 252,
+  "socket_held": 256,
+  "peg_held": 252,
+  "both_lifted": 245,
+  "in_hole": 213,
+  "inserted": 89,
+  "success": 89,
+  "arms_touching": 0,
+  "robot_touching_table": 130
+ },
+ "lift_max_cm": {
+  "socket": [
+   11.5,
+   14.5,
+   16.8
+  ],
+  "peg": [
+   10.4,
+   15.7,
+   18.1
+  ]
+ },
+ "both_lifted_first_step": [
+  8.4,
+  10.0,
+  14.0
+ ],
+ "approach_min_cm_while_up": [
+  0.1,
+  0.3,
+  1.5
+ ],
+ "approach_under_10cm": 245,
+ "approach_under_5cm": 243,
+ "approach_under_2cm": 229,
+ "align_best_when_near": [
+  0.966,
+  0.999,
+  1.0
+ ],
+ "axial_max_cm": [
+  0.1,
+  2.0,
+  4.0
+ ],
+ "tip_past_mouth": 231,
+ "episode_return_q": [
+  918.3,
+  1217.8,
+  1619.4
+ ]
+}
