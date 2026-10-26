@@ -23,6 +23,9 @@ In the bin at least 80% over both seeds (B008's 90 cm camera: 90%).
 - ≥ 80%: B010's top-camera condition uses this placement (it is already queued with it).
 - < 80%: read B010's top condition against this; rerun B010's top condition with the 90 cm camera, and look at what the slanted view hides (videos, `who_sees_what.py`).
 
+## Amendment
+- **A1, 2026-10-25 19:10, camera roll.** Checked against a real frame from the organisers' recordings (`observation.images.right_front`): the real image has the arms at the bottom edge; this run's camera renders them at the top (LeHome's sim camera is rolled the same way, and LeHome's code rotates its image 180°). Placement and lens are LeHome's; only the roll differs, a fixed rotation of every image, so the run's sim results stand. A policy from it would see the real camera upside down: real-rig runs use `...TopCamLeHome-v2` (rolled to match: arm bases at pixels (31, 109) and (97, 109) of 128, the workspace centre at (64, 63)). Still unmeasured on the real rig: the lens (the real camera is 16:9; LeHome's sim lens is 4:3) and the height (56 cm in LeHome's sim, ~65 cm in its README).
+
 ## Results
 Preflight 24 of 24 (with B010's two conditions; `experiments/bimanual/out/b009_b010_preflight.log`). Both runs exit 0, commit `06193d4`. Stage counts, 256 episodes per run (seeds 7 + 8); raw `experiments/bimanual/out/stages_b009_*.json`, `b009_counts.txt`.
 

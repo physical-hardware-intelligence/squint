@@ -586,6 +586,15 @@ class HandoverBarV2(Handover):
 
 @register_env("SO101HandoverBarV2TopCamLeHome-v1", max_episode_steps=120)
 class HandoverBarV2TopCamLeHome(LeHomeTopCamera, Handover):
-    """Task 1 with reward v2 and a top camera placed as LeHome's rig (B010)."""
+    """B010, as run: task 1 with reward v2 and a top camera placed as LeHome's, rolled the sim's way (image upside down
+    against the real camera's). Kept for reproducing B010; new runs use v2."""
+
+    REWARD_VERSION = 2
+    TOP_CAMERA_UP = (0, 0, 1)
+
+
+@register_env("SO101HandoverBarV2TopCamLeHome-v2", max_episode_steps=120)
+class HandoverBarV2TopCamLeHomeV2(LeHomeTopCamera, Handover):
+    """Task 1 with reward v2 and the top camera as the organisers' real one: placed and rolled so its image matches theirs."""
 
     REWARD_VERSION = 2

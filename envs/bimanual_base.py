@@ -39,6 +39,8 @@ class BimanualWristCameraEnv(BaseRandomEnv):
     TOP_CAMERA_TARGET = [0.20, 0.0, 0.0]
     TOP_CAMERA_FOV = np.deg2rad(55)
     TOP_CAMERA_INTRINSIC = None  # a 3x3 matrix instead of TOP_CAMERA_FOV (a wide lens squeezed into the square image)
+    TOP_CAMERA_UP = (0, 0, 1)  # look_at's up hint: sets the camera's roll, so which way up its image comes out
+    TOP_CAMERA_SIZE = 128  # the image size the lens matrix is written for
 
     agent: MultiAgent
 
@@ -100,7 +102,7 @@ class BimanualWristCameraEnv(BaseRandomEnv):
             # Fixed, about 90 cm above the table, looking down at both arms, the bar and the bin. No noise: drawing it
             # from the episode generator would shift the per-env object sizes drawn after it.
             lens = dict(intrinsic=self.TOP_CAMERA_INTRINSIC) if self.TOP_CAMERA_INTRINSIC is not None else dict(fov=self.TOP_CAMERA_FOV)
-            configs.append(CameraConfig("top", pose=sapien_utils.look_at(self.TOP_CAMERA_EYE, self.TOP_CAMERA_TARGET),
+            configs.append(CameraConfig("top", pose=sapien_utils.look_at(self.TOP_CAMERA_EYE, self.TOP_CAMERA_TARGET, up=self.TOP_CAMERA_UP),
                                         width=128, height=128, near=0.01, far=100, **lens))
         return configs
 
@@ -188,6 +190,16 @@ class BimanualWristCameraEnv(BaseRandomEnv):
         self._last_obs = obs
         return obs, info
 
+    def _after_reconfigure(self, options: dict):
+        super()._after_reconfigure(options)
+        # A lens matrix is written for one image size; an override of the camera's width or height (sensor_configs)
+        # would leave it unchanged and silently shrink or crop the view
+        if self.TOP_CAMERA and self.TOP_CAMERA_INTRINSIC is not None:
+            cam = self.scene.sensors["top"].config
+            if (cam.width, cam.height) != (self.TOP_CAMERA_SIZE, self.TOP_CAMERA_SIZE):
+                raise ValueError(f"top camera rendered at {cam.width}x{cam.height}, but its lens matrix is for "
+                                 f"{self.TOP_CAMERA_SIZE}x{self.TOP_CAMERA_SIZE}")
+
     def _after_reset_before_observe(self):
         """Hook for subclasses: runs after the parent reset (controllers already reset), before the cameras are synced
         and the returned observation is rendered."""
@@ -224,9 +236,14 @@ def lehome_top_intrinsic(size=128, hfov_deg=67.2, vfov_deg=52.9):
 class LeHomeTopCamera:
     """Mixin: the top camera placed as LeHome's (lehome-challenge garment_bi_cfg_v2.py, the competition's rig, arms 46 cm
     apart as ours): centred between the arms, 44 cm in front of their bases, 56 cm above the table, looking down and back
-    toward the robots at 19° from vertical. LeHome's README gives ~65 cm for the real rig: measure ours."""
+    toward the robots at 19° from vertical. LeHome's README gives ~65 cm for the real rig: measure ours.
+
+    Roll: the real camera's image has the arms at the bottom edge (the organisers' recordings, observation.images.
+    right_front). LeHome's sim camera renders it the other way up and its code rotates the image 180°; here the camera
+    itself is rolled (up hint -z), so the image comes out the real way up with no flip anywhere."""
 
     TOP_CAMERA = True
     TOP_CAMERA_EYE = [0.44, 0.0, 0.56]
     TOP_CAMERA_TARGET = [0.44 - 0.56 * math.tan(math.radians(19.0)), 0.0, 0.0]
     TOP_CAMERA_INTRINSIC = lehome_top_intrinsic()
+    TOP_CAMERA_UP = (0, 0, -1)
