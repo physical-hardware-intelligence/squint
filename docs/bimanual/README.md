@@ -42,7 +42,8 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | [B015](experiments/B015-handover-longer.md) | Does more training lift the handover policy's carries, and the chain with them? | done: no, carries flat then lower (101, 104, 91); the release has plateaued under v2 |
 | [B016](experiments/B016-release-slope.md) | Does paying the picker's way off the bar (reward v4) raise the clean releases? | done: no, v4 collapsed the clean releases on all 5 seeds (carries 3-12; chained 0-1 in the bin) |
 | [B017](experiments/B017-carry-from-b016.md) | Carry policy retrained on B016's handovers: does the chain keep the gain? | not a valid test: B016 left 10 carry starts |
-| [B018](experiments/B018-practise-the-release.md) | Second policy practising the release from where the picker stops squeezing: does it fix the chain's weak step? | protocol written |
+| [B018](experiments/B018-practise-the-release.md) | Second policy practising the release from where the picker stops squeezing: does it fix the chain's weak step? | done: no. Found why: ~half the counted handovers were fake grips (closed gripper pressed on the bar), which cannot be released |
+| [B019](experiments/B019-real-grasps.md) | With a grasp check that rejects fake grips, does the handover policy make more real handovers? | protocol written |
 
 ## Story so far
 1. **B001.** The layout works; scripted grasps don't, so learning has to find the grasp.
@@ -62,6 +63,7 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 15. **B014.** Carry starts saved from B011's own handovers: the retrained carry policy puts 90-92% of what it is handed in the bin; 99 of 256 end to end (39%). The handover policy is now the limit: 42% of episodes reach a carry.
 16. **B015.** 3M more steps of the handover policy with v2: carries flat, then lower (101, 104, 91). The failed releases mostly end with the picker's opened jaw still on the bar (79 of 99).
 17. **B016.** Reward v4 pays the picker's way off the bar centimetre by centimetre: the clean releases collapsed on all five seeds (carries 3-12), because v4 paid the release the policy already made less than v2 did. Best chain still B011 + B014: 99 of 256.
+18. **B018.** Practising the release from where the picker stops squeezing did not help (86 in the bin). A scripted release showed why: in half of those states the receiver's gripper is fully shut against the bar's side, not around it; the grasp check counted that as a grip. Real grips release 97-99% of the time. The weak step is the receiver's real grasp (B019).
 
 ## Rules
 - Each experiment has a protocol written before it runs: question, predictions, method, decision rule. Changes after that are dated amendments. Results, including negative ones, go in the same file with the command and the commit.

@@ -175,6 +175,13 @@ class HandoverCarryTopCamLeHomeV2(CarryStartMixin, LeHomeTopCamera, Handover):
     """The carry with the top camera as the organisers' real one: placed and rolled so its image matches theirs."""
 
 
+@register_env("SO101HandoverCarryTopCamLeHomeGrip-v2", max_episode_steps=CARRY_EPISODE_STEPS)
+class HandoverCarryTopCamLeHomeGrip(CarryStartMixin, LeHomeTopCamera, Handover):
+    """The carry with the real-camera top view and a grasp only when the jaws are stopped by the bar."""
+
+    GRASP_NEEDS_OPEN_JAWS = True
+
+
 @register_env("SO101HandoverBarV3-v1", max_episode_steps=120)
 class HandoverBarV3(CarryStartMixin, Handover):
     """B012: the whole task with reward v3 (`Handover.REWARD_VERSION`). With carry_start_fraction > 0 (training only, via

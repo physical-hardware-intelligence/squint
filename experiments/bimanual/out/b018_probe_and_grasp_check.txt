@@ -1,0 +1,15 @@
+# 2026-10-26 11:05-11:20, RTX box. Raw printouts.
+# probe_scripted_release.py (picker opens 3 steps, backs toward its start pose 12 steps; receiver still), 512 restored starts each
+holding starts (carry_starts_holding_b011.pt, old grasp check): clean 257 (50%), dropped 255 (50%), still touching 0
+clean-carry starts (carry_starts_b011.pt, B014's): clean 506 (99%), dropped 6 (1%), still touching 0
+grip at the start, by outcome: median [25th-75th percentile]  (holding starts, old check)
+  depth_cm     clean 1.70 [1.26-2.06] | dropped 1.63 [1.23-2.11]
+  off_axis_cm  clean 0.79 [0.51-1.10] | dropped 1.88 [1.79-1.98]
+  tilt_deg     clean 9.27 [4.62-17.65] | dropped 24.07 [19.80-29.98]
+  stiffness    clean 1293.53 [983.24-1720.84] | dropped 1175.23 [861.35-1585.18]
+  closed       clean 0.89 [0.89-0.90] | dropped 1.00 [1.00-1.00]
+# check_holding_fidelity.py (B011 acting): own episodes 98% / 95% holding after 1 / 11 steps, 1-2 bar jumps in ~580; restored 95% / 91%, 14-18 jumps in 768
+# Corrected grasp check (GRASP_NEEDS_OPEN_JAWS, SO101HandoverBarV2Grip-v1), B011 s1 3M, stage counts:
+seed 7 picker grasp 128 handover 51 carry 51
+seed 8 picker grasp 127 handover 57 carry 54
+# holding starts under the corrected check (2 episodes x 512): saved 415; scripted release from 312 restored: clean 309 (99%), dropped 3 (1%)
