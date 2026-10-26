@@ -44,6 +44,10 @@ def main():
     ap.add_argument("--out", default="runs/carry_starts.pt")
     ap.add_argument("--settle_steps", type=int, default=5, help="save this many steps into a carry")
     ap.add_argument("--confirm_steps", type=int, default=10, help="keep it only if the carry is unbroken this many steps later")
+    ap.add_argument("--at", choices=("carry", "holding"), default="carry",
+                    help="carry: picker's jaws off the bar (B008, B014). holding: receiver grips, picker no longer squeezing, "
+                         "its jaws possibly still on the bar; saved when that has held settle_steps + 1 steps in a row, "
+                         "the same rule as chain_eval.py --switch_on holding, with no check on what happens after")
     args = ap.parse_args()
     dev = torch.device("cuda")
     env = gym.make("SO101HandoverBar-v1", num_envs=args.num_envs, obs_mode="rgb+segmentation", sim_backend="gpu",
@@ -72,13 +76,22 @@ def main():
             pending = torch.zeros(n, dtype=torch.bool, device=dev)
             done = torch.zeros(n, dtype=torch.bool, device=dev)
             buf = None
+            run = torch.zeros(n, dtype=torch.long, device=dev)
             for t in range(u.spec.max_episode_steps or 120):
                 obs, r, term, trunc, info = env.step(agent.get_action(obs))
-                carry = (info["handed_over"] & info["receiver_grasp"] & ~info["picker_touch_bar"]).to(dev)
-                began = carry & (start_t < 0)
-                start_t[began] = t
-                alive = (alive | began) & carry
-                snap = alive & (t == start_t + args.settle_steps) & ~done
+                if args.at == "holding":
+                    # The current run of the holding condition, reset when it breaks (as chain_eval.py's switch)
+                    cond = (info["handed_over"] & info["receiver_grasp"] & ~info["picker_grasp"]).to(dev)
+                    run = torch.where(cond, run + 1, torch.zeros_like(run))
+                    snap = (run == args.settle_steps + 1) & ~done & ~pending
+                    start_t[snap] = t - args.settle_steps
+                    alive = cond
+                else:
+                    carry = (info["handed_over"] & info["receiver_grasp"] & ~info["picker_touch_bar"]).to(dev)
+                    began = carry & (start_t < 0)
+                    start_t[began] = t
+                    alive = (alive | began) & carry
+                    snap = alive & (t == start_t + args.settle_steps) & ~done
                 if snap.any():
                     state = u.scene.get_sim_state()
                     if buf is None:
@@ -127,7 +140,7 @@ def main():
         geometry={k: getattr(u, k).cpu().clone() for k in CarryStartMixin.GEOMETRY_KEYS},
         **{k: torch.cat(saved[k]).cpu() for k in ("background", "gripper_stiffness", "gripper_damping") if k in saved},
         meta=dict(checkpoints=args.checkpoints, episodes_per_checkpoint=args.episodes, num_envs=n, seed=args.seed,
-                  settle_steps=args.settle_steps, confirm_steps=args.confirm_steps),
+                  settle_steps=args.settle_steps, confirm_steps=args.confirm_steps, at=args.at),
     )
     per_env = torch.bincount(out["env_index"], minlength=n)
     print(f"saved {len(out['env_index'])} carry starts; env indices with none: {int((per_env == 0).sum())} of {n}; "
