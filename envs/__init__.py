@@ -10,3 +10,4 @@ import envs.place
 import envs.stack
 import envs.handover
 import envs.handover_carry
+import envs.insertion
