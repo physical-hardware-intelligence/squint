@@ -1,6 +1,6 @@
 # B018: Second policy practising the release: does it fix the chain's weak step?
 
-**Status:** protocol written 2026-10-26 10:40, before the runs.
+**Status:** protocol written 2026-10-26 10:30, before the runs.
 
 ## Question
 The chain's weak step is the release: of the episodes where both arms hold the bar, about half never become a clean carry, and 79 of B011's 99 failed releases end with the picker's opened jaw still on the bar. Switching to B014's carry policy at that moment did not help (93 and 105 in the bin against 99): it had never practised from there. A second policy trained from saved states taken at that exact moment: does it finish the release and the carry, so the chain puts most bars in the bin?
