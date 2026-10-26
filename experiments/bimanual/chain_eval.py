@@ -13,6 +13,7 @@ Domain randomization and backgrounds as training (0-50 +-6), GPU simulator, no c
 no scene rebuild between episodes (as stage_counts.py). Outcomes are counted at each of `--report_steps` (the task's
 120 steps, and more: a late handover leaves the carry policy less than the 60 steps it was trained for).
 Prints and writes experiments/bimanual/out/chain_<handover run>_<carry run>_seed<seed>_<time>.json.
+`--video DIR` also records every env as training's evaluation videos do (cameras plus a side view; use few envs).
 """
 
 import argparse
@@ -26,6 +27,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 import gymnasium as gym  # noqa: E402
 import torch  # noqa: E402
 from mani_skill.utils.wrappers.flatten import FlattenActionSpaceWrapper, FlattenRGBDObservationWrapper  # noqa: E402
+from mani_skill.utils.wrappers.record import RecordEpisode  # noqa: E402
 
 import envs  # noqa: E402,F401
 from train_squint import DeployAgent  # noqa: E402
@@ -61,6 +63,7 @@ def main():
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--settle_steps", type=int, default=5, help="as harvest_carry_starts.py")
     ap.add_argument("--report_steps", type=int, nargs="+", default=[120, 180])
+    ap.add_argument("--video", default=None, help="directory for a video of all envs (as training's evaluation videos)")
     args = ap.parse_args()
     dev = torch.device("cuda")
     steps = max(args.report_steps)
@@ -68,9 +71,14 @@ def main():
     env = gym.make(args.env_id, num_envs=args.num_envs, obs_mode="rgb+segmentation", sim_backend="gpu",
                    sensor_configs=dict(width=128, height=128), domain_randomization=True,
                    domain_randomization_config={"background_level_range": [0, 50], "background_tint": 6},
-                   max_episode_steps=steps)
+                   max_episode_steps=steps,
+                   **(dict(render_mode="all", human_render_camera_configs=dict(shader_pack="default", width=128, height=128))
+                      if args.video else {}))
     keep = KeepRGB(env, rgb=True, depth=False, state=True)
     env = FlattenActionSpaceWrapper(keep)
+    if args.video:
+        env = RecordEpisode(env, output_dir=args.video, save_trajectory=False, save_video=True, max_steps_per_video=steps,
+                            video_fps=20)
     u = env.unwrapped
     n = args.num_envs
     obs, _ = env.reset(seed=args.seed)
@@ -139,6 +147,7 @@ def main():
     path = Path(__file__).resolve().parent / "out" / f"{name}_{dt.datetime.now():%Y%m%d-%H%M%S}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(out, indent=1))
+    env.close()  # writes the video, if any
 
 
 if __name__ == "__main__":

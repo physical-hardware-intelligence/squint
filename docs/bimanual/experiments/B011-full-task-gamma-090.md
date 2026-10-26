@@ -1,6 +1,6 @@
 # B011: Is γ 0.97 what stalls the handover in the whole task?
 
-**Status:** seed 1 done 2026-10-25 20:38: the handover comes back at γ 0.9 (193 of 256; γ 0.97: 29), but the carry stalls (0 in the bin). Seed 2 queued after B012.
+**Status:** done 2026-10-25 23:25. Seed 1 learned the handover at γ 0.9 (193 of 256), seed 2 did not (13): γ 0.9 is not a reliable fix. Seed 1's carries stall (0 in the bin).
 
 ## Question
 B010's wrist run (reward v2, γ 0.97) made 3 handovers in 256 episodes at 1.5M and 29 at 3M; B003 (reward v1, γ 0.9) made 66 [from 33 of 128] and 128. Before the handover the two rewards are identical (8,000 states checked, largest difference 0), so γ is the one difference there. With γ 0.9, does the handover come back?
@@ -36,6 +36,8 @@ Seed 1 run 2026-10-25 19:46-20:38, commit `06193d4`, preflight 8 of 8 (`experime
 | in the bin, success | 0, 0 | 0, 0 |
 | carried bar to the bin, median start → closest | 32.1 → 30.8 cm (seed 7), 32.8 → 31.6 cm (seed 8) | |
 
-**Predictions (seed 1).** 1 holds (193 ≥ 70). 2 holds (193 vs 29). 3 not met (0 in the bin); seed 2 pending.
+**Seed 2** (2026-10-25 22:30-23:25, same command with `--seed=2`): at 1.5M 1 handover, at 3M **13** (7 and 6), 0 carries. The picker brings the bar to the handover point (233 of 256) and the receiver comes within 3 cm (141), but it does not grip: B010's pattern, at γ 0.9.
 
-**So far.** Only γ changed, and the handover comes back (29 → 193) with the release (101 carries): γ 0.97 is what stalled the handover. The carries then move the bar about 1 cm toward the bin, as in B003-B006. Carried alone (B008, bin position given), the bar reached the bin at both γ (87%, 69%) and γ 0.97 held the finish better (success at the end 46% vs 27%). The handover wants 0.9, the carry 0.97. Rule "1 and 2 hold" → [B012](B012-v3-carry-practice.md): a clearly paid handover step (reward v3) at γ 0.97, plus carry practice.
+**Predictions.** 1 holds on seed 1 (193), fails on seed 2 (13). 2 holds on seed 1 (193 vs 29), fails on seed 2 (13 vs B010's 53). 3 fails (0 in the bin).
+
+**Reading.** On seed 1, only γ changed and the handover came back (29 → 193) with the release (101 carries). Seed 2 did not: at γ 0.9 one seed of two learned the handover, at γ 0.97 none of four runs did (29, 53, top camera 14, B012 8). γ 0.9 helps, but from scratch the grip is found on some seeds only, as expected of a step paid +0.16 over hovering ([reward-design](../reward-design.md) §7). The rest of this paragraph is seed 1's. The carries then move the bar about 1 cm toward the bin, as in B003-B006. Carried alone (B008, bin position given), the bar reached the bin at both γ (87%, 69%) and γ 0.97 held the finish better (success at the end 46% vs 27%). The handover wants 0.9, the carry 0.97. Rule "1 and 2 hold" → [B012](B012-v3-carry-practice.md): a clearly paid handover step (reward v3) at γ 0.97, plus carry practice.
