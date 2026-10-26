@@ -62,6 +62,8 @@ def main():
     ap.add_argument("--num_envs", type=int, default=128)
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--settle_steps", type=int, default=5, help="as harvest_carry_starts.py")
+    ap.add_argument("--switch_on", choices=("carry", "holding"), default="carry",
+                    help="carry: picker's jaws off the bar (the saved starts' condition); holding: picker no longer squeezing")
     ap.add_argument("--report_steps", type=int, nargs="+", default=[120, 180])
     ap.add_argument("--video", default=None, help="directory for a video of all envs (as training's evaluation videos)")
     args = ap.parse_args()
@@ -103,6 +105,7 @@ def main():
     flags = ("picker_grasp", "both_hold", "bar_in_bin", "success", "robot_touching_table", "arms_touching")
     ever = {k: torch.zeros(n, dtype=torch.bool, device=dev) for k in flags + ("carrying", "switched")}
     run_len = torch.zeros(n, dtype=torch.long, device=dev)  # consecutive carrying steps, current run
+    hold_len = torch.zeros(n, dtype=torch.long, device=dev)  # consecutive steps of the --switch_on holding condition
     switched = torch.zeros(n, dtype=torch.bool, device=dev)
     switch_t = torch.full((n,), -1, dtype=torch.long, device=dev)
     first_bin = torch.full((n,), -1, dtype=torch.long, device=dev)
@@ -121,7 +124,12 @@ def main():
         run_len = torch.where(carrying, run_len + 1, torch.zeros_like(run_len))
         if agent_c is not None:
             # harvest_carry_starts.py saved the state at the first carrying step + settle_steps: settle_steps + 1 in a row
-            new = ~switched & (run_len >= args.settle_steps + 1)
+            if args.switch_on == "holding":  # receiver grips, picker no longer squeezing (its jaws may still touch)
+                ready = (info["handed_over"] & info["receiver_grasp"] & ~info["picker_grasp"]).to(dev)
+                hold_len = torch.where(ready, hold_len + 1, torch.zeros_like(hold_len))
+                new = ~switched & (hold_len >= args.settle_steps + 1)
+            else:
+                new = ~switched & (run_len >= args.settle_steps + 1)
             switch_t[new] = t
             switched |= new
             ever["switched"] = switched.clone()
@@ -138,12 +146,12 @@ def main():
     has = switch_t >= 0
     out = dict(handover=short(args.handover), carry=short(args.carry) if args.carry else None, env_id=args.env_id,
                channels=dict(handover=c_h, carry=c_c, env=total, cameras=present), episodes=n, seed=args.seed,
-               settle_steps=args.settle_steps, steps=steps, reports=reports,
+               settle_steps=args.settle_steps, switch_on=args.switch_on, steps=steps, reports=reports,
                switch_step=dict(median=int(switch_t[has].median()) if has.any() else None,
                                 over_100=int((switch_t >= 100).sum())),
                first_in_bin_step_median=int(first_bin[first_bin >= 0].median()) if (first_bin >= 0).any() else None)
     print(json.dumps(out, indent=1))
-    name = f"chain_{Path(args.handover).parent.name}_{Path(args.carry).parent.name if args.carry else 'alone'}_seed{args.seed}"
+    name = f"chain_{Path(args.handover).parent.name}_{Path(args.carry).parent.name if args.carry else 'alone'}_{args.switch_on}_seed{args.seed}"
     path = Path(__file__).resolve().parent / "out" / f"{name}_{dt.datetime.now():%Y%m%d-%H%M%S}.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(out, indent=1))

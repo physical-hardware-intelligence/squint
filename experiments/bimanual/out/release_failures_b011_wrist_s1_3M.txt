@@ -1,0 +1,8 @@
+# 2026-10-26 02:10, release_failures.py --checkpoint runs/b011_wrist_s1/ckpt_3M.pt --seed 7 / --seed 8 (tree at 4797a3b + this script)
+{"checkpoint": "runs/b011_wrist_s1/ckpt_3M.pt", "seed": 7, "episodes": 128, "reached_both_hold": 109, "reached_carry": 57, "both_hold_no_carry": 52, "of_those_at_the_last_step": {"frozen_both_hold": 3, "receiver_grips_picker_still_touching": 39, "picker_alone_holds": 9, "nobody_holds": 1}, "of_those_other": 0, "both_hold_steps_median": {"no_carry": 4.0, "carry": 2.0}}
+{"checkpoint": "runs/b011_wrist_s1/ckpt_3M.pt", "seed": 8, "episodes": 128, "reached_both_hold": 95, "reached_carry": 48, "both_hold_no_carry": 47, "of_those_at_the_last_step": {"frozen_both_hold": 2, "receiver_grips_picker_still_touching": 40, "picker_alone_holds": 5, "nobody_holds": 0}, "of_those_other": 0, "both_hold_steps_median": {"no_carry": 3.0, "carry": 2.0}}
+# 2026-10-26 02:12, chain_eval.py --switch_on holding (switch once the picker stops squeezing, its jaws possibly still on the bar), B011 s1 3M then B014 carry, env SO101HandoverBarV2TopCamLeHome-v2
+b014_top_s1 holding-switch seed 7 handover 98 switched 96 carry 52 bin 49 success 30 | at end bin 47 success 22
+b014_top_s1 holding-switch seed 8 handover 94 switched 90 carry 48 bin 44 success 26 | at end bin 41 success 24
+b014_top_s2 holding-switch seed 7 handover 102 switched 100 carry 55 bin 48 success 42 | at end bin 45 success 27
+b014_top_s2 holding-switch seed 8 handover 102 switched 99 carry 61 bin 57 success 44 | at end bin 47 success 31
