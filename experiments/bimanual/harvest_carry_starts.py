@@ -42,6 +42,7 @@ def main():
     ap.add_argument("--num_envs", type=int, default=512)
     ap.add_argument("--seed", type=int, default=100)
     ap.add_argument("--out", default="runs/carry_starts.pt")
+    ap.add_argument("--env_id", default="SO101HandoverBar-v1", help="its grasp flags decide what counts as a carry or holding")
     ap.add_argument("--settle_steps", type=int, default=5, help="save this many steps into a carry")
     ap.add_argument("--confirm_steps", type=int, default=10, help="keep it only if the carry is unbroken this many steps later")
     ap.add_argument("--at", choices=("carry", "holding"), default="carry",
@@ -50,7 +51,7 @@ def main():
                          "the same rule as chain_eval.py --switch_on holding, with no check on what happens after")
     args = ap.parse_args()
     dev = torch.device("cuda")
-    env = gym.make("SO101HandoverBar-v1", num_envs=args.num_envs, obs_mode="rgb+segmentation", sim_backend="gpu",
+    env = gym.make(args.env_id, num_envs=args.num_envs, obs_mode="rgb+segmentation", sim_backend="gpu",
                    sensor_configs=dict(width=128, height=128), domain_randomization=True,
                    domain_randomization_config={"background_level_range": [0, 50], "background_tint": 6})
     keep = KeepSensors(env, rgb=True, depth=False, state=True)

@@ -77,6 +77,11 @@ class Handover(BimanualWristCameraEnv):
     # Reward stages (see compute_dense_reward); the maximum normalizes the reward to 1
     MAX_REWARD = 16.0
     PICKER_CLEAR_DISTANCE = 0.06  # reward v4: the picker's release is fully paid 6 cm from its end of the bar
+    # A grasp needs the jaws stopped by the bar: is_grasping alone (contact forces up to 110 degrees off the closing
+    # direction) also accepts a fully closed gripper pressed against the bar's side, which drops it as soon as the
+    # other arm lets go (B018: 255 of 512 such starts; real grips sit at 10-11% open, those at 0%). Off in the envs as run
+    GRASP_NEEDS_OPEN_JAWS = False
+    MIN_GRASP_OPENNESS = 0.03
     # How the carry is paid for its distance d to the goal: "tanh" = 1 - tanh(5 d), steep only within ~15 cm (B001-B005);
     # "linear" = 1 - d / 40 cm, the same pull at every distance (B006). 40 cm covers the handover point to any goal
     CARRY_DISTANCE_SHAPE = "tanh"
@@ -320,6 +325,12 @@ class Handover(BimanualWristCameraEnv):
         return obs
 
     # ------------------------------------------------------------------ task logic
+    @staticmethod
+    def _openness(arm) -> torch.Tensor:
+        """How far the gripper is open, 0 (closed) to 1 (open), from its joint limits."""
+        lo, hi = arm.robot.get_qlimits()[0, -1, :]
+        return (arm.robot.get_qpos()[:, -1] - lo) / (hi - lo)
+
     def _by_role(self, left: torch.Tensor, right: torch.Tensor, role: str) -> torch.Tensor:
         """Select per env the picker's (role='picker') or the receiver's value from the left/right arms' values."""
         is_left = (self.picker == 0) if role == "picker" else (self.picker == 1)
@@ -360,6 +371,8 @@ class Handover(BimanualWristCameraEnv):
 
         # Per arm, then per role
         grasping = [arm.is_grasping(self.bar) for arm in self.arms]
+        if self.GRASP_NEEDS_OPEN_JAWS:
+            grasping = [g & (self._openness(arm) >= self.MIN_GRASP_OPENNESS) for g, arm in zip(grasping, self.arms)]
         touching_bar = [arm.is_touching(self.bar) for arm in self.arms]
         touching_bin = [arm.is_touching(self.bin) for arm in self.arms]
         touching_table = [arm.is_touching(self.table_scene.table) for arm in self.arms]
@@ -627,6 +640,14 @@ class HandoverBarV2(Handover):
     """Task 1 with reward v2 (after the handover, scores follow the bar's progress; no dips)."""
 
     REWARD_VERSION = 2
+
+
+@register_env("SO101HandoverBarV2Grip-v1", max_episode_steps=120)
+class HandoverBarV2Grip(Handover):
+    """Task 1, reward v2, and a grasp only when the jaws are stopped by the bar (GRASP_NEEDS_OPEN_JAWS)."""
+
+    REWARD_VERSION = 2
+    GRASP_NEEDS_OPEN_JAWS = True
 
 
 @register_env("SO101HandoverBarV4-v1", max_episode_steps=120)
