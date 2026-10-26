@@ -9,14 +9,14 @@ One Squint policy drives two SO-101 arms from their two wrist cameras: trained i
 | Rig | two SO-101 followers side by side, facing forward, pan axes 46 cm apart; one wrist camera each |
 | Policy input | left then right wrist image (16×16, 6 channels); 24 numbers (per arm: 6 noisy joint angles, 6 targets); no memory |
 | Policy output | 12 joint deltas, `pd_joint_target_delta_pos` |
-| Code | `envs/bimanual_base.py` (two arms, two cameras), `envs/handover.py` (task 1) |
+| Code | `envs/bimanual_base.py` (two arms, two cameras), `envs/handover.py` (task 1), `envs/insertion.py` (task 2) |
 
 ## Tasks
 
 | # | Task | Env | Status |
 |---|---|---|---|
 | 1 | Handover: one arm picks a 25 × 25 × 60 mm red bar, hands it to the other in mid-air, which puts it in the bin. Either arm may pick; neither can reach both bar and bin | `SO101HandoverBar-v1` | the whole task reaches the bin by chaining two trained policies (B013: up to 28% in the bin); not yet as one policy (B010-B012) |
-| 2 | Insertion in mid-air: one arm picks a socket, the other a peg; insert until seated (as ALOHA's Bimanual Insertion). Clearance to decide: 5 mm is below one policy pixel ([GUIDE §6](GUIDE.md#6-task-2-insertion-decide-these-first)) | — | next (Parv); series `I001…` |
+| 2 | Insertion in mid-air: the left arm picks a 40 × 40 × 80 mm socket (32 mm hole, 50 mm deep), the right arm a 22 × 22 × 90 mm peg; insert to the floor, let go, move away, and the peg stays in (ALOHA's Bimanual Insertion with Put On Shoe's release test) | `SO101InsertPegRetain-v1` (held only: `SO101InsertPeg-v1`) | held insertion learned (I001: 27% at the end, 7M); retained 0 so far; I021 running |
 | 3 | Hold and open: one arm holds a hinged box, the other lifts the lid past 60° | — | draft |
 
 ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the left gripper) and Bimanual Insertion in simulation, learned from 50 demonstrations per task with 6-joint arms. Task 1 adds a random direction and the bin; Task 2 is the same concept as Insertion. We use 5-joint arms, one wrist camera per arm, and RL without demonstrations.
@@ -38,6 +38,8 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | [B011](experiments/B011-full-task-gamma-090.md) | Is γ 0.97 what stalls the handover in the whole task? | partly: seed 1 learned the handover (193; γ 0.97: 29) and released (101 carries), but the carry stalls ~31 cm from the bin; seed 2 did not hand over (13) |
 | [B012](experiments/B012-v3-carry-practice.md) | Does the whole task reach the bin with reward v3 and carry practice? | stopped after A seed 1: 8 handovers of 256 (v3's grip paid away from the handover point too); B runs not done |
 | [B013](experiments/B013-chain-skills.md) | Chain the learned handover and carry policies: does the bar reach the bin? | done: yes with the top-camera carry, 71 of 256 in the bin (success at the end up to 38); wrist-only 0 and 21 |
+| [I001-I020](experiments/I001-I020-insertion-dev.md) | Task 2: does the insertion learn, and what does the reward need? | done: v1 learns the held insertion (1 of 3 seeds); released at 25 mm the peg always falls out; release rewards warm-started from it lost the insertion |
+| [I021](experiments/I021-retain.md) | Warm-started with the critic relearned first, does the retain reward keep the insertion and add the release? | running |
 
 ## Story so far
 1. **B001.** The layout works; scripted grasps don't, so learning has to find the grasp.
@@ -54,6 +56,7 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 12. **B011.** Only γ changed, to 0.9: on seed 1 the handover is back (193) and the release (101 carries), but the carries stall ~31 cm from the bin. Seed 2 never grips (13): from scratch, the grip is found on some seeds only. The handover needs 0.9, the carry's finish wants 0.97 (B008). B012 removes the conflict: a handover step that clearly pays (reward v3, [reward-design](reward-design.md) §7) at 0.97, plus 25% of training episodes starting mid-carry.
 13. **B012.** v3 plus carry practice at γ 0.97: 8 handovers. v3 paid gripping anywhere a full point over waiting at the handover point, a shortcut the reward probe never scored. Stopped after one seed.
 14. **B013.** Stop asking one run to learn everything: chain the policies that work. B011's handover, then a carry policy from B008/B009. With the top camera, 71 of 256 bars in the bin, the first from the whole task. Limits: 40% of episodes reach a carry, and the carry policies lose ground on another policy's handovers. Next: carry starts from the handover policy itself, the calibrated top camera, the real rig.
+15. **Task 2, I001-I020.** v1's staged reward learns both grasps and the held insertion (I001, 27% at the end of 256 episodes at 7M), but the peg stops at ~25 mm and falls out when released there. Measured in sim: a peg released within 5 mm of the floor stays in with the mouth ≥ 10° up. The retain env pays depth to the floor, then the release; I021 tests it from I001 with the critic relearned before the actor moves.
 
 ## Rules
 - Each experiment has a protocol written before it runs: question, predictions, method, decision rule. Changes after that are dated amendments. Results, including negative ones, go in the same file with the command and the commit.
