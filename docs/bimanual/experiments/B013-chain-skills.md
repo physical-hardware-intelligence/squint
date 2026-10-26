@@ -1,6 +1,6 @@
 # B013: Chain the two learned skills: does the bar reach the bin?
 
-**Status:** protocol written 2026-10-25, before the runs.
+**Status:** done 2026-10-25 22:39. **The first bars in the bin from the whole task:** with the top-camera carry policy, 71 of 256 episodes (28%) end with the bar in the bin; success at the end up to 38 (15%). Wrist-only carry: 0 and 21.
 
 ## Question
 Each part has been learned, but never all of them in one run. B011's policy hands over and releases (193 and 101 of 256); B008's and B009's carry policies, trained from saved carry starts, put the bar in the bin (wrist 36-44%, top camera 93-95%). Run one after the other: how often does the whole task end with the bar in the bin?
@@ -33,4 +33,26 @@ The handover policy is given only the wrist images (checked against the raw came
 - Few switches (under 30% of episodes): the handover policy is the bottleneck; improve it alone.
 
 ## Results
-_Not run._
+Run 2026-10-25 22:29-22:39, commit `304f7e0`, `experiments/bimanual/chain_eval.py` (command in its docstring; `--carry` and `--env_id` per condition). Raw: `experiments/bimanual/out/b013_chains.txt`, `chain_*.json`.
+
+**Control:** the handover policy alone gave 107 and 94 handovers, 55 and 50 carries (B011's own counts: 99 and 94, 51 and 50): the script reproduces it.
+
+| 256 episodes (seeds 7 + 8), outcomes by step 120 | wrist: B008 s1 | wrist: B008 s2 | top: B009 s1 | top: B009 s2 | handover policy alone |
+|---|---|---|---|---|---|
+| handovers | 205 | 216 | 202 | 200 | 201 |
+| switched to the carry policy | 102 | 114 | 100 | 106 | (105 carries) |
+| **bar in the bin** | 0 | 21 | **71** | 55 | 0 |
+| in the bin at step 120 | 0 | 18 | 65 | 52 | 0 |
+| success, ever / at step 120 | 0 / 0 | 12 / 8 | 20 / 10 | 43 / **38** | 0 / 0 |
+| of the switched, in the bin | 0% | 18% | **71%** | 52% | |
+| same carry policy from its saved starts | 44% | 36% | 93% | 95% | |
+
+The switch comes early (median step 26-28; at most 3 of 256 per pair after step 100), so 180 steps change almost nothing (in the bin 22, 71, 56; success at the end 7, 7, 39).
+
+**Predictions.** 1 fails narrowly: wrist at most 22 of 256 by step 180 (26 needed). 2 holds: top 71 (64 needed). 3 holds for the top camera (71%, 52%; 47% needed), fails for wrist (0%, 18%; 20% needed).
+
+**Reading.**
+- The whole task works end to end in simulation for the first time, when the carry policy has the top camera: 21-28% of all episodes put the bar in the bin.
+- Two losses, in order: (1) only about 40% of episodes reach a carry (the handover policy's release, as in B011); (2) the carry policies do worse on B011's handovers than on the saved starts they were trained on (from B003's policies): 95% → 52%, 93% → 71%, and one wrist policy from 44% to 0. They were trained on another policy's handovers.
+
+**Decision (rule "2 holds").** The chain is the route to the real rig: calibrate the top camera (Monday), then retrain the carry policy with it, from carry starts harvested from the handover policy it will follow (rule "3 fails" for wrist points the same way). Then a switch rule from the gripper joints, tested in simulation against the flag-based switch used here. The handover policy's release (40% of episodes) is the next limit.

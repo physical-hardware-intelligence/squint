@@ -15,7 +15,7 @@ One Squint policy drives two SO-101 arms from their two wrist cameras: trained i
 
 | # | Task | Env | Status |
 |---|---|---|---|
-| 1 | Handover: one arm picks a 25 × 25 × 60 mm red bar, hands it to the other in mid-air, which puts it in the bin. Either arm may pick; neither can reach both bar and bin | `SO101HandoverBar-v1` | training: the carry alone reaches the bin (B008, B009); the whole task not yet (B010, B011; B012 running) |
+| 1 | Handover: one arm picks a 25 × 25 × 60 mm red bar, hands it to the other in mid-air, which puts it in the bin. Either arm may pick; neither can reach both bar and bin | `SO101HandoverBar-v1` | the whole task reaches the bin by chaining two trained policies (B013: up to 28% in the bin); not yet as one policy (B010-B012) |
 | 2 | Insertion in mid-air: one arm picks a socket, the other a peg; insert until seated (as ALOHA's Bimanual Insertion). Clearance to decide: 5 mm is below one policy pixel ([GUIDE §6](GUIDE.md#6-task-2-insertion-decide-these-first)) | — | next (Parv); series `I001…` |
 | 3 | Hold and open: one arm holds a hinged box, the other lifts the lid past 60° | — | draft |
 
@@ -36,7 +36,8 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | [B009](experiments/B009-lehome-top-camera.md) | Does the top camera placed as on Ilia's rig work as well on the carry? | done: yes, in bin 94% (90 cm camera: 88%); clean finishes similar (35% at the end) |
 | [B010](experiments/B010-full-task-v2.md) | Does the whole task learn with reward v2, from wrist cameras or with a top camera? | done: the handover stalls at γ 0.97 (3M: wrist 29 and 53, top 14 of 256), so the carry is barely reached (2 of 768) |
 | [B011](experiments/B011-full-task-gamma-090.md) | Is γ 0.97 what stalls the handover in the whole task? | seed 1: yes, 193 handovers (γ 0.97: 29) and 101 carries, but the carry stalls ~31 cm from the bin (0 in it); seed 2 queued after B012 |
-| [B012](experiments/B012-v3-carry-practice.md) | Does the whole task reach the bin with reward v3 and carry practice? | running: preflight 17 of 17, A seed 1 training |
+| [B012](experiments/B012-v3-carry-practice.md) | Does the whole task reach the bin with reward v3 and carry practice? | stopped after A seed 1: 8 handovers of 256 (v3's grip paid away from the handover point too); B runs not done |
+| [B013](experiments/B013-chain-skills.md) | Chain the learned handover and carry policies: does the bar reach the bin? | done: yes with the top-camera carry, 71 of 256 in the bin (success at the end up to 38); wrist-only 0 and 21 |
 
 ## Story so far
 1. **B001.** The layout works; scripted grasps don't, so learning has to find the grasp.
@@ -51,6 +52,8 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 10. **B009.** The top camera placed as on Ilia's rig works on the carry alone: in the bin 94%.
 11. **B010.** The whole task from scratch, v2 at γ 0.97: the handover stalls (29 and 53 of 256 at 3M; B003: 128 and 88), with either camera, so the carry is barely reached.
 12. **B011.** Only γ changed, to 0.9: the handover is back (193) and the release (101 carries), but the carries stall ~31 cm from the bin. The handover needs 0.9, the carry's finish wants 0.97 (B008). B012 removes the conflict: a handover step that clearly pays (reward v3, [reward-design](reward-design.md) §7) at 0.97, plus 25% of training episodes starting mid-carry.
+13. **B012.** v3 plus carry practice at γ 0.97: 8 handovers. v3 paid gripping anywhere a full point over waiting at the handover point, a shortcut the reward probe never scored. Stopped after one seed.
+14. **B013.** Stop asking one run to learn everything: chain the policies that work. B011's handover, then a carry policy from B008/B009. With the top camera, 71 of 256 bars in the bin, the first from the whole task. Limits: 40% of episodes reach a carry, and the carry policies lose ground on another policy's handovers. Next: carry starts from the handover policy itself, the calibrated top camera, the real rig.
 
 ## Rules
 - Each experiment has a protocol written before it runs: question, predictions, method, decision rule. Changes after that are dated amendments. Results, including negative ones, go in the same file with the command and the commit.

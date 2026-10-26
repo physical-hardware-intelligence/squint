@@ -1,6 +1,6 @@
 # B012: Does the whole task reach the bin with reward v3 and carry practice?
 
-**Status:** running. Protocol written 2026-10-25 before the runs; preflight 17 of 17 (21:31, tree at `7ff1f57`); A s1 started 21:38.
+**Status:** stopped 2026-10-25 22:30 after A seed 1, which failed (8 handovers of 256). B s1, A s2 and B s2 not run: chaining the learned skills instead ([B013](B013-chain-skills.md)). Which of the two changes caused the failure is not separated.
 
 ## Question
 B010/B011: at γ 0.97 the handover stalls (29 handovers); at γ 0.9 it works (193) but the carry stalls (31 cm from the bin, 0 in it). With a handover step that pays a full point (v3) and a quarter of training episodes starting mid-carry, does the bar reach the bin at γ 0.97?
@@ -34,4 +34,20 @@ Both: wrist cameras, 512 envs, 3M steps, evaluation every 250k on normal starts 
 - 2 holds: the corrected, calibrated top camera (after Monday), then the real rig.
 
 ## Results
-_Not run._
+A seed 1 run 2026-10-25 21:38-22:30, tree at `7ff1f57`, preflight 17 of 17: `python train_squint.py --exp_name=b012_A_s1 --env_id=SO101HandoverBarV3-v1 --seed=1 --num_envs=512 --total_timesteps=3000000 --eval_freq=250000 --env_background_level 0 50 --env_background_tint 6 --gamma=0.97 --v_min=-25 --v_max=35 --train_env_kwargs={"carry_start_fraction":0.25}`. Raw: `experiments/bimanual/out/b012_counts.txt`, `stages_b012_A_s1_*.json`.
+
+| 256 episodes (seeds 7 + 8) | A s1 at 1.5M | A s1 at 3M | B010 wrist s1 at 3M (v2) |
+|---|---|---|---|
+| picker grasps | 192 | 244 | |
+| best stage reached: bar at the handover point | 62 | 183 | |
+| receiver within 3 cm of the bar | 105 | 22 | |
+| handovers | 3 | **8** | 29 |
+| carries, in the bin | 0, 0 | 0, 0 | 2, 0 |
+| robot touches the table | 111 | 76 | |
+| arms touch | 87 | 78 | |
+
+At 1.5M the picker mostly held the bar low, near the table, and the receiver gripped it there (no handover: the bar under 2 cm up or the picker not squeezing). By 3M the picker brings the bar to the handover point (183), but the receiver stays back (median closest 6.3 and 6.8 cm).
+
+**Predictions.** 1 fails (8, not 70). 2 fails (0 in the bin). 3 not tested (no B run).
+
+**What v3 missed (found after the run).** Stage 4 (both hold) pays wherever the bar is, not only at the handover point. That was so in v2 too, but v3 made gripping anywhere worth a full point more than the best wait at the handover point (6.56 vs 5.46; v2: 6.11 vs 5.95). `reward_probe_handover.py` scored only the intended path, not that shortcut. The carry practice may also confuse roles: the policy sees neither which arm picked nor whether the handover happened, and in a quarter of its training episodes an arm holding the bar should carry it to the bin. B s1 would have told the two apart; it was not run.
