@@ -1,6 +1,6 @@
 # B012: Does the whole task reach the bin with reward v3 and carry practice?
 
-**Status:** protocol written 2026-10-25, before the runs.
+**Status:** running. Protocol written 2026-10-25 before the runs; preflight 17 of 17 (21:31, tree at `7ff1f57`); A s1 started 21:38.
 
 ## Question
 B010/B011: at γ 0.97 the handover stalls (29 handovers); at γ 0.9 it works (193) but the carry stalls (31 cm from the bin, 0 in it). With a handover step that pays a full point (v3) and a quarter of training episodes starting mid-carry, does the bar reach the bin at γ 0.97?

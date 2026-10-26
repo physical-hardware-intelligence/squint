@@ -15,7 +15,7 @@ One Squint policy drives two SO-101 arms from their two wrist cameras: trained i
 
 | # | Task | Env | Status |
 |---|---|---|---|
-| 1 | Handover: one arm picks a 25 × 25 × 60 mm red bar, hands it to the other in mid-air, which puts it in the bin. Either arm may pick; neither can reach both bar and bin | `SO101HandoverBar-v1` | training: grasp, handover and release learned; nothing in the bin yet (B001-B004) |
+| 1 | Handover: one arm picks a 25 × 25 × 60 mm red bar, hands it to the other in mid-air, which puts it in the bin. Either arm may pick; neither can reach both bar and bin | `SO101HandoverBar-v1` | training: the carry alone reaches the bin (B008, B009); the whole task not yet (B010, B011; B012 running) |
 | 2 | Insertion in mid-air: one arm picks a socket, the other a peg; insert until seated (as ALOHA's Bimanual Insertion). Clearance to decide: 5 mm is below one policy pixel ([GUIDE §6](GUIDE.md#6-task-2-insertion-decide-these-first)) | — | next (Parv); series `I001…` |
 | 3 | Hold and open: one arm holds a hinged box, the other lifts the lid past 60° | — | draft |
 
@@ -34,9 +34,9 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | [B007](experiments/B007-first-frame-memory.md) | Does remembering the first frame (bin in view) get the bar to the bin? | untested: neither memory seed learned the handover (6, 0 of 256); B003 seed 2 did (88). Every run with an extra input has failed at the handover |
 | [B008](experiments/B008-carry-alone.md) | Trained on the carry alone: do reward dips, horizon or seeing the bin decide it? | done: reward v2 is the fix (in bin 87% vs v1 17%); top camera 90% (= sim-only bin position); wrist-only 39%; γ no consistent effect; memory hurts |
 | [B009](experiments/B009-lehome-top-camera.md) | Does the top camera placed as on Ilia's rig work as well on the carry? | done: yes, in bin 94% (90 cm camera: 88%); clean finishes similar (35% at the end) |
-| [B010](experiments/B010-full-task-v2.md) | Does the whole task learn with reward v2, from wrist cameras or with a top camera? | seed 1: handover stalls at γ 0.97 (wrist 29, top 14 of 256); seed 2 running |
-| [B011](experiments/B011-full-task-gamma-090.md) | Is γ 0.97 what stalls the handover in the whole task? | seed 1: yes, 193 handovers (γ 0.97: 29), but the carry stalls (0 in bin); seed 2 queued |
-| [B012](experiments/B012-v3-carry-practice.md) | Does the whole task reach the bin with reward v3 and carry practice? | protocol written |
+| [B010](experiments/B010-full-task-v2.md) | Does the whole task learn with reward v2, from wrist cameras or with a top camera? | done: the handover stalls at γ 0.97 (3M: wrist 29 and 53, top 14 of 256), so the carry is barely reached (2 of 768) |
+| [B011](experiments/B011-full-task-gamma-090.md) | Is γ 0.97 what stalls the handover in the whole task? | seed 1: yes, 193 handovers (γ 0.97: 29) and 101 carries, but the carry stalls ~31 cm from the bin (0 in it); seed 2 queued after B012 |
+| [B012](experiments/B012-v3-carry-practice.md) | Does the whole task reach the bin with reward v3 and carry practice? | running: preflight 17 of 17, A seed 1 training |
 
 ## Story so far
 1. **B001.** The layout works; scripted grasps don't, so learning has to find the grasp.
@@ -47,7 +47,10 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 6. **B006.** Make the carry reward pull equally at every distance (0.25 per 10 cm): the bar gets only ~1.5 cm closer (21 cm), 0 in the bin. The reward is not the main stall; vision is the remaining suspect. Fixes: memory, a top camera, or a layout that keeps the bin in view.
 7. **B007.** First-frame memory (after fixing a stale reset frame): neither seed learned the handover, so memory never reached the carry. B003 seed 2 reproduces B003. Pattern: every run given an extra input (5) failed at the handover; every run without (4) carried. Next: test the carry on its own.
 8. **Reward review** ([reward-design](reward-design.md)): v1 has measured dips after the handover (release, rim, drop, final let-go), and γ 0.9 sees about 1 s ahead. A blind upright placement lands in the bin in 62% of layouts, so seeing the bin is not the main blocker. Reward v2 removes the dips.
-9. **B008.** The carry trained alone, from saved starts: with v2 the bar goes in the bin (87% with the bin position given; v1: 17%). A top camera gets 90%, wrist cameras alone 39%. γ 0.9 vs 0.97: no consistent difference. First successes of the project.
+9. **B008.** The carry trained alone, from saved starts: with v2 the bar goes in the bin (87% with the bin position given; v1: 17%). A top camera gets 90%, wrist cameras alone 39%. γ: no consistent effect on getting it in, but 0.97 holds the finish better (success at the end 46% vs 27%). First successes of the project.
+10. **B009.** The top camera placed as on Ilia's rig works on the carry alone: in the bin 94%.
+11. **B010.** The whole task from scratch, v2 at γ 0.97: the handover stalls (29 and 53 of 256 at 3M; B003: 128 and 88), with either camera, so the carry is barely reached.
+12. **B011.** Only γ changed, to 0.9: the handover is back (193) and the release (101 carries), but the carries stall ~31 cm from the bin. The handover needs 0.9, the carry's finish wants 0.97 (B008). B012 removes the conflict: a handover step that clearly pays (reward v3, [reward-design](reward-design.md) §7) at 0.97, plus 25% of training episodes starting mid-carry.
 
 ## Rules
 - Each experiment has a protocol written before it runs: question, predictions, method, decision rule. Changes after that are dated amendments. Results, including negative ones, go in the same file with the command and the commit.

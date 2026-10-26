@@ -1,0 +1,36 @@
+# start 2026-10-25 16:41:35 commit 06193d467b059b2f7d984a73fae6139c45acf3f3
+# B008 recount done 2026-10-25 16:54:17
+preflight: 24 of 24 passed
+b009_top_lehome_s1 500k seed 7 handover 0 carry 127 bin 115 success 84 | at end: bin 103 success 47 | start 26.5 closest 3.6
+b009_top_lehome_s1 500k seed 8 handover 0 carry 128 bin 118 success 85 | at end: bin 108 success 49 | start 26.0 closest 3.9
+EXIT 0
+b009_top_lehome_s1 1M seed 7 handover 0 carry 128 bin 120 success 52 | at end: bin 105 success 21 | start 26.5 closest 4.4
+b009_top_lehome_s1 1M seed 8 handover 0 carry 128 bin 119 success 64 | at end: bin 102 success 29 | start 26.1 closest 4.4
+b009_top_lehome_s2 500k seed 7 handover 0 carry 128 bin 107 success 53 | at end: bin 93 success 29 | start 26.6 closest 3.1
+b009_top_lehome_s2 500k seed 8 handover 0 carry 128 bin 112 success 61 | at end: bin 98 success 39 | start 26.2 closest 3.0
+EXIT 0
+b009_top_lehome_s2 1M seed 7 handover 0 carry 128 bin 122 success 96 | at end: bin 106 success 61 | start 26.4 closest 3.8
+b009_top_lehome_s2 1M seed 8 handover 0 carry 128 bin 120 success 102 | at end: bin 112 success 67 | start 26.2 closest 4.0
+b010_wrist_s1 1.5M seed 7 handover 1 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+b010_wrist_s1 1.5M seed 8 handover 2 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+EXIT 0
+b010_wrist_s1 3M seed 7 handover 13 carry 1 bin 0 success 0 | at end: bin 0 success 0 | start 28.5 closest 28.0
+b010_wrist_s1 3M seed 8 handover 16 carry 1 bin 0 success 0 | at end: bin 0 success 0 | start 25.2 closest 23.1
+b010_top_s1 1.5M seed 7 handover 8 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+b010_top_s1 1.5M seed 8 handover 5 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+EXIT 0
+# reorder 2026-10-25 19:41:41: B009/B010 queue stopped after b010_top_s1 training; B011 s1 moved ahead of B010 seed 2
+b010_top_s1 3M seed 7 handover 6 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+b010_top_s1 3M seed 8 handover 8 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+B011 preflight: 8 of 8 passed
+b011_wrist_s1 1.5M seed 7 handover 57 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+b011_wrist_s1 1.5M seed 8 handover 52 carry 1 bin 0 success 0 | at end: bin 0 success 0 | start 26.3 closest 25.7
+EXIT 0
+b011_wrist_s1 3M seed 7 handover 99 carry 51 bin 0 success 0 | at end: bin 0 success 0 | start 32.1 closest 30.8
+b011_wrist_s1 3M seed 8 handover 94 carry 50 bin 0 success 0 | at end: bin 0 success 0 | start 32.8 closest 31.6
+b010_wrist_s2 1.5M seed 7 handover 4 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+b010_wrist_s2 1.5M seed 8 handover 1 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+EXIT 0
+# handover to the B012 queue 2026-10-25 21:30:01: old queue stopped after b010_wrist_s2 training; B012 next, then B011 seed 2; B010 top seed 2 dropped
+b010_wrist_s2 3M seed 7 handover 30 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
+b010_wrist_s2 3M seed 8 handover 23 carry 0 bin 0 success 0 | at end: bin 0 success 0 | start None closest None
