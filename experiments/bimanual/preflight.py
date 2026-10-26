@@ -75,6 +75,12 @@ def main():
             got = re.search(rf"\b{key}=([-\d.e]+)", text)
             record(f"{env_id}: {key} = {want}", bool(got) and abs(float(got.group(1)) - want) < 1e-9,
                    f"trainer printed {got.group(1) if got else 'nothing'}")
+        m = re.search(r"--train_env_kwargs[= ](\S+)", train_args)
+        if m:  # settings for the training env only must reach the trainer as given
+            want = m.group(1).strip("'\"")
+            got = re.search(r"train_env_kwargs=('[^']*'|None)", text)
+            record(f"{env_id}: train_env_kwargs = {want}", f"train_env_kwargs='{want}'" in text,
+                   f"trainer printed {got.group(1) if got else 'nothing'}")
         ckpt = ROOT / "runs" / name / "ckpt.pt"
         record(f"{env_id}: checkpoint saved", ckpt.exists())
         # 3. the counter loads it on the same env
