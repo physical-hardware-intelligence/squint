@@ -63,6 +63,13 @@ first = torch.where(did, let_go.float().argmax(0), torch.full((n,), T - 1, devic
 after = torch.arange(T, device=dev)[:, None] >= first[None]
 fell = (after & ~R["in_hole"]).any(0) & did  # left the hole at any step after the release
 at = lambda x: torch.where(did, x.gather(0, first[None]).squeeze(0), nan)  # noqa: E731  value at the release step
+# WHY: I024c 1.75M let go of 2 pegs 48 mm deep with the mouth 15-31 deg up and both fell out, where the probe (socket
+# held rigidly, nothing touching the peg) keeps every one; read what differs at the step the peg leaves the hole
+out_t = torch.where(fell, (after & ~R["in_hole"]).float().argmax(0), torch.full((n,), T - 1, device=dev))
+steps = torch.arange(T, device=dev)[:, None]
+before_out = (steps >= (out_t - 10).clamp(min=0)[None]) & (steps < out_t[None]) & after
+touched = (~R["released"] & before_out).any(0)  # jaws, wrist or forearm on the peg in the 10 steps before
+at_out = lambda x: torch.where(fell, x.gather(0, out_t[None]).squeeze(0), nan)  # noqa: E731  value when it left
 
 
 def q(x):
@@ -85,6 +92,11 @@ out = dict(
     depth_at_release_mm=q(at(axial) * 1000),
     pitch_at_release_deg=q(at(pitch)),
     retreat_at_end_cm=q(torch.where(did, retreat[-1] * 100, nan)),
+    fell_touched_by_peg_arm_10_steps_before=int((fell & touched).sum()),
+    fell_socket_not_held_up=int((fell & ~R["socket_up"].gather(0, out_t[None]).squeeze(0)).sum()),
+    fell_steps_after_release=q(torch.where(fell, (out_t - first).float(), nan)),
+    pitch_when_fell_deg=q(at_out(pitch)),
+    retreat_when_fell_cm=q(at_out(retreat) * 100),
 )
 print(json.dumps(out, indent=1))
 path = Path(args.out) if args.out else (Path(__file__).parent / "out" /
