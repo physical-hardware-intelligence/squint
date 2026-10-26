@@ -16,6 +16,7 @@ import math
 import random
 import time
 import glob
+import json
 from typing import Optional
 
 from mani_skill.utils import gym_utils
@@ -93,6 +94,9 @@ class Args:
     e.g. 0 50. None = upstream's fixed black overlay. Needs env_domain_randomization."""
     env_background_tint: float = 0.0
     """Phi: max per-channel offset (0-255) on top of the grey level, e.g. 6."""
+    train_env_kwargs: Optional[str] = None
+    """Phi: JSON object of extra keyword arguments for the training env only, e.g. '{"carry_start_fraction": 0.25}';
+    evaluation envs get none, so evaluation measures the task as given."""
     """adds domain randomization flag if env supports it"""
     num_envs: int = 1024
     """the number of parallel environments"""
@@ -603,6 +607,8 @@ if __name__ == "__main__":
         env_kwargs["domain_randomization_config"] = bg_cfg
         eval_env_kwargs["domain_randomization_config"] = dict(bg_cfg)
 
+    if args.train_env_kwargs:
+        env_kwargs.update(json.loads(args.train_env_kwargs))  # after the eval kwargs were copied: training env only
     envs = gym.make(args.env_id, num_envs=args.num_envs if not args.evaluate else 1,
                     reconfiguration_freq=args.reconfiguration_freq, **env_kwargs)
     eval_envs = gym.make(args.env_id, num_envs=args.num_eval_envs,

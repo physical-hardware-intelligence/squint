@@ -75,9 +75,30 @@ Rule: on the intended path every state scores at least the one before. Milestone
 
 Code: `Handover._reward_after_handover_v2` (`envs/handover.py`), `REWARD_VERSION = 2`; full task `SO101HandoverBarV2-v1`. v1 is unchanged for comparison. `check_reward.py`: 18 of 18 on both.
 
-## 7. Known, not changed yet
+## 7. Reward v3: the handover step (B012)
 
-- **Arms touching at the handover:** the check includes both grippers' jaws, which sit about 3.6 cm apart on the bar during a handover; −2 can put a completed handover (≈ 4.3) below hovering in stage 3 (≈ 5.9). Measure how often it fires on handovers before changing it.
+B010/B011 found the handover itself stalls at γ 0.97: closing the grip paid +0.16 over hovering (the picker's jaws are 11.5% open while it holds the bar, measured), a jaw-to-jaw touch cost −2, and a nudge past 5 cm dropped the score by 2.6. v3 = v2 plus three changes before and during the handover (`reward_probe_handover.py`):
+
+| Step | v2 | v3 |
+|---|---|---|
+| receiver 20 cm away | 4.48 | 4.36 |
+| receiver at the bar, hovering | 5.95 | 5.46 |
+| receiver grips: both hold | 6.11 | 6.56 |
+| both hold, jaws touch | 4.11 | 6.56 |
+| both hold, wrists or forearms touch | 4.11 | 4.56 |
+| hovering, bar nudged 7 cm | 3.33 | 5.46 |
+| picker letting go, jaws touch | 5.71 | 7.71 |
+| picker clear | 8.71 | 8.71 |
+
+- Grip: stage 3 tops out at 5.5 (4 + 1.5 × reach), stage 4 starts at 6.5 (+ 0.5 × picker opening).
+- No 5 cm cliff: once the bar has reached the handover point in the picker's grip (latched), stage 3 holds within 10 cm.
+- Jaw contact: no penalty for gripper-to-gripper contact while the picker is still on the bar at the handover point; wrist and forearm contact always −2.
+
+Code: `REWARD_VERSION = 3`, env `SO101HandoverBarV3-v1`. v1 and v2 are unchanged.
+
+## 8. Known, not changed yet
+
+- **Arms touching at the handover:** handled in v3 (§7).
 - **The receiver gets no signal before stage 3:** it wanders (the "visit the bin first" motion seen in the videos). A small term for waiting near the handover point would fix it; left out so that v2 changes only what happens after the handover.
 
 B008 tests v2 and γ on the carry alone ([B008](experiments/B008-carry-alone.md)).

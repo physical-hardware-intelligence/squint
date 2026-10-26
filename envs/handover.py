@@ -32,6 +32,7 @@ from .robot.so101 import SO101
 
 PAN_AXIS_X = 0.0388  # the pan axis sits 3.88 cm in front of the base origin (so101.urdf L439)
 CONTACT_LINKS = ("gripper_link", "moving_jaw_so101_v1_link", "wrist_link", "lower_arm_link")  # checked for arm-arm hits
+JAW_LINKS = ("gripper_link", "moving_jaw_so101_v1_link")  # reward v3: jaw-to-jaw contact is part of a handover
 
 
 @dataclass
@@ -80,7 +81,8 @@ class Handover(BimanualWristCameraEnv):
     CARRY_DISTANCE_SHAPE = "tanh"
     CARRY_LINEAR_RANGE = 0.40
     # Reward version. 1: B001-B007. 2 (B008): the same up to the handover; after it, scores follow the bar's progress
-    # instead of contact flags, so the intended path never dips (see docs/bimanual/reward-design.md)
+    # instead of contact flags, so the intended path never dips. 3 (B012): v2, plus a handover step that pays a full
+    # point, no 5 cm cliff, and no penalty for jaw-to-jaw contact during the handover (see docs/bimanual/reward-design.md)
     REWARD_VERSION = 1
 
     def __init__(
@@ -225,6 +227,8 @@ class Handover(BimanualWristCameraEnv):
         # Per-env task state: which arm picks (0 left, 1 right), and whether the mid-air handover has happened
         self.picker = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
         self.handed_over = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        # Reward v3: the bar has reached the handover point in the picker's grip this episode (latched)
+        self.reached_handover = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
 
         goal_builder = self.scene.create_actor_builder()
         goal_builder.add_sphere_visual(radius=0.01, material=sapien.render.RenderMaterial(base_color=[0, 1, 0, 1]))
@@ -262,6 +266,7 @@ class Handover(BimanualWristCameraEnv):
             picker = torch.randint(0, 2, (b,))
             self.picker[env_idx] = picker
             self.handed_over[env_idx] = False
+            self.reached_handover[env_idx] = False
             outward = torch.where(picker == 0, 1.0, -1.0)
             picker_axis = torch.where((picker == 0)[:, None], pan_axes[0], pan_axes[1])
             receiver_axis = torch.where((picker == 0)[:, None], pan_axes[1], pan_axes[0])
@@ -325,15 +330,27 @@ class Handover(BimanualWristCameraEnv):
         """The bar's long axis in the world frame."""
         return self.bar.pose.to_transformation_matrix()[..., :3, 0]
 
-    def _arms_touching(self) -> torch.Tensor:
-        """True where any of the two arms' gripper, jaw, wrist or forearm links touch each other."""
+    def _arm_contacts(self):
+        """Contacts between the two arms over the same 16 link pairs as before, split: (jaws, body). jaws: a gripper link or
+        moving jaw of one arm against a gripper link or moving jaw of the other (a handover brings them ~3.6 cm apart);
+        body: any pair that involves a wrist or forearm link."""
         left, right = self.arms
-        touching = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        jaws = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+        body = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
         for a in CONTACT_LINKS:
             for c in CONTACT_LINKS:
                 forces = self.scene.get_pairwise_contact_forces(left.robot.links_map[a], right.robot.links_map[c])
-                touching |= torch.linalg.norm(forces, axis=-1) >= 1e-2
-        return touching
+                hit = torch.linalg.norm(forces, axis=-1) >= 1e-2
+                if a in JAW_LINKS and c in JAW_LINKS:
+                    jaws |= hit
+                else:
+                    body |= hit
+        return jaws, body
+
+    def _arms_touching(self) -> torch.Tensor:
+        """True where any of the two arms' gripper, jaw, wrist or forearm links touch each other."""
+        jaws, body = self._arm_contacts()
+        return jaws | body
 
     def evaluate(self):
         left, right = self.arms
@@ -367,7 +384,9 @@ class Handover(BimanualWristCameraEnv):
         bar_in_bin = inside & (bar_low < self.bin_thickness + 0.01)
         bar_static = torch.linalg.norm(self.bar.linear_velocity, axis=-1) <= 2e-2
 
-        arms_touching = self._arms_touching()
+        arms_jaws, arms_body = self._arm_contacts()
+        arms_touching = arms_jaws | arms_body
+        self.reached_handover |= picker_grasp & (torch.linalg.norm(bar_p - self.handover_point, axis=1) < 0.05)
         success = (
             self.handed_over & bar_in_bin & bar_static
             & ~touching_bar[0] & ~touching_bar[1] & ~touching_bin[0] & ~touching_bin[1]
@@ -385,6 +404,9 @@ class Handover(BimanualWristCameraEnv):
             "bar_in_bin": bar_in_bin,
             "bar_static": bar_static,
             "arms_touching": arms_touching,
+            "arms_touching_jaws": arms_jaws,
+            "arms_touching_body": arms_body,
+            "reached_handover": self.reached_handover.clone(),
             "robot_touching_table": touching_table[0] | touching_table[1],
             "robot_touching_bin": touching_bin[0] | touching_bin[1],
             "picker_is_left": self.picker == 0,
@@ -419,15 +441,24 @@ class Handover(BimanualWristCameraEnv):
         carry = 2 * (1 - torch.tanh(5 * bar_to_handover))
         reward = torch.where(info["picker_grasp"], 2 + carry, reward)
 
-        # Stage 3, 4-6: at the handover point, the receiver reaches the free end
-        at_handover = info["picker_grasp"] & (bar_to_handover < 0.05)
-        receiver_reach = 2 * (1 - torch.tanh(5 * torch.linalg.norm(tcp_r - receiver_end, axis=1)))
-        reward = torch.where(at_handover, 4 + receiver_reach, reward)
+        receiver_gap = torch.linalg.norm(tcp_r - receiver_end, axis=1)
+        if self.REWARD_VERSION == 3:
+            # v3 stage 3, 4-5.5: the bar has reached the handover point (latched) and is still within 10 cm of it, so
+            # a nudge from the receiver's approach does not drop the score to stage 2 (v1/v2: a 5 cm cliff)
+            at_handover = info["picker_grasp"] & info["reached_handover"] & (bar_to_handover < 0.10)
+            reward = torch.where(at_handover, 4 + 1.5 * (1 - torch.tanh(5 * receiver_gap)), reward)
+            # v3 stage 4, 6.5-7: both hold; gripping pays a full point over the best hover (v1/v2: +0.1)
+            reward = torch.where(info["both_hold"], 6.5 + 0.5 * picker_open, reward)
+        else:
+            # Stage 3, 4-6: at the handover point, the receiver reaches the free end
+            at_handover = info["picker_grasp"] & (bar_to_handover < 0.05)
+            receiver_reach = 2 * (1 - torch.tanh(5 * receiver_gap))
+            reward = torch.where(at_handover, 4 + receiver_reach, reward)
 
-        # Stage 4, 6-7: both hold the lifted bar; the picker is paid to let go
-        reward = torch.where(info["both_hold"], 6 + picker_open, reward)
+            # Stage 4, 6-7: both hold the lifted bar; the picker is paid to let go
+            reward = torch.where(info["both_hold"], 6 + picker_open, reward)
 
-        if self.REWARD_VERSION == 2:
+        if self.REWARD_VERSION in (2, 3):
             return self._reward_after_handover_v2(reward, info, bar_p, axis, receiver_open)
 
         # Stage 5, 8-10: after a mid-air handover, the receiver alone carries the bar over the bin. Starts a full
@@ -507,7 +538,13 @@ class Handover(BimanualWristCameraEnv):
         # success still requires letting go of everything
         reward -= 6 * info["robot_touching_table"].float()
         reward -= 3 * (info["robot_touching_bin"] & ~in_bin).float()
-        reward -= 2 * info["arms_touching"].float()
+        if self.REWARD_VERSION == 3:
+            # v3: jaw-to-jaw contact is not penalised while the picker is still on the bar at the handover point (the
+            # approach, both holding, the release); wrist and forearm contact always is
+            handover_phase = info["reached_handover"] & (info["picker_grasp"] | info["picker_touch_bar"])
+            reward -= 2 * (info["arms_touching_body"] | (info["arms_touching_jaws"] & ~handover_phase)).float()
+        else:
+            reward -= 2 * info["arms_touching"].float()
         reward -= 1 * (~info["bar_lifted"] & ~self.handed_over).float()
         return reward
 

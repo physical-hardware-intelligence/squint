@@ -30,6 +30,7 @@ CARRY_EPISODE_STEPS = 60  # 6 s: B003's carries started about 30 cm from the bin
 class CarryStartMixin:
     REWARD_VERSION = 2  # B008 trains the carry with reward v2; one condition keeps v1 for comparison
     CARRY_BANK = os.environ.get("SQUINT_CARRY_BANK", "runs/carry_starts.pt")
+    CARRY_START_FRACTION = 1.0  # share of episodes that start from a saved carry; an instance's carry_start_fraction wins
     GEOMETRY_KEYS = ("bar_half_widths", "bar_half_lengths", "bin_half_sizes_x", "bin_half_sizes_y", "bin_half_sizes_z")
 
     def _load_carry_bank(self):
@@ -60,11 +61,17 @@ class CarryStartMixin:
 
     def _initialize_episode(self, env_idx: torch.Tensor, options: dict):
         super()._initialize_episode(env_idx, options)
+        fraction = getattr(self, "carry_start_fraction", self.CARRY_START_FRACTION)
+        if fraction <= 0:
+            return  # normal starts only: no bank is loaded (evaluation and counting envs)
         if not hasattr(self, "_bank"):
             self._load_carry_bank()
         if not getattr(self, "_geometry_ok", False):
             self._check_geometry()
         self._restored[env_idx] = False
+        reset_idx = env_idx
+        if fraction < 1:  # mixed: each env being reset starts from a saved carry with this probability
+            env_idx = env_idx[(torch.rand(len(env_idx)) < fraction).to(env_idx.device)]
         rows, envs = [], []
         for e in env_idx.tolist():
             candidates = self._bank_rows[e]
@@ -84,6 +91,7 @@ class CarryStartMixin:
         self.scene.set_sim_state(state, envs)
         self.picker[envs] = b["picker"][rows]
         self.handed_over[envs] = True
+        self.reached_handover[envs] = True
         # Per-episode draws made before the restore: give back the saved episode's background and gripper drive, so
         # the grip squeezes as it did and the kept first frame matches the current frames' background
         if self._background_colors is not None and "background" in b:
@@ -96,8 +104,8 @@ class CarryStartMixin:
                     joint._objs[e].set_drive_properties(stiff, damp, force_limit=100)
                     self._gripper_stiffness[a, e] = stiff
                     self._gripper_damping[a, e] = damp
-        goal = self.bin.pose.p[env_idx].clone()  # the goal marker follows the (restored) bin for every env being reset
-        goal[:, 2] = self.bin_thickness + self.bar_half_widths[env_idx]
+        goal = self.bin.pose.p[reset_idx].clone()  # the goal marker follows the (restored) bin for every env being reset
+        goal[:, 2] = self.bin_thickness + self.bar_half_widths[reset_idx]
         self.goal_site.set_pose(Pose.create_from_pq(goal))
         self._restored[envs] = True
         self._restored_rows[envs] = rows
@@ -106,6 +114,8 @@ class CarryStartMixin:
         """Controllers were reset to the restored joint angles; give them back their saved targets (the gripper's
         target sits inside the bar: that is what makes it squeeze). Restored envs also get their first frame back."""
         super()._after_reset_before_observe()
+        if not hasattr(self, "_restored"):
+            return  # normal starts only (carry_start_fraction 0): nothing was restored
         envs = torch.nonzero(self._restored)[:, 0]
         if len(envs) == 0:
             return
@@ -163,3 +173,16 @@ class HandoverCarryTopCamLeHome(CarryStartMixin, LeHomeTopCamera, Handover):
 @register_env("SO101HandoverCarryTopCamLeHome-v2", max_episode_steps=CARRY_EPISODE_STEPS)
 class HandoverCarryTopCamLeHomeV2(CarryStartMixin, LeHomeTopCamera, Handover):
     """The carry with the top camera as the organisers' real one: placed and rolled so its image matches theirs."""
+
+
+@register_env("SO101HandoverBarV3-v1", max_episode_steps=120)
+class HandoverBarV3(CarryStartMixin, Handover):
+    """B012: the whole task with reward v3 (`Handover.REWARD_VERSION`). With carry_start_fraction > 0 (training only, via
+    the trainer's --train_env_kwargs), that share of episodes starts from a saved carry, so the carry gets practice;
+    the default 0 gives normal starts, which every evaluation and count uses."""
+
+    REWARD_VERSION = 3
+
+    def __init__(self, *args, carry_start_fraction: float = 0.0, **kwargs):
+        self.carry_start_fraction = carry_start_fraction  # set before the parent's first reset
+        super().__init__(*args, **kwargs)

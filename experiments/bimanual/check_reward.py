@@ -97,7 +97,9 @@ check("bands rise in order", r1 < r2 < r4 < r5 < r6 < rs)
 check("a clean release pays at least a full point over both holding", r5 - 7 >= 1 - 1e-6, f"stage 5 {r5:.2f} vs stage 4 top 7")
 info = info_with(success=True, bar_in_bin=True, robot_touching_table=False, arms_touching=False, robot_touching_bin=False)
 check("normalized maximum = 1", abs(float(u.compute_normalized_dense_reward(None, None, info)[0]) - 1) < 1e-6)
-rp = reward(info_with(success=True, bar_in_bin=True, robot_touching_table=True, arms_touching=True, robot_touching_bin=False))
+# arms_touching_body too: reward v3 penalises wrist/forearm contact always (jaw-to-jaw contact only outside a handover)
+rp = reward(info_with(success=True, bar_in_bin=True, robot_touching_table=True, arms_touching=True, arms_touching_body=True,
+                      robot_touching_bin=False))
 check("penalties apply: table -6, arms -2", abs(rp - 8) < 1e-6, f"{rp:.2f}")
 
 # The carry's pull: reward gained for 10 cm closer to the goal, bar carried at the goal's height (informational)
