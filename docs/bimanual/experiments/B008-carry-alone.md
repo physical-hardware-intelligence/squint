@@ -61,6 +61,19 @@ Preflight 48 of 48 (`experiments/bimanual/out/b008_preflight.log`); all 12 runs 
 
 At 500k (in bin, seed 1 / seed 2): top 88 / 130, binstate 89 / 30, binstate γ 0.9 114 / 201, wrist 96 / 11, reward v1 1 / 0, memory 1 / 19. Every condition carries in nearly all episodes (≥ 254 of 256); the bar starts 26-27 cm from the bin.
 
+**Recount with end-of-episode outcomes** (2026-10-25 16:54, `stage_counts.py` with `at_end`, same checkpoints and counting seeds; raw `experiments/bimanual/out/b008_recount.txt`). "Ever" differs by a few episodes from the first count: counting noise.
+
+| Condition | In bin: ever → at end | Success: ever → at end | Success at end, seed 1 / seed 2 |
+|---|---|---|---|
+| binstate | 86% → 76% | 65% → 46% | 107 / 127 |
+| top camera (90 cm) | 88% → 79% | 67% → 40% | 92 / 111 |
+| binstate, γ 0.9 | 68% → 62% | 55% → 27% | 62 / 74 |
+| wrist | 39% → 34% | 30% → 15% | 46 / 33 |
+| binstate, reward v1 | 18% → 11% | 8% → 1% | 0 / 5 |
+| memory | 12% → 9% | 1% → 1% | 4 / 0 |
+
+The bar mostly stays in the bin; the clean finish does not (about half of momentary successes are undone by the last step: an arm moves or touches again). On success at the end, γ 0.97 beats 0.9 on both seeds (107 vs 62, 127 vs 74): the longer horizon does not change how often the bar gets in, but it helps hold the finish.
+
 **Predictions:**
 1. Held: binstate 223 and 220 in the bin (≥ 64 each).
 2. Held on both seeds: reward v1 0 and 87, below half of binstate's (111, 110). v1 is not always 0: seed 2 learned part of the carry. Over both seeds v2 puts 5× as many bars in the bin and 8× as many successes.

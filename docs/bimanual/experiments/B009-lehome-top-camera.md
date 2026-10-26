@@ -1,6 +1,6 @@
 # B009: Does the top camera placed as on Ilia's rig work as well on the carry?
 
-**Status:** protocol written 2026-10-25, before the runs.
+**Status:** done 2026-10-25 17:45. The LeHome placement works: in the bin 94% (ever) and 83% (at the end) over both seeds, against 88% and 79% for the 90 cm camera. B010 keeps it.
 
 ## Question
 B008's top camera was 90 cm above the table, looking straight down: in bin 90% on the carry. Ilia's rig (LeHome) has it lower, in front of the arms and tilted. Placed that way, is the carry as good?
@@ -24,4 +24,20 @@ In the bin at least 80% over both seeds (B008's 90 cm camera: 90%).
 - < 80%: read B010's top condition against this; rerun B010's top condition with the 90 cm camera, and look at what the slanted view hides (videos, `who_sees_what.py`).
 
 ## Results
-_Not run._
+Preflight 24 of 24 (with B010's two conditions; `experiments/bimanual/out/b009_b010_preflight.log`). Both runs exit 0, commit `06193d4`. Stage counts, 256 episodes per run (seeds 7 + 8); raw `experiments/bimanual/out/stages_b009_*.json`, `b009_counts.txt`.
+
+| At 1M | In bin: ever / at end | Success: ever / at end |
+|---|---|---|
+| seed 1 | 239 / 207 | 116 / 50 |
+| seed 2 | 242 / 218 | 198 / 128 |
+| both seeds | 94% / 83% | 61% / 35% |
+| B008, 90 cm camera (recount), both seeds | 88% / 79% | 67% / 40% |
+
+At 500k: seed 1 in bin 233 (at end 211), success 169 (at end 96); seed 2 in bin 219 (191), success 114 (68).
+
+**Prediction:** held, 94% in the bin (83% at the end).
+
+**Reading:** the camera placed as on Ilia's rig puts more bars in the bin than the 90 cm one; clean finishes are similar and seed-dependent. Seed 1 finished less often at 1M than at 500k (success at the end 96 → 50): the finish is not stable, as B008's recount found.
+
+**Decision (rule: ≥ 80% → B010's top condition uses this placement):** kept; B010 is running with it.
+
