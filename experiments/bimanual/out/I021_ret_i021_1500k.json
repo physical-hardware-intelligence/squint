@@ -1,0 +1,44 @@
+{
+ "checkpoint": "/scratch/patodia.pa/squint-bimanual/ckpts/i021_retain_warm/ckpt_1500160.pt",
+ "env_id": "SO101InsertPegRetain-v1",
+ "episodes": 256,
+ "seed": 8,
+ "steps": 150,
+ "reached": {
+  "socket_grasp": 256,
+  "peg_grasp": 246,
+  "both_lifted": 243,
+  "in_hole": 183,
+  "seated": 1,
+  "success": 0,
+  "arms_touching": 5,
+  "robot_touching_table": 145
+ },
+ "at_end": {
+  "socket_grasp": 229,
+  "peg_grasp": 212,
+  "both_lifted": 207,
+  "in_hole": 129,
+  "seated": 0,
+  "success": 0,
+  "arms_touching": 0,
+  "robot_touching_table": 1
+ },
+ "released_seated": 0,
+ "fell_out_after_release": 0,
+ "success_last_10_steps": 0,
+ "first_success_step": null,
+ "max_depth_mm": [
+  6.0,
+  17.0,
+  29.5
+ ],
+ "socket_pitch_deg_while_both_up": [
+  -4.5,
+  10.0,
+  16.5
+ ],
+ "depth_at_release_mm": null,
+ "pitch_at_release_deg": null,
+ "retreat_at_end_cm": null
+}

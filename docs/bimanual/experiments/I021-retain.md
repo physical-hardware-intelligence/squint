@@ -1,6 +1,6 @@
 # I021: Does a warm start from the held insertion learn to leave the peg in?
 
-**Status:** running. Protocol written 2026-10-25 ~22:45 PDT, before any result; both runs queued at 22:35. `insert_probe.py` 31 of 31 on the tree that runs (`experiments/bimanual/out/I021_insert_probe.txt`).
+**Status:** I021 results to 2.75M below (predictions 1-3 missed); I022 and I023 queued. Protocol written 2026-10-25 ~22:45 PDT, before any result; both runs queued at 22:35. `insert_probe.py` 31 of 31 on the tree that runs (`experiments/bimanual/out/I021_insert_probe.txt`).
 
 ## Question
 I001 inserts the peg while holding it (27% success at the end on `SO101InsertPeg-v1`, 7M) but never leaves it in: retained 0 of 256 on `SO101InsertPegRetain-v1`. Both earlier release rewards (v8, v9), warm-started from I001 or I014, lost the insertion itself within 500k ([I001-I020](I001-I020-insertion-dev.md)). Does the retain reward, with the critic relearned before the actor moves, keep the insertion and add the release?
@@ -44,4 +44,24 @@ both up 240, in hole 197, seated 11, released while seated 1, fell out 1, retain
 - 3 holds: the retained-peg checkpoint goes to the real-arm test.
 
 ## Results
-_Not run._
+
+### I021 (warm, I001's critic), diag every 250k, 256 episodes, seed 8 (`experiments/bimanual/out/I021_ret_*.json`)
+| Step | In hole | Seated | Retained at end | Max depth p10/50/90 mm |
+|---|---|---|---|---|
+| 250k (actor still held) | 193 | 14 | 0 | 10.9 / 25.3 / 41.6 |
+| 500k | 128 | 5 | 0 | 5.8 / 21.2 / 34.9 |
+| 750k | 144 | 1 | 0 | 3.3 / 16.8 / 29.9 |
+| 1M | 150 | 4 | 0 | 8.3 / 22.7 / 35.0 |
+| 1.5M | 183 | 1 | 0 | 6.0 / 17.0 / 29.5 |
+| 2M | 183 | 0 | 0 | 6.0 / 18.4 / 28.1 |
+| 2.5M | 182 | 1 | 0 | 4.1 / 17.4 / 29.5 |
+| 2.75M | 180 | 5 | 0 | 9.1 / 22.2 / 34.4 |
+
+Eval (16 envs) success 0 at every step to 2.75M. Prediction 1 missed (128 < 150 at 500k), 2 missed (seated ≤ 5 after 250k), 3 missed (0 retained). α stayed small (exp log α 0.0029 at the start, 0.0021 at 2.5M), so the drop is not added exploration noise.
+
+### Why the peg stops (`insert_stall.py`, `experiments/bimanual/out/I021_stall.txt`)
+At each episode's deepest step, both checkpoints show the same picture: the peg rides one side wall (lateral 4-5 mm of the 5 mm clearance, fit ≈ 0), contact with the socket is light (median 0.5-1.6 N) and sideways (share along the socket axis ≤ 0.03), and over the 10 steps before it the peg arm's TCP and the peg move in by the same amount (2.5M: 1.1-1.7 mm and 1.7-1.9 mm, median) with no slip along the peg (median ≤ 0.11 mm). Only pegs at 45-60 mm push on a face (share 0.91 at 250k: the floor). In-plane geometry agrees: a 22 mm peg in the 32 mm hole jams only where 22 cos θ + d sin θ > 32 mm, which allows any tilt below 20 mm depth and 32.6° at 25 mm; the stalled pegs are tilted 10-18° (median) at 10-30 mm.
+
+So the peg is not wedged and not slipping: the policy stops advancing it. Under the decision rule this is the "2 fails" branch, but not the rim jam it anticipated. The depth fell after the actor began learning (250k → 750k: median 25.3 → 16.8 mm).
+
+Inference, not tested: the retain reward's per-mm slope below 25 mm matches v1's (normalized 0.009 vs 0.010 per mm), but v1 also paid its full success (16 of 16) from 25 mm, a step the retain ladder does not have (14 of 18 at 25 mm). I022 (fresh critic) and I023 (from scratch) separate a warm-critic effect from the reward before any reward change.
