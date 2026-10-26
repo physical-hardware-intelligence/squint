@@ -1,0 +1,58 @@
+# b016_s3 start 2026-10-26 06:02:37 NVIDIA A100-SXM4-40GB
+NVIDIA A100-SXM4-40GB commit b4bf117ac659f0ea762b8d04b43b865a9c7701bf
+b016_s3 +1.5M seed 7 handover 69 carry 1 bin 0
+b016_s3 +1.5M release failures seed 7 both hold no carry 65 {'frozen_both_hold': 2, 'receiver_grips_picker_still_touching': 48, 'picker_alone_holds': 13, 'nobody_holds': 2}
+b016_s3 +1.5M chained with b014_top_s1 seed 7 handover 69 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b016_s3 +1.5M chained with b014_top_s2 seed 7 handover 67 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b016_s3 +1.5M seed 8 handover 69 carry 0 bin 0
+b016_s3 +1.5M release failures seed 8 both hold no carry 67 {'frozen_both_hold': 2, 'receiver_grips_picker_still_touching': 41, 'picker_alone_holds': 17, 'nobody_holds': 7}
+b016_s3 +1.5M chained with b014_top_s1 seed 8 handover 66 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b016_s3 +1.5M chained with b014_top_s2 seed 8 handover 65 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b016_s3 EXIT 139
+b016_s3 +3M seed 7 handover 56 carry 3 bin 0
+b016_s3 +3M release failures seed 7 both hold no carry 54 {'frozen_both_hold': 2, 'receiver_grips_picker_still_touching': 41, 'picker_alone_holds': 7, 'nobody_holds': 4}
+b016_s3 +3M chained with b014_top_s1 seed 7 handover 57 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b016_s3 +3M chained with b014_top_s2 seed 7 handover 59 switched 2 bin 0 success 0 | at end: bin 0 success 0
+b016_s3 +3M seed 8 handover 45 carry 0 bin 0
+b016_s3 +3M release failures seed 8 both hold no carry 45 {'frozen_both_hold': 2, 'receiver_grips_picker_still_touching': 32, 'picker_alone_holds': 9, 'nobody_holds': 2}
+b016_s3 +3M chained with b014_top_s1 seed 8 handover 44 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b016_s3 +3M chained with b014_top_s2 seed 8 handover 50 switched 1 bin 0 success 0 | at end: bin 0 success 0
+# b016_s3 done 2026-10-26 07:37:51
+# b016_s4 start 2026-10-26 11:31:22 NVIDIA A100-SXM4-80GB commit b4bf117ac659f0ea762b8d04b43b865a9c7701bf
+# b016_s5 start 2026-10-26 11:31:22 NVIDIA A100-SXM4-80GB commit b4bf117ac659f0ea762b8d04b43b865a9c7701bf
+b016_s5 +1.5M seed 7 handover 61 carry 3 bin 0
+b016_s4 +1.5M seed 7 handover 60 carry 3 bin 0
+b016_s5 +1.5M release failures seed 7 both hold no carry 55 {'frozen_both_hold': 0, 'receiver_grips_picker_still_touching': 42, 'picker_alone_holds': 7, 'nobody_holds': 6}
+b016_s4 +1.5M release failures seed 7 both hold no carry 53 {'frozen_both_hold': 1, 'receiver_grips_picker_still_touching': 42, 'picker_alone_holds': 9, 'nobody_holds': 1}
+b016_s5 +1.5M chained with b014_top_s1 seed 7 handover 57 switched 6 bin 3 success 2 | at end: bin 2 success 1
+b016_s4 +1.5M chained with b014_top_s1 seed 7 handover 61 switched 3 bin 1 success 1 | at end: bin 1 success 0
+b016_s5 +1.5M chained with b014_top_s2 seed 7 handover 57 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b016_s4 +1.5M chained with b014_top_s2 seed 7 handover 56 switched 2 bin 0 success 0 | at end: bin 0 success 0
+b016_s5 +1.5M seed 8 handover 52 carry 2 bin 0
+b016_s4 +1.5M seed 8 handover 54 carry 3 bin 0
+b016_s5 +1.5M release failures seed 8 both hold no carry 50 {'frozen_both_hold': 1, 'receiver_grips_picker_still_touching': 41, 'picker_alone_holds': 4, 'nobody_holds': 4}
+b016_s4 +1.5M release failures seed 8 both hold no carry 46 {'frozen_both_hold': 6, 'receiver_grips_picker_still_touching': 36, 'picker_alone_holds': 3, 'nobody_holds': 1}
+b016_s5 +1.5M chained with b014_top_s1 seed 8 handover 48 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b016_s4 +1.5M chained with b014_top_s1 seed 8 handover 51 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b016_s5 +1.5M chained with b014_top_s2 seed 8 handover 55 switched 2 bin 1 success 1 | at end: bin 1 success 1
+b016_s4 +1.5M chained with b014_top_s2 seed 8 handover 51 switched 3 bin 0 success 0 | at end: bin 0 success 0
+b016_s5 EXIT 139
+b016_s5 +3M seed 7 handover 64 carry 2 bin 0
+b016_s5 +3M release failures seed 7 both hold no carry 54 {'frozen_both_hold': 3, 'receiver_grips_picker_still_touching': 43, 'picker_alone_holds': 6, 'nobody_holds': 2}
+b016_s5 +3M chained with b014_top_s1 seed 7 handover 60 switched 2 bin 0 success 0 | at end: bin 0 success 0
+b016_s4 EXIT 139
+b016_s4 +3M seed 7 handover 53 carry 8 bin 0
+b016_s5 +3M chained with b014_top_s2 seed 7 handover 59 switched 4 bin 0 success 0 | at end: bin 0 success 0
+b016_s4 +3M release failures seed 7 both hold no carry 51 {'frozen_both_hold': 4, 'receiver_grips_picker_still_touching': 31, 'picker_alone_holds': 11, 'nobody_holds': 5}
+b016_s5 +3M seed 8 handover 61 carry 2 bin 0
+b016_s4 +3M chained with b014_top_s1 seed 7 handover 54 switched 6 bin 0 success 0 | at end: bin 0 success 0
+b016_s5 +3M release failures seed 8 both hold no carry 51 {'frozen_both_hold': 0, 'receiver_grips_picker_still_touching': 40, 'picker_alone_holds': 9, 'nobody_holds': 2}
+b016_s4 +3M chained with b014_top_s2 seed 7 handover 54 switched 5 bin 0 success 0 | at end: bin 0 success 0
+b016_s5 +3M chained with b014_top_s1 seed 8 handover 59 switched 3 bin 0 success 0 | at end: bin 0 success 0
+b016_s4 +3M seed 8 handover 47 carry 4 bin 0
+b016_s5 +3M chained with b014_top_s2 seed 8 handover 59 switched 2 bin 0 success 0 | at end: bin 0 success 0
+# b016_s5 done 2026-10-26 13:03:43
+b016_s4 +3M release failures seed 8 both hold no carry 36 {'frozen_both_hold': 1, 'receiver_grips_picker_still_touching': 26, 'picker_alone_holds': 3, 'nobody_holds': 6}
+b016_s4 +3M chained with b014_top_s1 seed 8 handover 46 switched 5 bin 0 success 0 | at end: bin 0 success 0
+b016_s4 +3M chained with b014_top_s2 seed 8 handover 50 switched 7 bin 0 success 0 | at end: bin 0 success 0
+# b016_s4 done 2026-10-26 13:06:13
