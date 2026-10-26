@@ -40,8 +40,8 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | [B013](experiments/B013-chain-skills.md) | Chain the learned handover and carry policies: does the bar reach the bin? | done: yes with the top-camera carry, 71 of 256 in the bin (success at the end up to 38); wrist-only 0 and 21 |
 | [B014](experiments/B014-carry-from-own-handovers.md) | Trained on the handover policy's own handovers, does the carry policy hold its rate when chained? | done: yes, 90-92% of carries in the bin; 99 of 256 end to end on both seeds |
 | [B015](experiments/B015-handover-longer.md) | Does more training lift the handover policy's carries, and the chain with them? | done: no, carries flat then lower (101, 104, 91); the release has plateaued under v2 |
-| [B016](experiments/B016-release-slope.md) | Does paying the picker's way off the bar (reward v4) raise the clean releases? | protocol written |
-| [B017](experiments/B017-carry-from-b016.md) | Carry policy retrained on B016's handovers: does the chain keep the gain? | protocol written |
+| [B016](experiments/B016-release-slope.md) | Does paying the picker's way off the bar (reward v4) raise the clean releases? | done: no, v4 collapsed the clean releases on all 5 seeds (carries 3-12; chained 0-1 in the bin) |
+| [B017](experiments/B017-carry-from-b016.md) | Carry policy retrained on B016's handovers: does the chain keep the gain? | not a valid test: B016 left 10 carry starts |
 
 ## Story so far
 1. **B001.** The layout works; scripted grasps don't, so learning has to find the grasp.
@@ -59,6 +59,8 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 13. **B012.** v3 plus carry practice at γ 0.97: 8 handovers. v3 paid gripping anywhere a full point over waiting at the handover point, a shortcut the reward probe never scored. Stopped after one seed.
 14. **B013.** Stop asking one run to learn everything: chain the policies that work. B011's handover, then a carry policy from B008/B009. With the top camera, 71 of 256 bars in the bin, the first from the whole task. Limits: 40% of episodes reach a carry, and the carry policies lose ground on another policy's handovers. Next: carry starts from the handover policy itself, the calibrated top camera, the real rig.
 15. **B014.** Carry starts saved from B011's own handovers: the retrained carry policy puts 90-92% of what it is handed in the bin; 99 of 256 end to end (39%). The handover policy is now the limit: 42% of episodes reach a carry.
+16. **B015.** 3M more steps of the handover policy with v2: carries flat, then lower (101, 104, 91). The failed releases mostly end with the picker's opened jaw still on the bar (79 of 99).
+17. **B016.** Reward v4 pays the picker's way off the bar centimetre by centimetre: the clean releases collapsed on all five seeds (carries 3-12), because v4 paid the release the policy already made less than v2 did. Best chain still B011 + B014: 99 of 256.
 
 ## Rules
 - Each experiment has a protocol written before it runs: question, predictions, method, decision rule. Changes after that are dated amendments. Results, including negative ones, go in the same file with the command and the commit.

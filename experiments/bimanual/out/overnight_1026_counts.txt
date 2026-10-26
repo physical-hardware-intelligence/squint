@@ -1,0 +1,50 @@
+# start 2026-10-26 02:27:16 commit 01b91064864a4ec4912fd8c9dcb467032a6cebfb
+B016 preflight: 8 of 8 passed
+b016_s1 +1.5M seed 7 handover 58 carry 1 bin 0
+b016_s1 +1.5M release failures seed 7 both hold no carry 55 {'frozen_both_hold': 4, 'receiver_grips_picker_still_touching': 43, 'picker_alone_holds': 5, 'nobody_holds': 3}
+b016_s1 +1.5M chained with b014_top_s1 seed 7 handover 60 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b016_s1 +1.5M chained with b014_top_s2 seed 7 handover 59 switched 1 bin 0 success 0 | at end: bin 0 success 0
+b016_s1 +1.5M seed 8 handover 51 carry 4 bin 0
+b016_s1 +1.5M release failures seed 8 both hold no carry 46 {'frozen_both_hold': 1, 'receiver_grips_picker_still_touching': 41, 'picker_alone_holds': 2, 'nobody_holds': 2}
+b016_s1 +1.5M chained with b014_top_s1 seed 8 handover 51 switched 3 bin 0 success 0 | at end: bin 0 success 0
+b016_s1 +1.5M chained with b014_top_s2 seed 8 handover 49 switched 2 bin 0 success 0 | at end: bin 0 success 0
+EXIT 0
+b016_s1 +3M seed 7 handover 54 carry 3 bin 0
+b016_s1 +3M release failures seed 7 both hold no carry 53 {'frozen_both_hold': 2, 'receiver_grips_picker_still_touching': 47, 'picker_alone_holds': 2, 'nobody_holds': 2}
+b016_s1 +3M chained with b014_top_s1 seed 7 handover 58 switched 4 bin 0 success 0 | at end: bin 0 success 0
+b016_s1 +3M chained with b014_top_s2 seed 7 handover 58 switched 2 bin 1 success 1 | at end: bin 1 success 0
+b016_s1 +3M seed 8 handover 49 carry 5 bin 0
+b016_s1 +3M release failures seed 8 both hold no carry 44 {'frozen_both_hold': 2, 'receiver_grips_picker_still_touching': 41, 'picker_alone_holds': 1, 'nobody_holds': 0}
+b016_s1 +3M chained with b014_top_s1 seed 8 handover 52 switched 6 bin 1 success 0 | at end: bin 1 success 0
+b016_s1 +3M chained with b014_top_s2 seed 8 handover 53 switched 2 bin 0 success 0 | at end: bin 0 success 0
+B017 saved 10 carry starts; env indices with none: 502 of 512; median per index 0
+B017 preflight: 8 of 8 passed
+EXIT 0
+b017_top_s1 from saved starts seed 7 carry 2 bin 0 success 0 | at end: bin 0 success 0
+b017_top_s1 chained after b016_s1 seed 7 handover 56 switched 3 bin 0 success 0 | at end: bin 0 success 0
+b017_top_s1 from saved starts seed 8 carry 2 bin 0 success 0 | at end: bin 0 success 0
+b017_top_s1 chained after b016_s1 seed 8 handover 51 switched 4 bin 0 success 0 | at end: bin 0 success 0
+EXIT 0
+b017_top_s2 from saved starts seed 7 carry 2 bin 0 success 0 | at end: bin 0 success 0
+b017_top_s2 chained after b016_s1 seed 7 handover 57 switched 1 bin 0 success 0 | at end: bin 0 success 0
+b017_top_s2 from saved starts seed 8 carry 2 bin 0 success 0 | at end: bin 0 success 0
+b017_top_s2 chained after b016_s1 seed 8 handover 52 switched 3 bin 0 success 0 | at end: bin 0 success 0
+b016_s2 +1.5M seed 7 handover 63 carry 1 bin 0
+b016_s2 +1.5M release failures seed 7 both hold no carry 53 {'frozen_both_hold': 1, 'receiver_grips_picker_still_touching': 40, 'picker_alone_holds': 11, 'nobody_holds': 1}
+b016_s2 +1.5M chained with b014_top_s1 seed 7 handover 70 switched 4 bin 0 success 0 | at end: bin 0 success 0
+b016_s2 +1.5M chained with b014_top_s2 seed 7 handover 63 switched 2 bin 0 success 0 | at end: bin 0 success 0
+b016_s2 +1.5M seed 8 handover 50 carry 5 bin 0
+b016_s2 +1.5M release failures seed 8 both hold no carry 50 {'frozen_both_hold': 0, 'receiver_grips_picker_still_touching': 35, 'picker_alone_holds': 11, 'nobody_holds': 4}
+b016_s2 +1.5M chained with b014_top_s1 seed 8 handover 61 switched 2 bin 0 success 0 | at end: bin 0 success 0
+b016_s2 +1.5M chained with b014_top_s2 seed 8 handover 54 switched 2 bin 0 success 0 | at end: bin 0 success 0
+EXIT 0
+b016_s2 +3M seed 7 handover 58 carry 8 bin 0
+b016_s2 +3M release failures seed 7 both hold no carry 47 {'frozen_both_hold': 0, 'receiver_grips_picker_still_touching': 35, 'picker_alone_holds': 7, 'nobody_holds': 5}
+b016_s2 +3M chained with b014_top_s1 seed 7 handover 51 switched 7 bin 0 success 0 | at end: bin 0 success 0
+b016_s2 +3M chained with b014_top_s2 seed 7 handover 53 switched 10 bin 0 success 0 | at end: bin 0 success 0
+b016_s2 +3M seed 8 handover 46 carry 3 bin 0
+b016_s2 +3M release failures seed 8 both hold no carry 42 {'frozen_both_hold': 0, 'receiver_grips_picker_still_touching': 36, 'picker_alone_holds': 4, 'nobody_holds': 2}
+b016_s2 +3M chained with b014_top_s1 seed 8 handover 50 switched 6 bin 0 success 0 | at end: bin 0 success 0
+b016_s2 +3M chained with b014_top_s2 seed 8 handover 46 switched 10 bin 0 success 0 | at end: bin 0 success 0
+SPEED RTX 4080: 1107 steps/s from 100352 to 249856 (135 s)
+# DONE 2026-10-26 05:28:20

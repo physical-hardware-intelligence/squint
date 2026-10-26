@@ -106,6 +106,8 @@ B011's failed releases mostly end with the picker's jaws opened but one still on
 
 Code: `REWARD_VERSION = 4`, `PICKER_CLEAR_DISTANCE`, env `SO101HandoverBarV4-v1`; probe `reward_probe_release.py`; `check_reward.py` 18 of 18 on v1-v4.
 
+**Result (B016): v4 failed.** Continued from B011 seed 1 on five seeds, the clean releases collapsed (carries 101 → 3-12). B011's picker stops a few centimetres from the bar; v2 paid that release the full +1, v4 about +0.6. Changing a trained policy's reward must be checked on the states the policy actually visits, not only along a constructed path.
+
 ## 9. Known, not changed yet
 
 - **Arms touching at the handover:** handled in v3 (§7).
