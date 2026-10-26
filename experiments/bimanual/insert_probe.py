@@ -170,6 +170,16 @@ g = ev(depth=0.046, pitch_deg=20)
 check("geometry: seated at 46 mm; socket pitch reads +20", g["seated"] == 1 and abs(g["socket_pitch"] - 20) < 0.1, f"{g}")
 g = ev(depth=0.044)
 check("geometry: 44 mm is not seated (floor 50, margin 5)", g["seated"] == 0 and g["in_hole"] == 1)
+
+
+def near_at(**k):
+    place(e, **k)
+    return float(e.reward_inputs(e.evaluate())["near"][0])
+
+
+n_out, n_front, n_behind = near_at(depth=-0.01), near_at(depth=-0.40), near_at(depth=0.40)
+check("reward: on the axis 40 cm behind the closed end is as far from the mouth as 40 cm in front (near), not at it",
+      abs(n_behind - n_front) < 1e-3 and n_out > 0.9, f"near 40 cm behind {n_behind:.3f}, 40 cm out {n_front:.3f}, 1 cm out {n_out:.3f}")
 env.close()
 
 # ---------------------------------------------------------------- 3. physics

@@ -418,8 +418,11 @@ class Insertion(BimanualWristCameraEnv):
         left, right = self.arms
         g = self.geometry()
         # Approach along the socket axis: off-axis distance counts double, which pulls the tip onto the axis; with the
-        # plain 3-D distance a tip parked 4 cm beside the socket outscored an aligned tip 5 cm straight out
-        approach = torch.sqrt(torch.clamp(-g["axial"], min=0) ** 2 + (2 * g["lateral"]) ** 2)
+        # plain 3-D distance a tip parked 4 cm beside the socket outscored an aligned tip 5 cm straight out.
+        # WHY |axial|, not the outside part only: a tip on the axis line behind the socket's closed end has axial > 0,
+        # and with the outside part only it scored as if at the mouth (I023 learned it: tip 34-43 cm past the mouth,
+        # near up to 0.97). Inside the hole stage 3 applies, so this term only scores tips that are not in
+        approach = torch.sqrt(g["axial"] ** 2 + (2 * g["lateral"]) ** 2)
         contact = (2 * self.peg_half_width - JAW_TIP_DIST_0) / JAW_TIP_DIST_PER_RAD  # jaw angle at which the tips touch the peg
         return dict(
             retain=self.RETAIN, max_reward=self.MAX_REWARD,
