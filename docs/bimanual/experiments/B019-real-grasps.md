@@ -1,6 +1,6 @@
 # B019: With a grasp check that rejects fake grips, does the handover policy make more real handovers?
 
-**Status:** protocol written 2026-10-26 11:20, before the runs.
+**Status:** done 2026-10-26 22:45 (protocol 11:20, before the runs). No: real handovers did not rise on any seed, and two of four seeds lost the release.
 
 ## What B018 found (no learning involved)
 - From the saved "picker stopped squeezing" starts, a scripted release (picker opens, backs away; receiver still) keeps the bar in only 257 of 512 (50%); from clean-carry starts, 506 of 512 (`probe_scripted_release.py`).
@@ -28,4 +28,18 @@ Preflight first. At +1.5M and +3M, under the corrected check (env `SO101Handover
 - 1 fails: the receiver does not learn the real grasp from this signal; practise the grasp itself (saved starts with the bar at the handover point and the receiver near).
 
 ## Results
-_Not run._
+Seeds 1-2 on the RTX box 2026-10-26 11:25-13:21 (commit `d922b5a`, preflight 8 of 8); seeds 3-4 on Explorer A100s 12:13-16:46 PDT (commit `85f1b13`, docs-only change). Raw: `experiments/bimanual/out/b019_counts.txt`, `b019_release_failures.txt`.
+
+| 256 episodes (seeds 7 + 8), +3M | Target | B011 (start) | Seed 1 | Seed 2 | Seed 3 | Seed 4 |
+|---|---|---|---|---|---|---|
+| real handovers | ≥150 | 108 | 44 | 59 | 109 | 100 |
+| carries | ≥140 | 105 | 0 | 0 | 106 | 99 |
+| **bar in the bin, chained** (best of B014's two carry policies) | ≥130 | 99 | **0** | **0** | **97** | **88** |
+
+At +1.5M: real handovers 39, 0, 107, 100; carries 0, 0, 105, 99.
+
+**Predictions.** 1, 2 and 3 fail on every seed.
+
+**Two outcomes, not one.** Seeds 3 and 4 stayed where B011 started. Seeds 1 and 2 lost the release: after a real handover the picker keeps the bar (seed 7 episodes: seed 1, 17 of 18 handovers end with the picker alone holding; seed 2, 14 with both still holding to the end and 14 with the picker alone; B011, 2 of 55 fail at all). The box measures correctly (B011 re-measured there: 55 real handovers, 54 carries on seed 7), and the training return stayed flat on all four seeds (32-41), so the return did not show the loss. Not known: whether the split is the seed or the machine. The two bad seeds are exactly the two run on the box; B016 agreed across machines.
+
+**Decision.** By the rule: the receiver does not learn the real grasp from the corrected check alone; practise the grasp itself. Before that, train seed 1 on Explorer and seed 3 on the box: if the release loss follows the seed, continuing B011 is unstable and grasp practice needs several seeds; if it follows the machine, results from the two machines cannot be pooled until that is found.
