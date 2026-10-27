@@ -1,6 +1,6 @@
 # B022: A carry policy for B021 seed 2's handovers
 
-**Status:** protocol written 2026-10-27 11:24, before the runs.
+**Status:** done 2026-10-27 12:42. The best chain so far: B021 seed 2 then this carry policy puts the bar in the bin in 133 of 256 episodes (52%; before: 99).
 
 ## Why
 B021 seed 2 is the best handover policy so far: 168 real handovers and 152 carries of 256. Chained with B014's carry policies, though, only 20 of 256 reach the bin. Those policies were trained on B011's handovers. B014's lesson: train the carry policy on starts from the handover policy it will follow.
@@ -27,4 +27,20 @@ All on Explorer A100s.
 Run on the RTX box, not Explorer. The box came back idle while Explorer's queue had not started the jobs (cancelled there). B014, whose recipe this is, ran on the box, and B019 A1 ruled the machine out as a cause of different results. B021 seed 2's checkpoint was copied from Explorer, SHA-256 checked.
 
 ## Results
-_Not run._
+Run 2026-10-27 11:44-12:42 on the RTX box, tree `db051bc`. Harvest: 4,492 carry starts, every one of the 512 env indices covered (median 9). Preflight 8 of 8. Raw: `experiments/bimanual/out/b022_counts.txt`.
+
+| 256 episodes (seeds 7 + 8) | carry s1 | carry s2 | B011 + B014 (before) |
+|---|---|---|---|
+| from its saved starts: in the bin / at the end | 216 / 183 | 224 / 186 | 239 / 221 |
+| chained: handovers / switched | 164 / 155 | 173 / 162 | 197 / 108 |
+| **chained: in the bin (all episodes)** | **123** | **133** | 99 |
+| chained: of the switched, in the bin | 79% | 82% | 90-92% |
+| chained: success ever / at step 120 | 87 / 63 | 73 / 37 | 57-79 / 36-51 |
+
+**Predictions.** 1 fails on seed 1 by a hair (79%, 80% needed) and holds on seed 2 (82%). 2 holds: 133 of 256 in the bin on seed 2 (52%; the best before was 99).
+
+**Reading.** This is the best end-to-end result so far: B021 seed 2 hands over, then this carry policy takes the bar to the bin in 133 of 256 episodes. Two gaps remain:
+- The carry is weaker on these handovers than B014's was on B011's (79-82% of switched episodes, against 90-92%).
+- The finish is unclean: of 133 in the bin, 114 are still there at step 120, and 37 succeed (bar still, nothing touching, arms still).
+
+**Decision.** By the rule (1 fails on one seed), watch the failed carries in video before changing anything. Chain videos: `chain_eval.py --video`.
