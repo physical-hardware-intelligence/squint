@@ -1,0 +1,110 @@
+# 2026-10-26 22:53:53 probe_receiver_grasp.py, B011 s1 3M, tree at d922b5ae9120f03b682627692d4286f1ff41db4b + this script
+{
+ "checkpoint": "runs/b011_wrist_s1/ckpt_3M.pt",
+ "env_id": "SO101HandoverBarV2Grip-v1",
+ "seed": 7,
+ "episodes": 128,
+ "classes": {
+  "1 real handover": 57,
+  "2 bar never at the handover point": 3,
+  "3 receiver never within 3 cm": 2,
+  "4 near but never closes": 0,
+  "5 shuts beside the bar": 55,
+  "6 shuts on air": 3,
+  "7 other": 8
+ },
+ "at_first_close_near_the_bar": {
+  "1 real handover": {
+   "off_axis_cm": "0.87 [0.56-1.30] n=56",
+   "depth_cm": "1.56 [1.26-1.99] n=56",
+   "angle_deg": "43.94 [30.96-54.65] n=56",
+   "openness": "0.11 [0.10-0.13] n=56"
+  },
+  "5 shuts beside the bar": {
+   "off_axis_cm": "2.04 [1.80-2.32] n=55",
+   "depth_cm": "1.39 [-0.42-2.13] n=55",
+   "angle_deg": "79.34 [75.98-83.77] n=55",
+   "openness": "-0.00 [-0.00--0.00] n=55"
+  },
+  "6 shuts on air": {
+   "off_axis_cm": "2.08 [1.46-2.45] n=3",
+   "depth_cm": "-0.12 [-0.73-0.83] n=3",
+   "angle_deg": "80.73 [80.48-85.20] n=3",
+   "openness": "0.09 [0.04-0.11] n=3"
+  },
+  "7 other": {
+   "off_axis_cm": "1.63 [0.64-2.65] n=8",
+   "depth_cm": "1.65 [1.38-2.22] n=8",
+   "angle_deg": "52.31 [29.47-71.91] n=8",
+   "openness": "0.13 [0.11-0.13] n=8"
+  }
+ },
+ "arrived_already_closed": {
+  "1 real handover": "11 of 57",
+  "5 shuts beside the bar": "55 of 55",
+  "6 shuts on air": "3 of 3",
+  "7 other": "4 of 8"
+ },
+ "closes_per_episode": {
+  "1 real handover": "2.00 [1.00-5.00] n=57",
+  "5 shuts beside the bar": "2.00 [2.00-4.00] n=55",
+  "6 shuts on air": "4.00 [3.50-10.50] n=3",
+  "7 other": "5.00 [1.00-9.75] n=8"
+ }
+}
+{
+ "checkpoint": "runs/b011_wrist_s1/ckpt_3M.pt",
+ "env_id": "SO101HandoverBarV2Grip-v1",
+ "seed": 8,
+ "episodes": 128,
+ "classes": {
+  "1 real handover": 54,
+  "2 bar never at the handover point": 4,
+  "3 receiver never within 3 cm": 5,
+  "4 near but never closes": 1,
+  "5 shuts beside the bar": 51,
+  "6 shuts on air": 1,
+  "7 other": 12
+ },
+ "at_first_close_near_the_bar": {
+  "1 real handover": {
+   "off_axis_cm": "0.99 [0.68-1.37] n=54",
+   "depth_cm": "1.61 [1.27-1.89] n=54",
+   "angle_deg": "47.12 [36.36-54.86] n=54",
+   "openness": "0.12 [0.11-0.13] n=54"
+  },
+  "5 shuts beside the bar": {
+   "off_axis_cm": "2.05 [1.84-2.40] n=51",
+   "depth_cm": "1.29 [0.34-2.11] n=51",
+   "angle_deg": "80.97 [76.58-84.45] n=51",
+   "openness": "-0.00 [-0.00--0.00] n=51"
+  },
+  "6 shuts on air": {
+   "off_axis_cm": "1.84 [1.84-1.84] n=1",
+   "depth_cm": "-0.69 [-0.69--0.69] n=1",
+   "angle_deg": "58.25 [58.25-58.25] n=1",
+   "openness": "-0.00 [-0.00--0.00] n=1"
+  },
+  "7 other": {
+   "off_axis_cm": "2.48 [0.80-2.73] n=12",
+   "depth_cm": "1.48 [0.96-2.18] n=12",
+   "angle_deg": "70.99 [37.43-86.17] n=12",
+   "openness": "0.11 [0.11-0.13] n=12"
+  }
+ },
+ "arrived_already_closed": {
+  "1 real handover": "13 of 54",
+  "4 near but never closes": "0 of 1",
+  "5 shuts beside the bar": "51 of 51",
+  "6 shuts on air": "1 of 1",
+  "7 other": "6 of 12"
+ },
+ "closes_per_episode": {
+  "1 real handover": "1.00 [1.00-2.00] n=54",
+  "4 near but never closes": "0.00 [0.00-0.00] n=1",
+  "5 shuts beside the bar": "3.00 [2.00-4.00] n=51",
+  "6 shuts on air": "6.00 [6.00-6.00] n=1",
+  "7 other": "2.00 [1.75-5.00] n=12"
+ }
+}
+# DONE

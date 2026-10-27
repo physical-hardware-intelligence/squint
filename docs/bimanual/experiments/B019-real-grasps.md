@@ -64,3 +64,20 @@ No learning. B011 seed 1 at 3M (B020's starting policy) runs its own episodes un
 At the receiver's first close near the bar it records, by class: the grip point's distance from the bar's centre line (the bar is 1.25 cm from centre to face), its depth in from the bar's end, the angle between the jaws' closing direction and the bar (90 degrees = across it), and the closes per episode.
 
 **Why look (from the reward, not yet measured).** Stage 3 pays the receiver 2(1 − tanh(5 × gap)), the gap from its grip point to a point on the bar's centre line 1.2 cm in from the end. A closed gripper pressed against the bar sits at least 1.25 cm off that line and loses 0.125 of 2 compared with jaws around the bar; a real grasp pays +0.1 over a perfect hover while the picker still holds. If classes 5 and 6 dominate, the reward does not tell the receiver how to grasp, and B020 changes what the receiver is paid for near the bar, not only where it starts. If 3 dominates, the receiver does not get there and practice from near starts is the fix. If 4 dominates, it hesitates.
+
+### A2 results
+Run 2026-10-26 22:54 on the RTX box (tree `d922b5a` + the probe). Raw: `experiments/bimanual/out/b019_a2_receiver_grasp.txt`.
+
+| 256 episodes (seeds 7 + 8), B011 seed 1 at 3M | Episodes | Arrived with the gripper already shut |
+|---|---|---|
+| 1 real handover | 111 (43%) | 24 of 111 |
+| 2 bar never at the handover point | 7 | |
+| 3 receiver never within 3 cm | 7 | |
+| 4 near but never closes | 1 | |
+| **5 shuts beside the bar** | **106 (41%)** | **106 of 106** |
+| 6 shuts on air | 4 | |
+| 7 other | 20 | |
+
+At the first close near the bar (median): real grasps 0.9 cm off the centre line, 11-12% open; shut beside the bar 2.0 cm off (the face is at 1.25 cm), 0% open. The closing-direction angle (real 44-47 degrees, beside 79-81) is reported as measured but not validated: the fixed jaw's y axis may not be the true closing direction.
+
+**Reading.** Class 5 dominates, as the reward predicts: in every one of those episodes the receiver came in with its gripper already shut and pressed it against the bar's side; it never opened. Most real grasps arrived open. The receiver is not missing its aim; it is not opening. B020 must pay the receiver for an open gripper on the way in (inside stage 3's band, so a hover still scores below both holding), checked on the current policy's states first (B016's lesson) and probed for shortcuts (B012's).
