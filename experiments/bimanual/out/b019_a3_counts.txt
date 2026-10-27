@@ -1,0 +1,29 @@
+# B019 amendment A3: control on the RTX box, B015 setup (old check, v2), seeds 2 and 3; counts under the corrected check
+# start 2026-10-27 01:50:02 commit d922b5ae9120f03b682627692d4286f1ff41db4b
+b019c_s2 +1.5M seed 7 real handover 0 carry 0 bin 0
+b019c_s2 +1.5M chained with b014_top_s1 seed 7 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019c_s2 +1.5M chained with b014_top_s2 seed 7 switched 1 bin 0 success 0 | at end: bin 0 success 0
+b019c_s2 +1.5M seed 8 real handover 0 carry 0 bin 0
+b019c_s2 +1.5M chained with b014_top_s1 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019c_s2 +1.5M chained with b014_top_s2 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+EXIT 0
+b019c_s2 +3M seed 7 real handover 0 carry 0 bin 0
+b019c_s2 +3M chained with b014_top_s1 seed 7 switched 2 bin 0 success 0 | at end: bin 0 success 0
+b019c_s2 +3M chained with b014_top_s2 seed 7 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019c_s2 +3M seed 8 real handover 0 carry 0 bin 0
+b019c_s2 +3M chained with b014_top_s1 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019c_s2 +3M chained with b014_top_s2 seed 8 switched 1 bin 1 success 0 | at end: bin 1 success 0
+b019c_s3 +1.5M seed 7 real handover 3 carry 0 bin 0
+b019c_s3 +1.5M chained with b014_top_s1 seed 7 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019c_s3 +1.5M chained with b014_top_s2 seed 7 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019c_s3 +1.5M seed 8 real handover 1 carry 0 bin 0
+b019c_s3 +1.5M chained with b014_top_s1 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019c_s3 +1.5M chained with b014_top_s2 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+EXIT 0
+b019c_s3 +3M seed 7 real handover 4 carry 1 bin 0
+b019c_s3 +3M chained with b014_top_s1 seed 7 switched 1 bin 0 success 0 | at end: bin 0 success 0
+b019c_s3 +3M chained with b014_top_s2 seed 7 switched 2 bin 0 success 0 | at end: bin 0 success 0
+b019c_s3 +3M seed 8 real handover 6 carry 0 bin 0
+b019c_s3 +3M chained with b014_top_s1 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019c_s3 +3M chained with b014_top_s2 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+# DONE 2026-10-27 03:43:14

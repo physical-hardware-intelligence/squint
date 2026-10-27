@@ -88,6 +88,10 @@ class Handover(BimanualWristCameraEnv):
     # a median 22% and stay above 15% until the grip in 95% of steps
     OPEN_APPROACH_WEIGHT = 0.5  # share of the reach that needs the open gripper
     OPEN_APPROACH_FULL = 0.15  # openness that earns it in full
+    # Reward v7 (B023): half the receiver's reach pays the last centimetres, 1 - tanh(gap / FINE_REACH_SCALE). B023 step 0:
+    # the receiver hovered ~2 cm from its target, where closing grasps 8% of the time (from ~1 cm: most real grasps);
+    # v6's reach paid 1 cm only 0.09 more than 2 cm
+    FINE_REACH_SCALE = 0.02
     # How the carry is paid for its distance d to the goal: "tanh" = 1 - tanh(5 d), steep only within ~15 cm (B001-B005);
     # "linear" = 1 - d / 40 cm, the same pull at every distance (B006). 40 cm covers the handover point to any goal
     CARRY_DISTANCE_SHAPE = "tanh"
@@ -96,7 +100,8 @@ class Handover(BimanualWristCameraEnv):
     # instead of contact flags, so the intended path never dips. 3 (B012): v2, plus a handover step that pays a full
     # point, no 5 cm cliff, and no penalty for jaw-to-jaw contact during the handover (see docs/bimanual/reward-design.md).
     # 4 (B016): v2 plus a slope for the picker moving off the bar. 5 (B020): v2 with the receiver's reach paid in full
-    # only with its gripper open (OPEN_APPROACH_*). 6 (B021): v5 with both holding paid more at the handover point
+    # only with its gripper open (OPEN_APPROACH_*). 6 (B021): v5 with both holding paid more at the handover point.
+    # 7 (B023): v6 with half the receiver's reach paid over its last centimetres (FINE_REACH_SCALE)
     REWARD_VERSION = 1
 
     def __init__(
@@ -494,12 +499,14 @@ class Handover(BimanualWristCameraEnv):
             # Stage 3, 4-6: at the handover point, the receiver reaches the free end
             at_handover = info["picker_grasp"] & (bar_to_handover < 0.05)
             receiver_reach = 2 * (1 - torch.tanh(5 * receiver_gap))
-            if self.REWARD_VERSION in (5, 6):
+            if self.REWARD_VERSION == 7:
+                receiver_reach = (1 - torch.tanh(5 * receiver_gap)) + (1 - torch.tanh(receiver_gap / self.FINE_REACH_SCALE))
+            if self.REWARD_VERSION in (5, 6, 7):
                 receiver_reach = receiver_reach * self._open_approach(receiver_open)
             reward = torch.where(at_handover, 4 + receiver_reach, reward)
 
             # Stage 4, 6-7: both hold the lifted bar; the picker is paid to let go
-            if self.REWARD_VERSION == 6:
+            if self.REWARD_VERSION in (6, 7):
                 # v6 (B021): half the point is for where the bar is held, full at the handover point and fading with
                 # distance (not v3's flat pay anywhere), so a real grip there beats the best hover (6.0) by 0.55, not
                 # v2's 0.1 (B020: the receiver opened, then hovered). The picker's letting go pays the other half
@@ -508,7 +515,7 @@ class Handover(BimanualWristCameraEnv):
             else:
                 reward = torch.where(info["both_hold"], 6 + picker_open, reward)
 
-        if self.REWARD_VERSION in (2, 3, 4, 5, 6):
+        if self.REWARD_VERSION in (2, 3, 4, 5, 6, 7):
             picker_gap = torch.linalg.norm(tcp_p - picker_end, axis=1)  # picker's grip point to its end of the bar
             return self._reward_after_handover_v2(reward, info, bar_p, axis, receiver_open, picker_gap)
 
@@ -700,6 +707,15 @@ class HandoverBarV6Grip(Handover):
     """B021: task 1, reward v6 (v5 with both holding paid more at the handover point) and the corrected grasp check."""
 
     REWARD_VERSION = 6
+    GRASP_NEEDS_OPEN_JAWS = True
+
+
+@register_env("SO101HandoverBarV7Grip-v1", max_episode_steps=120)
+class HandoverBarV7Grip(Handover):
+    """B023: task 1, reward v7 (v6 with half the receiver's reach paid over its last centimetres) and the corrected grasp
+    check."""
+
+    REWARD_VERSION = 7
     GRASP_NEEDS_OPEN_JAWS = True
 
 

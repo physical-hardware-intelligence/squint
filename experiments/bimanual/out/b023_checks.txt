@@ -1,0 +1,32 @@
+# 2026-10-27 reward_probe_v7.py and check_reward.py SO101HandoverBarV7Grip-v1, commit d467ad066bee9ff6e35707144477303e8621fa50
+picker 11.5% open while gripping; receiver 25% when open, 10.5% when gripping
+state                                                v2     v6     v7
+receiver 20 cm out, open                           4.48   4.48   4.24
+receiver 20 cm out, shut                           4.48   4.24   4.12
+receiver at the bar, open (hover)                  5.95   5.95   5.73
+receiver 30 cm from its target, open               4.19   4.19   4.09
+receiver 10 cm from its target, open               5.08   5.08   4.54
+receiver 5 cm from its target, open                5.51   5.51   4.77
+receiver 3 cm from its target, open                5.70   5.70   4.95
+receiver 2 cm from its target, open                5.80   5.80   5.14
+receiver 1 cm from its target, open                5.90   5.90   5.49
+receiver 0.5 cm from its target, open              5.95   5.95   5.73
+receiver 0 cm from its target, open                6.00   6.00   6.00
+receiver at the bar, shut                          5.95   4.98   4.87
+both hold, bar 0 cm from the handover point        6.11   6.56   6.56
+both hold, bar 7 cm from the handover point        6.11   6.39   6.39
+both hold, bar 12 cm from the handover point       6.11   6.29   6.29
+both hold, bar 25 cm from the handover point       6.11   6.13   6.13
+both hold, picker 50% open                         6.50   6.75   6.75
+both hold, picker 100% open                        7.00   7.00   7.00
+handed over, a picker jaw still on the bar         7.71   7.71   7.71
+handed over, picker clear of the bar               8.71   8.71   8.71
+PASS  S1 grip at the point beats the best hover by >= 0.5
+PASS  S2 grip pays less farther from the point
+PASS  S2 25 cm off: v7 at most 0.05 over v2
+PASS  S3 the release never pays less as it goes
+PASS  S4 open beats shut at the same spot
+PASS  S5 reach states at or above 4
+PASS  S6 1 cm pays >= 0.3 more than 2 cm
+PASS  S7 the reach rises at every step in
+# check_reward.py: 18 PASS, 0 FAIL

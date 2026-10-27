@@ -1,0 +1,26 @@
+# B022 raw counts, RTX box. Carry env SO101HandoverCarryTopCamLeHomeGrip-v2 (bank from B021 seed 2); chain env SO101HandoverBarV2TopCamLeHome-v2, switch on carry, report at step 120.
+# b022 start 2026-10-27 11:44:29 commit db051bc38fe7f5532dc77e23415380ddafea21f5
+harvest runs/b021_s2/ckpt_6M.pt episode 13/15: carry starts 299 of 512
+harvest runs/b021_s2/ckpt_6M.pt episode 14/15: carry starts 293 of 512
+harvest runs/b021_s2/ckpt_6M.pt episode 15/15: carry starts 306 of 512
+harvest saved 4492 carry starts; env indices with none: 0 of 512; median per index 9
+PASS  SO101HandoverCarryTopCamLeHomeGrip-v2: check_carry_starts.py  log runs/preflight/1_SO101HandoverCarryTopCamLeHomeGrip_v2_envcheck.log
+PASS  SO101HandoverCarryTopCamLeHomeGrip-v2: short training exits 0  log runs/preflight/1_SO101HandoverCarryTopCamLeHomeGrip_v2_train.log
+PASS  SO101HandoverCarryTopCamLeHomeGrip-v2: images 16x16x9, state 24  trainer printed ('16', '16', '9', '24')
+PASS  SO101HandoverCarryTopCamLeHomeGrip-v2: gamma = 0.97  trainer printed 0.97
+PASS  SO101HandoverCarryTopCamLeHomeGrip-v2: v_min = -25.0  trainer printed -25.0
+PASS  SO101HandoverCarryTopCamLeHomeGrip-v2: v_max = 35.0  trainer printed 35.0
+PASS  SO101HandoverCarryTopCamLeHomeGrip-v2: checkpoint saved  
+PASS  SO101HandoverCarryTopCamLeHomeGrip-v2: stage counter runs the checkpoint  log runs/preflight/1_SO101HandoverCarryTopCamLeHomeGrip_v2_count.log
+preflight: 8 of 8 passed
+EXIT 0
+b022_top_s1 from saved starts seed 7 carry 128 bin 113 success 85 | at end: bin 97 success 60
+b022_top_s1 chained after b021_s2 seed 7 handover 89 switched 81 bin 62 success 44 | at end: bin 50 success 31
+b022_top_s1 from saved starts seed 8 carry 128 bin 103 success 78 | at end: bin 86 success 51
+b022_top_s1 chained after b021_s2 seed 8 handover 75 switched 74 bin 61 success 43 | at end: bin 48 success 32
+EXIT 0
+b022_top_s2 from saved starts seed 7 carry 127 bin 112 success 76 | at end: bin 96 success 43
+b022_top_s2 chained after b021_s2 seed 7 handover 86 switched 80 bin 68 success 40 | at end: bin 60 success 22
+b022_top_s2 from saved starts seed 8 carry 128 bin 112 success 75 | at end: bin 90 success 44
+b022_top_s2 chained after b021_s2 seed 8 handover 87 switched 82 bin 65 success 33 | at end: bin 54 success 15
+# DONE 2026-10-27 12:42:26

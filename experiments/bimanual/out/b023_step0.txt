@@ -1,0 +1,11 @@
+# B023 step 0, RTX box. probe_scripted_close.py on B021 seeds at 6M, episode seeds 7 and 8.
+# b023 step 0 start 2026-10-27 11:40:37 commit db051bc38fe7f5532dc77e23415380ddafea21f5
+b021_s1 seed 7 hover takeovers 43 real grasp 1 shut beside 4 shut on air 38 other 0 | both hold before any hover 47
+b021_s1 seed 8 hover takeovers 37 real grasp 2 shut beside 3 shut on air 32 other 0 | both hold before any hover 54
+b021_s3 seed 7 hover takeovers 37 real grasp 5 shut beside 5 shut on air 27 other 0 | both hold before any hover 49
+b021_s3 seed 8 hover takeovers 40 real grasp 5 shut beside 14 shut on air 21 other 0 | both hold before any hover 48
+b021_s4 seed 7 hover takeovers 44 real grasp 4 shut beside 9 shut on air 31 other 0 | both hold before any hover 47
+b021_s4 seed 8 hover takeovers 49 real grasp 4 shut beside 12 shut on air 33 other 0 | both hold before any hover 49
+b021_s2 seed 7 hover takeovers 14 real grasp 5 shut beside 7 shut on air 2 other 0 | both hold before any hover 78
+b021_s2 seed 8 hover takeovers 13 real grasp 6 shut beside 3 shut on air 4 other 0 | both hold before any hover 81
+# b023 step 0 done 2026-10-27 11:44:29

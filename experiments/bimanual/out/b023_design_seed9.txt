@@ -1,0 +1,142 @@
+# 2026-10-27 11:55:56 probe_scripted_close_v2.py (repo commit after db051bc: grip pose at takeover), seed 9
+{
+ "checkpoint": "runs/b021_s1/ckpt_6M.pt",
+ "env_id": "SO101HandoverBarV6Grip-v1",
+ "seed": 9,
+ "episodes": 128,
+ "hover_takeovers": 42,
+ "real_grasp": 2,
+ "shut_beside": 6,
+ "shut_on_air": 34,
+ "other": 0,
+ "both_hold_before_any_hover": 50,
+ "at_takeover": {
+  "real_grasp": {
+   "gap_cm": "1.99 [1.57-2.41] n=2",
+   "off_axis_cm": "1.78 [1.38-2.19] n=2",
+   "depth_cm": "2.07 [1.94-2.21] n=2",
+   "angle_deg": "38.13 [27.09-49.16] n=2",
+   "openness": "0.37 [0.29-0.44] n=2"
+  },
+  "shut_on_air": {
+   "gap_cm": "1.62 [1.03-2.19] n=34",
+   "off_axis_cm": "1.19 [0.74-1.81] n=34",
+   "depth_cm": "0.75 [-0.01-1.07] n=34",
+   "angle_deg": "30.13 [22.14-47.05] n=34",
+   "openness": "0.52 [0.47-0.59] n=34"
+  },
+  "shut_beside": {
+   "gap_cm": "1.50 [1.26-1.79] n=6",
+   "off_axis_cm": "1.05 [0.63-1.14] n=6",
+   "depth_cm": "0.20 [-0.19-0.46] n=6",
+   "angle_deg": "23.41 [20.85-29.74] n=6",
+   "openness": "0.53 [0.51-0.58] n=6"
+  }
+ }
+}
+{
+ "checkpoint": "runs/b021_s3/ckpt_6M.pt",
+ "env_id": "SO101HandoverBarV6Grip-v1",
+ "seed": 9,
+ "episodes": 128,
+ "hover_takeovers": 42,
+ "real_grasp": 7,
+ "shut_beside": 9,
+ "shut_on_air": 26,
+ "other": 0,
+ "both_hold_before_any_hover": 57,
+ "at_takeover": {
+  "real_grasp": {
+   "gap_cm": "1.11 [0.80-1.23] n=7",
+   "off_axis_cm": "0.81 [0.43-1.11] n=7",
+   "depth_cm": "0.59 [0.47-0.92] n=7",
+   "angle_deg": "46.62 [42.81-52.11] n=7",
+   "openness": "0.31 [0.30-0.33] n=7"
+  },
+  "shut_on_air": {
+   "gap_cm": "1.99 [1.48-2.48] n=26",
+   "off_axis_cm": "1.45 [0.83-2.33] n=26",
+   "depth_cm": "0.53 [0.07-0.99] n=26",
+   "angle_deg": "61.46 [52.30-78.19] n=26",
+   "openness": "0.26 [0.20-0.31] n=26"
+  },
+  "shut_beside": {
+   "gap_cm": "1.92 [1.42-2.17] n=9",
+   "off_axis_cm": "0.87 [0.23-1.94] n=9",
+   "depth_cm": "-0.21 [-0.64-0.35] n=9",
+   "angle_deg": "61.53 [38.83-69.49] n=9",
+   "openness": "0.24 [0.24-0.27] n=9"
+  }
+ }
+}
+{
+ "checkpoint": "runs/b021_s4/ckpt_6M.pt",
+ "env_id": "SO101HandoverBarV6Grip-v1",
+ "seed": 9,
+ "episodes": 128,
+ "hover_takeovers": 47,
+ "real_grasp": 5,
+ "shut_beside": 5,
+ "shut_on_air": 37,
+ "other": 0,
+ "both_hold_before_any_hover": 52,
+ "at_takeover": {
+  "real_grasp": {
+   "gap_cm": "1.89 [0.92-1.92] n=5",
+   "off_axis_cm": "1.17 [0.79-1.91] n=5",
+   "depth_cm": "1.07 [0.85-1.28] n=5",
+   "angle_deg": "57.92 [40.24-60.88] n=5",
+   "openness": "0.48 [0.39-0.48] n=5"
+  },
+  "shut_on_air": {
+   "gap_cm": "2.22 [1.73-2.50] n=37",
+   "off_axis_cm": "1.53 [1.14-2.07] n=37",
+   "depth_cm": "0.24 [-0.51-1.15] n=37",
+   "angle_deg": "54.84 [46.76-63.10] n=37",
+   "openness": "0.45 [0.38-0.52] n=37"
+  },
+  "shut_beside": {
+   "gap_cm": "1.60 [1.56-1.87] n=5",
+   "off_axis_cm": "1.48 [0.83-1.81] n=5",
+   "depth_cm": "1.15 [0.84-1.69] n=5",
+   "angle_deg": "58.63 [47.06-59.19] n=5",
+   "openness": "0.35 [0.27-0.45] n=5"
+  }
+ }
+}
+{
+ "checkpoint": "runs/b021_s2/ckpt_6M.pt",
+ "env_id": "SO101HandoverBarV6Grip-v1",
+ "seed": 9,
+ "episodes": 128,
+ "hover_takeovers": 8,
+ "real_grasp": 3,
+ "shut_beside": 3,
+ "shut_on_air": 2,
+ "other": 0,
+ "both_hold_before_any_hover": 78,
+ "at_takeover": {
+  "real_grasp": {
+   "gap_cm": "1.05 [0.92-1.18] n=3",
+   "off_axis_cm": "1.05 [0.88-1.13] n=3",
+   "depth_cm": "0.84 [0.77-1.02] n=3",
+   "angle_deg": "52.94 [44.61-67.55] n=3",
+   "openness": "0.30 [0.23-0.33] n=3"
+  },
+  "shut_on_air": {
+   "gap_cm": "2.26 [1.99-2.53] n=2",
+   "off_axis_cm": "1.92 [1.60-2.24] n=2",
+   "depth_cm": "0.07 [0.06-0.08] n=2",
+   "angle_deg": "45.72 [31.83-59.61] n=2",
+   "openness": "0.26 [0.26-0.27] n=2"
+  },
+  "shut_beside": {
+   "gap_cm": "1.97 [1.96-2.06] n=3",
+   "off_axis_cm": "1.83 [1.66-1.96] n=3",
+   "depth_cm": "1.66 [0.80-1.80] n=3",
+   "angle_deg": "76.49 [58.26-81.86] n=3",
+   "openness": "0.24 [0.21-0.28] n=3"
+  }
+ }
+}
+# DONE 2026-10-27 11:58:58
