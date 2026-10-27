@@ -82,12 +82,12 @@ class Handover(BimanualWristCameraEnv):
     # other arm lets go (B018: 255 of 512 such starts; real grips sit at 10-11% open, those at 0%). Off in the envs as run
     GRASP_NEEDS_OPEN_JAWS = False
     MIN_GRASP_OPENNESS = 0.03
-    # Reward v5 (B020): the receiver's reach at the handover point pays in full only with its gripper open, or with its
-    # grip point already inside the bar's outline (jaws around it, closing). B019 A2: 106 of 256 episodes the receiver came
-    # in shut and pressed on the bar's side, which v2 paid 0.125 of 2 less than jaws around it
+    # Reward v5 (B020): the receiver's reach at the handover point pays in full only with its gripper open wider than the
+    # bar. B019 A2: 106 of 256 episodes the receiver came in shut and pressed on the bar's side, which v2 paid 0.125 of 2
+    # less than jaws around it. Set on seed 9 (not a check seed): real grips stop at 10-11% open; real approaches run at
+    # a median 22% and stay above 15% until the grip in 95% of steps
     OPEN_APPROACH_WEIGHT = 0.5  # share of the reach that needs the open gripper
-    OPEN_APPROACH_FULL = 0.3  # openness that earns it in full
-    AROUND_BAR_OFF_AXIS = 0.016  # grip point this close to the centre line, within the bar's length: jaws around it
+    OPEN_APPROACH_FULL = 0.15  # openness that earns it in full
     # How the carry is paid for its distance d to the goal: "tanh" = 1 - tanh(5 d), steep only within ~15 cm (B001-B005);
     # "linear" = 1 - d / 40 cm, the same pull at every distance (B006). 40 cm covers the handover point to any goal
     CARRY_DISTANCE_SHAPE = "tanh"
@@ -365,12 +365,9 @@ class Handover(BimanualWristCameraEnv):
         return gap, torch.linalg.norm(rel - along[:, None] * axis, dim=1), self.bar_half_lengths - along.abs()
 
     def _open_approach(self, receiver_open: torch.Tensor) -> torch.Tensor:
-        """Reward v5: the share of the receiver's reach it earns, 1 - w (shut) to 1 (open, or jaws around the bar)."""
-        _, off_axis, depth = self._receiver_grip_geometry()
-        around = (off_axis < self.AROUND_BAR_OFF_AXIS) & (depth > 0)
+        """Reward v5: the share of the receiver's reach it earns, 1 - w (shut) to 1 (open wider than the bar)."""
         w = self.OPEN_APPROACH_WEIGHT
-        share = 1 - w + w * torch.clamp(receiver_open / self.OPEN_APPROACH_FULL, 0, 1)
-        return torch.where(around, torch.ones_like(share), share)
+        return 1 - w + w * torch.clamp(receiver_open / self.OPEN_APPROACH_FULL, 0, 1)
 
     def _arm_contacts(self):
         """Contacts between the two arms over the same 16 link pairs as before, split: (jaws, body). jaws: a gripper link or
