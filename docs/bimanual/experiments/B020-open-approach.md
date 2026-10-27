@@ -47,5 +47,10 @@ Each holds if it holds at +3M on at least 3 of the 4 seeds (B019 showed seeds ca
 - 1 fails: the signal is too weak in 3M steps; next w = 1 (no reach without an open gripper) or grasp practice from near starts.
 - 3 fails on some seeds: the release loss is not caused by the reward; test plain continuation (B015's setup, v2) on several seeds.
 
+## Amendment A1 (2026-10-26 23:45, before any training)
+- **Checks so far** (`experiments/bimanual/out/b020_checks.txt`): `reward_probe_v5.py` passes C1-C4 on seeds 7 and 8. Real handovers lose 0.0 per reach step (median), shut-beside episodes 0.83, and there is no dip at the grip in 52 of 52 and 54 of 54. `check_reward.py` passes 18 of 18. The box preflight passed 5 of 7: its short training crashed on a PhysX GPU allocation with three other jobs on the 16 GB card, a resource failure, not the code.
+- **Where.** B019 A1 so far: box seed 3 lost the release by +1.5M (4 real handovers, 0 carries), as seeds 1 and 2 did there; Explorer's seed 3 kept it. Explorer's seed-3 checkpoint scores the same on the box (108 real handovers, 107 carries), so the box measures correctly and the difference is in training there. Both A1 outcomes lead to Explorer (machine suspect: Explorer only; chance: several seeds anywhere), so all four seeds run on Explorer A100s and are queued now, since the queue wait is hours.
+- **Gate.** The preflight runs on an A100 as its own job (`hpc/b020_preflight.sbatch`); the four training seeds start only if it exits 0 (`--dependency=afterok`).
+
 ## Results
 _Not run._
