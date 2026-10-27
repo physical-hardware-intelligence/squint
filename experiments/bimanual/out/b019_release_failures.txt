@@ -1,0 +1,9 @@
+# 2026-10-26 22:40 PDT, RTX box, tree at 85f1b13 (code identical to d922b5a). Why seeds 1-2 carry nothing.
+# Re-measure, stage_counts.py --env_id SO101HandoverBarV2Grip-v1 --seed 7 (the box measures correctly: B011 matches B018's numbers):
+runs/b011_wrist_s1/ckpt_3M.pt {'picker_grasp': 127, 'both_hold': 55, 'handed_over': 55, 'receiver_grasp': 61, 'bar_in_bin': 0, 'success': 0, 'arms_touching': 27, 'robot_touching_table': 9, 'robot_touching_bin': 0, 'carrying': 54}
+runs/b019_s1/ckpt_3M.pt {'picker_grasp': 127, 'both_hold': 23, 'handed_over': 23, 'receiver_grasp': 24, 'bar_in_bin': 0, 'success': 0, 'arms_touching': 1, 'robot_touching_table': 11, 'robot_touching_bin': 0, 'carrying': 1}
+# release_failures.py --env_id SO101HandoverBarV2Grip-v1 --seed 7:
+runs/b011_wrist_s1/ckpt_3M.pt {"seed": 7, "episodes": 128, "reached_both_hold": 55, "reached_carry": 53, "both_hold_no_carry": 2, "of_those_at_the_last_step": {"frozen_both_hold": 0, "receiver_grips_picker_still_touching": 0, "picker_alone_holds": 1, "nobody_holds": 1}, "of_those_other": 0, "both_hold_steps_median": {"no_carry": 1.0, "carry": 1.0}}
+runs/b019_s1/ckpt_3M.pt {"seed": 7, "episodes": 128, "reached_both_hold": 19, "reached_carry": 1, "both_hold_no_carry": 18, "of_those_at_the_last_step": {"frozen_both_hold": 1, "receiver_grips_picker_still_touching": 0, "picker_alone_holds": 17, "nobody_holds": 0}, "of_those_other": 0, "both_hold_steps_median": {"no_carry": 7.0, "carry": 1.0}}
+runs/b019_s2/ckpt_3M.pt {"seed": 7, "episodes": 128, "reached_both_hold": 28, "reached_carry": 0, "both_hold_no_carry": 28, "of_those_at_the_last_step": {"frozen_both_hold": 14, "receiver_grips_picker_still_touching": 0, "picker_alone_holds": 14, "nobody_holds": 0}, "of_those_other": 0, "both_hold_steps_median": {"no_carry": 38.0, "carry": null}}
+# Training eval return (every 250k steps) stayed flat on all four seeds: box s1 37.9 -> 38.0, s2 32.3 -> 39.5; Explorer s3 36.8 -> 40.9, s4 28.8 -> 35.3.

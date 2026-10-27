@@ -1,0 +1,63 @@
+# B019 raw counts. Stage counts under the corrected grasp check (SO101HandoverBarV2Grip-v1); chain with B014's carry policies (SO101HandoverBarV2TopCamLeHome-v2), switch on carry, report at step 120.
+# Seeds 1-2: RTX 4080 SUPER box
+# start 2026-10-26 11:25:12 commit d922b5ae9120f03b682627692d4286f1ff41db4b
+preflight: 8 of 8 passed
+b019_s1 +1.5M seed 7 real handover 17 carry 0 bin 0
+b019_s1 +1.5M chained with b014_top_s1 seed 7 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s1 +1.5M chained with b014_top_s2 seed 7 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s1 +1.5M seed 8 real handover 22 carry 0 bin 0
+b019_s1 +1.5M chained with b014_top_s1 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s1 +1.5M chained with b014_top_s2 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+EXIT 0
+b019_s1 +3M seed 7 real handover 24 carry 0 bin 0
+b019_s1 +3M chained with b014_top_s1 seed 7 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s1 +3M chained with b014_top_s2 seed 7 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s1 +3M seed 8 real handover 20 carry 0 bin 0
+b019_s1 +3M chained with b014_top_s1 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s1 +3M chained with b014_top_s2 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s2 +1.5M seed 7 real handover 0 carry 0 bin 0
+b019_s2 +1.5M chained with b014_top_s1 seed 7 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s2 +1.5M chained with b014_top_s2 seed 7 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s2 +1.5M seed 8 real handover 0 carry 0 bin 0
+b019_s2 +1.5M chained with b014_top_s1 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s2 +1.5M chained with b014_top_s2 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+EXIT 0
+b019_s2 +3M seed 7 real handover 31 carry 0 bin 0
+b019_s2 +3M chained with b014_top_s1 seed 7 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s2 +3M chained with b014_top_s2 seed 7 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s2 +3M seed 8 real handover 28 carry 0 bin 0
+b019_s2 +3M chained with b014_top_s1 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s2 +3M chained with b014_top_s2 seed 8 switched 0 bin 0 success 0 | at end: bin 0 success 0
+# DONE 2026-10-26 13:21:15
+
+# Seeds 3-4: Explorer A100 (node names removed; Explorer clock is US Eastern, 3 h ahead of the box)
+# b019_s3 start 2026-10-26 15:13:33 on NVIDIA A100-SXM4-80GB commit 85f1b139c4db0843329e427896019c45647d8f0c
+b019_s3 +1.5M seed 7 real handover 47 carry 45 bin 0
+b019_s3 +1.5M chained with b014_top_s1 seed 7 handover 59 switched 51 bin 45 success 28 | at end: bin 42 success 21
+b019_s3 +1.5M chained with b014_top_s2 seed 7 handover 58 switched 44 bin 37 success 29 | at end: bin 32 success 17
+b019_s3 +1.5M seed 8 real handover 60 carry 60 bin 0
+b019_s3 +1.5M chained with b014_top_s1 seed 8 handover 67 switched 54 bin 50 success 32 | at end: bin 46 success 19
+b019_s3 +1.5M chained with b014_top_s2 seed 8 handover 66 switched 53 bin 51 success 40 | at end: bin 44 success 25
+b019_s3 EXIT 139
+b019_s3 +3M seed 7 real handover 55 carry 54 bin 0
+b019_s3 +3M chained with b014_top_s1 seed 7 handover 57 switched 47 bin 43 success 29 | at end: bin 40 success 16
+b019_s3 +3M chained with b014_top_s2 seed 7 handover 62 switched 53 bin 47 success 40 | at end: bin 46 success 28
+b019_s3 +3M seed 8 real handover 54 carry 52 bin 0
+b019_s3 +3M chained with b014_top_s1 seed 8 handover 64 switched 60 bin 49 success 35 | at end: bin 47 success 24
+b019_s3 +3M chained with b014_top_s2 seed 8 handover 64 switched 56 bin 50 success 41 | at end: bin 47 success 26
+# b019_s3 done 2026-10-26 16:42:57
+# b019_s4 start 2026-10-26 18:17:29 on NVIDIA A100-SXM4-40GB commit 85f1b139c4db0843329e427896019c45647d8f0c
+b019_s4 +1.5M seed 7 real handover 53 carry 52 bin 0
+b019_s4 +1.5M chained with b014_top_s1 seed 7 handover 58 switched 48 bin 43 success 28 | at end: bin 40 success 15
+b019_s4 +1.5M chained with b014_top_s2 seed 7 handover 61 switched 50 bin 45 success 39 | at end: bin 43 success 26
+b019_s4 +1.5M seed 8 real handover 47 carry 47 bin 0
+b019_s4 +1.5M chained with b014_top_s1 seed 8 handover 66 switched 52 bin 48 success 32 | at end: bin 46 success 23
+b019_s4 +1.5M chained with b014_top_s2 seed 8 handover 63 switched 54 bin 49 success 41 | at end: bin 47 success 18
+b019_s4 EXIT 139
+b019_s4 +3M seed 7 real handover 48 carry 48 bin 0
+b019_s4 +3M chained with b014_top_s1 seed 7 handover 60 switched 49 bin 42 success 29 | at end: bin 38 success 15
+b019_s4 +3M chained with b014_top_s2 seed 7 handover 49 switched 43 bin 36 success 31 | at end: bin 32 success 21
+b019_s4 +3M seed 8 real handover 52 carry 51 bin 0
+b019_s4 +3M chained with b014_top_s1 seed 8 handover 62 switched 54 bin 46 success 27 | at end: bin 42 success 19
+b019_s4 +3M chained with b014_top_s2 seed 8 handover 59 switched 53 bin 40 success 33 | at end: bin 37 success 25
+# b019_s4 done 2026-10-26 19:46:31
