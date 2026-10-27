@@ -83,7 +83,7 @@ At the first close near the bar (median): real grasps 0.9 cm off the centre line
 **Reading.** Class 5 dominates, as the reward predicts: in every one of those episodes the receiver came in with its gripper already shut and pressed it against the bar's side; it never opened. Most real grasps arrived open. The receiver is not missing its aim; it is not opening. B020 must pay the receiver for an open gripper on the way in (inside stage 3's band, so a hover still scores below both holding), checked on the current policy's states first (B016's lesson) and probed for shortcuts (B012's).
 
 ### A1 results
-Box seed 3 (2026-10-26 22:49-23:48): +1.5M 4 real handovers, 0 carries; +3M 6 and 0. Explorer seed 1 (2026-10-27 00:23-01:48 PDT): 0 and 0 at both. Raw: `out/b019_a1_counts.txt`, `out/b019_counts.txt` (Explorer lines appended there by the job).
+Box seed 3 (2026-10-26 22:49-23:48): +1.5M 4 real handovers, 0 carries; +3M 6 and 0. Explorer seed 1 (2026-10-27 00:23-01:48 PDT): 0 and 0 at both. Raw: `experiments/bimanual/out/b019_a1_counts.txt` (box), `b019_counts.txt` (Explorer seed 1, at the end).
 
 | Continued with the corrected check | kept the release | lost it |
 |---|---|---|
@@ -92,7 +92,7 @@ Box seed 3 (2026-10-26 22:49-23:48): +1.5M 4 real handovers, 0 carries; +3M 6 an
 
 By the reading set before the runs: the machine is ruled out. The same seed kept it on one machine and lost it on the other (GPU physics is not bit-reproducible), and both machines lost it. The release loss is run-to-run chance when continuing B011 under the corrected check: 4 of 6. The box also scores Explorer's seed-3 checkpoint as Explorer does (108 real handovers, 107 carries), so measurement is not the difference.
 
-## Amendment A3: is it the corrected check? (written 2026-10-27 01:55, before the runs)
+## Amendment A3: is it the corrected check? (written 2026-10-27 01:49, before the runs)
 The only continuation under the old check, B015 (box, seed 1), kept the release; B019 under the corrected check lost it on the same machine and seed. Control on the box: B015's exact command (`SO101HandoverBarV2-v1`, old check, v2) with seeds 2 and 3, the seeds that lost it there under the corrected check. Counts under the corrected check (`SO101HandoverBarV2Grip-v1`, comparable with B019) at +1.5M and +3M.
 - Both keep the release (carries at least half of real handovers at +3M): the corrected check is the likely cause (old check 3 of 3 kept, corrected 2 of 6). B020 uses the corrected check too, so its release is at risk; its four seeds measure it, and the fix to try is to make the switch gentle (e.g. warm the critic on the corrected check before the actor updates).
 - Either loses it: continuing B011 loses the release by chance whatever the check; continuation itself is unstable and B020's seeds need checking one by one.

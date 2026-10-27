@@ -61,3 +61,20 @@ b019_s4 +3M seed 8 real handover 52 carry 51 bin 0
 b019_s4 +3M chained with b014_top_s1 seed 8 handover 62 switched 54 bin 46 success 27 | at end: bin 42 success 19
 b019_s4 +3M chained with b014_top_s2 seed 8 handover 59 switched 53 bin 40 success 33 | at end: bin 37 success 25
 # b019_s4 done 2026-10-26 19:46:31
+
+# Amendment A1: seed 1 on Explorer (node name removed; Explorer clock US Eastern)
+# b019_s1 start 2026-10-27 03:23:27 on NVIDIA A100-SXM4-80GB commit 85f1b139c4db0843329e427896019c45647d8f0c
+b019_s1 +1.5M seed 7 real handover 0 carry 0 bin 0
+b019_s1 +1.5M chained with b014_top_s1 seed 7 handover 27 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s1 +1.5M chained with b014_top_s2 seed 7 handover 24 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s1 +1.5M seed 8 real handover 0 carry 0 bin 0
+b019_s1 +1.5M chained with b014_top_s1 seed 8 handover 23 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s1 +1.5M chained with b014_top_s2 seed 8 handover 28 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s1 EXIT 139
+b019_s1 +3M seed 7 real handover 0 carry 0 bin 0
+b019_s1 +3M chained with b014_top_s1 seed 7 handover 33 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s1 +3M chained with b014_top_s2 seed 7 handover 42 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s1 +3M seed 8 real handover 0 carry 0 bin 0
+b019_s1 +3M chained with b014_top_s1 seed 8 handover 35 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b019_s1 +3M chained with b014_top_s2 seed 8 handover 33 switched 0 bin 0 success 0 | at end: bin 0 success 0
+# b019_s1 done 2026-10-27 04:48:17
