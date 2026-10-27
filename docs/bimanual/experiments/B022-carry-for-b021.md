@@ -46,3 +46,38 @@ Run 2026-10-27 11:44-12:42 on the RTX box, tree `db051bc`. Harvest: 4,492 carry 
 **Decision.** By the rule (1 fails on one seed), watch the failed carries in video before changing anything. Chain videos: `chain_eval.py --video`.
 
 **Video (16 episodes, seed 7, carry seed 2).** 8 handovers, all 8 switched, 5 in the bin, 3 successes. In the side views at the last frame, the three failed carries end next to the bin rather than in it: one bar stands upright beside it, one lies on the table at its edge. Most of the other episodes never handed over: both grippers are still at the bar near the handover point. This is an impression from 16 low-resolution episodes `[UNVERIFIED]`. Before changing the carry, count where the failed carries end (on the rim, beside the bin, dropped on the way) over 256 episodes.
+
+## Amendment A2: where the failed carries end (written 2026-10-27 13:11, before the run)
+`chain_eval.py --failures`, the same chains (B021 seed 2 then each carry seed, seeds 7 + 8). For the episodes that switched to the carry but never had the bar in the bin by step 120, where the bar is at step 120, in the first class that fits:
+- still held, over the bin;
+- still held, elsewhere;
+- not held, part of it over the bin's outline (on the rim);
+- on the table within 5 cm of the bin's outline (beside it);
+- on the table farther away (dropped on the way);
+- other.
+
+Also: how many the receiver dropped and how far from the bin, the switch step of misses against successes (a late switch leaves the carry less than the 60 steps it trained on), how many misses reach the bin by step 180, and how many bars were in the bin and left it again.
+
+Reading: mostly beside it or on the rim means the placement is imprecise (as the receiver's grasp was); mostly dropped on the way means the carry grip fails; mostly still held means the carry runs out of time or does not let go.
+
+### A2 results
+Run 2026-10-27 13:12-13:15 on the RTX box. Raw: `experiments/bimanual/out/b022_a2_failures.txt`. Between this run and the first one, the same chains gave counts that differ by up to 9 per seed of 128 (carry s2, seed 8: 74 in the bin here, 65 before), from the GPU simulator's run-to-run variation.
+
+| Switched episodes that missed the bin by step 120 | carry s1 | carry s2 | both |
+|---|---|---|---|
+| missed (of switched) | 28 of 155 | 31 of 172 | 59 |
+| on the rim (part of the bar over the bin's outline) | 14 | 21 | **35 (59%)** |
+| on the table within 5 cm of the bin | 6 | 4 | **10 (17%)** |
+| on the table farther away | 5 | 4 | 9 (15%) |
+| still held | 3 | 2 | 5 (8%) |
+| reach the bin by step 180 | 3 | 0 | 3 |
+| in the bin at some step, then out again (not misses) | 13 | 30 | 43 |
+
+- The receiver let go of 54 of the 59 itself, with the bar's centre at the bin's outline (median distance 0.0 cm).
+- Misses switched no later than successes (median step 27-35 against 27-29), so time is not what runs out.
+
+**Reading (as set before the run).** Mostly on the rim or beside the bin: 45 of 59. The placement is imprecise, like the receiver's grasp was: the carry brings the bar to the bin's edge and lets go there. The reward's horizontal pull is linear over 40 cm, so it pays a centred release only about 0.03 per cm more than one at the edge.
+
+Separately, 43 bars were in the bin and left it again. That is most of the gap between in the bin at some step (133) and at step 120 (114). Not looked at yet: the bar may bounce off a wall after a drop from height, or the arm may knock it.
+
+**Next (proposed, not run).** Pay the carry's last centimetres over the bin as v7 pays the receiver's: half the horizontal pull over the last few cm from the bin's centre. Before that, check in video or by count whether bars leave the bin by bouncing or by being knocked.
