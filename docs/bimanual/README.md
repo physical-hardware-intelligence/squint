@@ -2,7 +2,7 @@
 
 One Squint policy drives two SO-101 arms from their two wrist cameras: trained in simulation with RL, no demonstrations, to run on the real pair.
 
-**New here, or adding a task?** Read this page, then [GUIDE.md](GUIDE.md) (files, setup, recipe, lessons) and [reward-design.md](reward-design.md) (why the reward is shaped as it is).
+**New here, or adding a task?** Read this page, then [GUIDE.md](GUIDE.md) (files, setup, recipe, lessons), [reward-explained.md](reward-explained.md) (what the reward pays and why, from zero) and [reward-design.md](reward-design.md) (each version's history and measurements).
 
 | | |
 |---|---|
