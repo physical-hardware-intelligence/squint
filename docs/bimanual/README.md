@@ -44,8 +44,8 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | [B017](experiments/B017-carry-from-b016.md) | Carry policy retrained on B016's handovers: does the chain keep the gain? | not a valid test: B016 left 10 carry starts |
 | [B018](experiments/B018-practise-the-release.md) | Second policy practising the release from where the picker stops squeezing: does it fix the chain's weak step? | done: no. Found why: ~half the counted handovers were fake grips (closed gripper pressed on the bar), which cannot be released |
 | [B019](experiments/B019-real-grasps.md) | With a grasp check that rejects fake grips, does the handover policy make more real handovers? | done: no. Seeds 3-4 flat (109, 100 real handovers; B011: 108); seeds 1-2 (box) lost the release and carry nothing |
-| [B020](experiments/B020-open-approach.md) | Paying the receiver to come in with an open gripper (reward v5): more real handovers? | running: shut approach gone (106 → 0); the receiver now hovers open; release lost on seeds 2-3 |
-| [B021](experiments/B021-scratch-v6.md) | The handover from scratch with reward v6 (gripping at the handover point pays more than hovering) | protocol written |
+| [B020](experiments/B020-open-approach.md) | Paying the receiver to come in with an open gripper (reward v5): more real handovers? | done: shut approach gone (106 → 0) on all seeds; the receiver then hovers open; release lost on seeds 2-3 |
+| [B021](experiments/B021-scratch-v6.md) | The handover from scratch with reward v6 (gripping at the handover point pays more than hovering) | done: seed 2 the best so far (168 real handovers, 152 carries of 256); seeds 1, 3, 4 hover or lost the release; B014's carry does not take the new handovers |
 
 ## Story so far
 1. **B001.** The layout works; scripted grasps don't, so learning has to find the grasp.

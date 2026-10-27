@@ -1,0 +1,95 @@
+# B020 raw counts, Explorer A100 (Explorer clock US Eastern). Stage counts and probe under the corrected check (SO101HandoverBarV5Grip-v1); chain with B014 carry, switch on carry.
+# b020 preflight start 2026-10-27 03:24:18 NVIDIA A100-SXM4-80GB commit 76e375872644eda34cd32e8fea98ad983f24ff48
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: check_reset_frames.py  log runs/preflight/1_SO101HandoverBarV5Grip_v1_envcheck.log
+b020 preflight FAIL  SO101HandoverBarV5Grip-v1: short training exits 0  log runs/preflight/1_SO101HandoverBarV5Grip_v1_train.log
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: images 16x16x6, state 24  trainer printed ('16', '16', '6', '24')
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: gamma = 0.9  trainer printed 0.9
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: v_min = -20.0  trainer printed -20.0
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: v_max = 20.0  trainer printed 20.0
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: checkpoint saved  
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: stage counter runs the checkpoint  log runs/preflight/1_SO101HandoverBarV5Grip_v1_count.log
+b020 preflight preflight: 7 of 8 passed
+# b020 preflight exit 1 2026-10-27 03:28:48
+# resubmitted after amendment A2 (preflight accepts the exit crash after cleanup), 2026-10-27 03:31:55
+# b020 preflight start 2026-10-27 03:42:40 NVIDIA A100-SXM4-80GB commit c9ece42ca0a143dea1745ccd4d9f90a840fa86fc
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: check_reset_frames.py  log runs/preflight/1_SO101HandoverBarV5Grip_v1_envcheck.log
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: short training exits 0  log runs/preflight/1_SO101HandoverBarV5Grip_v1_train.log (exit -11 after cleanup)
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: images 16x16x6, state 24  trainer printed ('16', '16', '6', '24')
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: gamma = 0.9  trainer printed 0.9
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: v_min = -20.0  trainer printed -20.0
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: v_max = 20.0  trainer printed 20.0
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: checkpoint saved  
+b020 preflight PASS  SO101HandoverBarV5Grip-v1: stage counter runs the checkpoint  log runs/preflight/1_SO101HandoverBarV5Grip_v1_count.log
+b020 preflight preflight: 8 of 8 passed
+# b020 preflight exit 0 2026-10-27 03:47:14
+# b020_s1 start 2026-10-27 03:48:16 NVIDIA A100-SXM4-80GB commit c9ece42ca0a143dea1745ccd4d9f90a840fa86fc
+# b020_s2 start 2026-10-27 03:55:10 NVIDIA A100-SXM4-40GB
+NVIDIA A100-SXM4-40GB commit c9ece42ca0a143dea1745ccd4d9f90a840fa86fc
+# b020_s3 start 2026-10-27 04:24:36 NVIDIA A100-SXM4-40GB
+NVIDIA A100-SXM4-40GB commit c9ece42ca0a143dea1745ccd4d9f90a840fa86fc
+b020_s1 +1.5M seed 7 real handover 56 carry 51
+b020_s1 +1.5M probe seed 7 1 real handover: 53 | 2 bar never at the handover point: 2 | 3 receiver never within 3 cm: 20 | 4 near but never closes: 15 | 5 shuts beside the bar: 0 | 6 shuts on air: 1 | 7 other: 37 
+b020_s1 +1.5M chained with b014_top_s1 seed 7 handover 58 switched 54 bin 46 success 23 | at end: bin 40 success 13
+b020_s1 +1.5M chained with b014_top_s2 seed 7 handover 53 switched 51 bin 48 success 33 | at end: bin 44 success 17
+b020_s1 +1.5M seed 8 real handover 59 carry 53
+b020_s1 +1.5M probe seed 8 1 real handover: 56 | 2 bar never at the handover point: 6 | 3 receiver never within 3 cm: 18 | 4 near but never closes: 19 | 5 shuts beside the bar: 0 | 6 shuts on air: 2 | 7 other: 27 
+b020_s1 +1.5M chained with b014_top_s1 seed 8 handover 67 switched 59 bin 52 success 34 | at end: bin 50 success 24
+b020_s2 +1.5M seed 7 real handover 7 carry 0
+b020_s2 +1.5M probe seed 7 1 real handover: 8 | 2 bar never at the handover point: 1 | 3 receiver never within 3 cm: 4 | 4 near but never closes: 109 | 5 shuts beside the bar: 0 | 6 shuts on air: 0 | 7 other: 6 
+b020_s1 +1.5M chained with b014_top_s2 seed 8 handover 62 switched 55 bin 48 success 32 | at end: bin 38 success 18
+b020_s2 +1.5M chained with b014_top_s1 seed 7 handover 13 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b020_s2 +1.5M chained with b014_top_s2 seed 7 handover 9 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b020_s2 +1.5M seed 8 real handover 13 carry 0
+b020_s2 +1.5M probe seed 8 1 real handover: 13 | 2 bar never at the handover point: 2 | 3 receiver never within 3 cm: 7 | 4 near but never closes: 102 | 5 shuts beside the bar: 0 | 6 shuts on air: 0 | 7 other: 4 
+b020_s2 +1.5M chained with b014_top_s1 seed 8 handover 9 switched 1 bin 0 success 0 | at end: bin 0 success 0
+b020_s2 +1.5M chained with b014_top_s2 seed 8 handover 15 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b020_s3 +1.5M seed 7 real handover 32 carry 0
+b020_s3 +1.5M probe seed 7 1 real handover: 37 | 2 bar never at the handover point: 1 | 3 receiver never within 3 cm: 1 | 4 near but never closes: 60 | 5 shuts beside the bar: 0 | 6 shuts on air: 0 | 7 other: 29 
+b020_s3 +1.5M chained with b014_top_s1 seed 7 handover 33 switched 1 bin 0 success 0 | at end: bin 0 success 0
+b020_s1 +3M chained with b014_top_s1 seed 7 handover 45 switched 39 bin 32 success 18 | at end: bin 29 success 10
+b020_s1 +3M chained with b014_top_s2 seed 7 handover 50 switched 47 bin 36 success 27 | at end: bin 32 success 18
+b020_s1 +3M seed 8 real handover 59 carry 55
+b020_s1 +3M probe seed 8 1 real handover: 55 | 2 bar never at the handover point: 4 | 3 receiver never within 3 cm: 18 | 4 near but never closes: 27 | 5 shuts beside the bar: 0 | 6 shuts on air: 1 | 7 other: 23 
+b020_s1 +3M chained with b014_top_s1 seed 8 handover 59 switched 58 bin 50 success 29 | at end: bin 47 success 19
+b020_s1 +3M chained with b014_top_s2 seed 8 handover 58 switched 54 bin 36 success 24 | at end: bin 31 success 10
+# b020_s1 done 2026-10-27 05:15:32
+b020_s3 +1.5M probe seed 8 1 real handover: 34 | 2 bar never at the handover point: 3 | 3 receiver never within 3 cm: 3 | 4 near but never closes: 75 | 5 shuts beside the bar: 0 | 6 shuts on air: 0 | 7 other: 13 
+b020_s3 +1.5M chained with b014_top_s1 seed 8 handover 28 switched 1 bin 0 success 0 | at end: bin 0 success 0
+b020_s2 EXIT 139
+b020_s2 +3M seed 7 real handover 23 carry 0
+b020_s3 +1.5M chained with b014_top_s2 seed 8 handover 31 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b020_s2 +3M probe seed 7 1 real handover: 23 | 2 bar never at the handover point: 3 | 3 receiver never within 3 cm: 3 | 4 near but never closes: 98 | 5 shuts beside the bar: 0 | 6 shuts on air: 0 | 7 other: 1 
+b020_s2 +3M chained with b014_top_s1 seed 7 handover 16 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b020_s2 +3M chained with b014_top_s2 seed 7 handover 30 switched 0 bin 0 success 0 | at end: bin 0 success 0
+b020_s2 +3M seed 8 real handover 32 carry 1
+b020_s2 +3M probe seed 8 1 real handover: 23 | 2 bar never at the handover point: 6 | 3 receiver never within 3 cm: 2 | 4 near but never closes: 97 | 5 shuts beside the bar: 0 | 6 shuts on air: 0 | 7 other: 0 
+b020_s2 +3M chained with b014_top_s1 seed 8 handover 23 switched 1 bin 0 success 0 | at end: bin 0 success 0
+b020_s2 +3M chained with b014_top_s2 seed 8 handover 31 switched 0 bin 0 success 0 | at end: bin 0 success 0
+# b020_s2 done 2026-10-27 05:28:03
+b020_s3 EXIT 139
+b020_s3 +3M seed 7 real handover 42 carry 1
+45
+b020_s3 +3M probe seed 7 1 real handover: 46 | 2 bar never at the handover point: 3 | 3 receiver never within 3 cm: 2 | 4 near but never closes: 63 | 5 shuts beside the bar: 0 | 6 shuts on air: 0 | 7 other: 14 
+8 
+b020_s3 +3M chained with b014_top_s1 seed 7 handover 43 switched 1 bin 0 success 0 | at end: bin 0 success 0
+b020_s4 +1.5M chained with b014_top_s1 seed 7 handover 55 switched 49 bin 44 success 28 | at end: bin 40 success 19
+b020_s3 +3M chained with b014_top_s2 seed 7 handover 43 switched 2 bin 0 success 0 | at end: bin 0 success 0
+b020_s3 +3M seed 8 real handover 36 carry 1
+b020_s3 +3M probe seed 8 1 real handover: 34 | 2 bar never at the handover point: 13 | 3 receiver never within 3 cm: 11 | 4 near but never closes: 57 | 5 shuts beside the bar: 0 | 6 shuts on air: 0 | 7 other: 13 
+b020_s3 +3M chained with b014_top_s1 seed 8 handover 32 switched 1 bin 0 success 0 | at end: bin 0 success 0
+b020_s4 +1.5M seed 8 real handover 65 carry 56
+b020_s4 +1.5M probe seed 8 1 real handover: 64 | 2 bar never at the handover point: 5 | 3 receiver never within 3 cm: 15 | 4 near but never closes: 26 | 5 shuts beside the bar: 0 | 6 shuts on air: 0 | 7 other: 18 
+b020_s3 +3M chained with b014_top_s2 seed 8 handover 37 switched 0 bin 0 success 0 | at end: bin 0 success 0
+# b020_s3 done 2026-10-27 05:57:52
+b020_s4 +1.5M chained with b014_top_s1 seed 8 handover 53 switched 46 bin 42 success 28 | at end: bin 41 success 23
+b020_s4 +1.5M chained with b014_top_s2 seed 8 handover 57 switched 47 bin 44 success 34 | at end: bin 42 success 21
+b020_s4 EXIT 139
+b020_s4 +3M seed 7 real handover 53 carry 50
+b020_s4 +3M probe seed 7 1 real handover: 50 | 2 bar never at the handover point: 3 | 3 receiver never within 3 cm: 16 | 4 near but never closes: 39 | 5 shuts beside the bar: 0 | 6 shuts on air: 0 | 7 other: 20 
+b020_s4 +3M chained with b014_top_s1 seed 7 handover 52 switched 49 bin 44 success 31 | at end: bin 42 success 14
+b020_s4 +3M chained with b014_top_s2 seed 7 handover 54 switched 53 bin 50 success 40 | at end: bin 45 success 24
+b020_s4 +3M seed 8 real handover 53 carry 51
+b020_s4 +3M probe seed 8 1 real handover: 53 | 2 bar never at the handover point: 4 | 3 receiver never within 3 cm: 12 | 4 near but never closes: 38 | 5 shuts beside the bar: 0 | 6 shuts on air: 0 | 7 other: 21 
+b020_s4 +3M chained with b014_top_s1 seed 8 handover 55 switched 53 bin 49 success 32 | at end: bin 47 success 23
+b020_s4 +3M chained with b014_top_s2 seed 8 handover 53 switched 50 bin 42 success 35 | at end: bin 37 success 22
+# b020_s4 done 2026-10-27 06:37:12
