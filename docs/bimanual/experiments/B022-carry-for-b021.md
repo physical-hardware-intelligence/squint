@@ -44,3 +44,5 @@ Run 2026-10-27 11:44-12:42 on the RTX box, tree `db051bc`. Harvest: 4,492 carry 
 - The finish is unclean: of 133 in the bin, 114 are still there at step 120, and 37 succeed (bar still, nothing touching, arms still).
 
 **Decision.** By the rule (1 fails on one seed), watch the failed carries in video before changing anything. Chain videos: `chain_eval.py --video`.
+
+**Video (16 episodes, seed 7, carry seed 2).** 8 handovers, all 8 switched, 5 in the bin, 3 successes. In the side views at the last frame, the three failed carries end next to the bin rather than in it: one bar stands upright beside it, one lies on the table at its edge. Most of the other episodes never handed over: both grippers are still at the bar near the handover point. This is an impression from 16 low-resolution episodes `[UNVERIFIED]`. Before changing the carry, count where the failed carries end (on the rim, beside the bin, dropped on the way) over 256 episodes.
