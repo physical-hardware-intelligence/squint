@@ -96,3 +96,13 @@ By the reading set before the runs: the machine is ruled out. The same seed kept
 The only continuation under the old check, B015 (box, seed 1), kept the release; B019 under the corrected check lost it on the same machine and seed. Control on the box: B015's exact command (`SO101HandoverBarV2-v1`, old check, v2) with seeds 2 and 3, the seeds that lost it there under the corrected check. Counts under the corrected check (`SO101HandoverBarV2Grip-v1`, comparable with B019) at +1.5M and +3M.
 - Both keep the release (carries at least half of real handovers at +3M): the corrected check is the likely cause (old check 3 of 3 kept, corrected 2 of 6). B020 uses the corrected check too, so its release is at risk; its four seeds measure it, and the fix to try is to make the switch gentle (e.g. warm the critic on the corrected check before the actor updates).
 - Either loses it: continuing B011 loses the release by chance whatever the check; continuation itself is unstable and B020's seeds need checking one by one.
+
+### A3 results
+Run on the RTX box 2026-10-27 01:50-03:43, tree `d922b5a`. Raw: `experiments/bimanual/out/b019_a3_counts.txt`.
+
+| 256 episodes (seeds 7 + 8), counted under the corrected check | +1.5M real handovers, carries | +3M real handovers, carries |
+|---|---|---|
+| control seed 2 (old check) | 0, 0 | 0, 0 |
+| control seed 3 (old check) | 4, 0 | 10, 1 |
+
+Both control seeds lost the release, so by the reading set before the run the corrected check is not the cause. Continuing B011 loses the release whichever check trains it. Counting every continuation of B011 except B016 (whose reward change caused its loss), the release was kept in 5 runs and lost in 8. B021 then lost it once from scratch as well (seed 4), so the instability is not only a continuation effect.
