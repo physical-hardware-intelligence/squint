@@ -96,7 +96,7 @@ class Handover(BimanualWristCameraEnv):
     # instead of contact flags, so the intended path never dips. 3 (B012): v2, plus a handover step that pays a full
     # point, no 5 cm cliff, and no penalty for jaw-to-jaw contact during the handover (see docs/bimanual/reward-design.md).
     # 4 (B016): v2 plus a slope for the picker moving off the bar. 5 (B020): v2 with the receiver's reach paid in full
-    # only with its gripper open (OPEN_APPROACH_*)
+    # only with its gripper open (OPEN_APPROACH_*). 6 (B021): v5 with both holding paid more at the handover point
     REWARD_VERSION = 1
 
     def __init__(
@@ -494,14 +494,21 @@ class Handover(BimanualWristCameraEnv):
             # Stage 3, 4-6: at the handover point, the receiver reaches the free end
             at_handover = info["picker_grasp"] & (bar_to_handover < 0.05)
             receiver_reach = 2 * (1 - torch.tanh(5 * receiver_gap))
-            if self.REWARD_VERSION == 5:
+            if self.REWARD_VERSION in (5, 6):
                 receiver_reach = receiver_reach * self._open_approach(receiver_open)
             reward = torch.where(at_handover, 4 + receiver_reach, reward)
 
             # Stage 4, 6-7: both hold the lifted bar; the picker is paid to let go
-            reward = torch.where(info["both_hold"], 6 + picker_open, reward)
+            if self.REWARD_VERSION == 6:
+                # v6 (B021): half the point is for where the bar is held, full at the handover point and fading with
+                # distance (not v3's flat pay anywhere), so a real grip there beats the best hover (6.0) by 0.55, not
+                # v2's 0.1 (B020: the receiver opened, then hovered). The picker's letting go pays the other half
+                at_point = 1 - torch.tanh(5 * bar_to_handover)
+                reward = torch.where(info["both_hold"], 6 + 0.5 * at_point + 0.5 * picker_open, reward)
+            else:
+                reward = torch.where(info["both_hold"], 6 + picker_open, reward)
 
-        if self.REWARD_VERSION in (2, 3, 4, 5):
+        if self.REWARD_VERSION in (2, 3, 4, 5, 6):
             picker_gap = torch.linalg.norm(tcp_p - picker_end, axis=1)  # picker's grip point to its end of the bar
             return self._reward_after_handover_v2(reward, info, bar_p, axis, receiver_open, picker_gap)
 
@@ -685,6 +692,14 @@ class HandoverBarV5Grip(Handover):
     grasp check."""
 
     REWARD_VERSION = 5
+    GRASP_NEEDS_OPEN_JAWS = True
+
+
+@register_env("SO101HandoverBarV6Grip-v1", max_episode_steps=120)
+class HandoverBarV6Grip(Handover):
+    """B021: task 1, reward v6 (v5 with both holding paid more at the handover point) and the corrected grasp check."""
+
+    REWARD_VERSION = 6
     GRASP_NEEDS_OPEN_JAWS = True
 
 
