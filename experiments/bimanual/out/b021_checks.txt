@@ -1,0 +1,22 @@
+# 2026-10-27 02:28 reward_probe_v6.py, commit 7659f4fbc2322e330c22349b847761b145df6b6b
+picker 11.5% open while gripping; receiver 25% when open, 10.5% when gripping
+state                                                v2     v5     v6
+receiver 20 cm out, open                           4.48   4.48   4.48
+receiver 20 cm out, shut                           4.48   4.24   4.24
+receiver at the bar, open (hover)                  5.95   5.95   5.95
+receiver at the bar, shut                          5.95   4.98   4.98
+both hold, bar 0 cm from the handover point        6.11   6.11   6.56
+both hold, bar 7 cm from the handover point        6.11   6.11   6.39
+both hold, bar 12 cm from the handover point       6.11   6.11   6.29
+both hold, bar 25 cm from the handover point       6.11   6.11   6.13
+both hold, picker 50% open                         6.50   6.50   6.75
+both hold, picker 100% open                        7.00   7.00   7.00
+handed over, a picker jaw still on the bar         7.71   7.71   7.71
+handed over, picker clear of the bar               8.71   8.71   8.71
+PASS  S1 grip at the point beats the best hover by >= 0.5
+PASS  S2 grip pays less farther from the point
+PASS  S2 25 cm off: v6 at most 0.05 over v2
+PASS  S3 the release never pays less as it goes
+PASS  S4 open beats shut at the same spot
+PASS  S5 reach states at or above 4
+# check_reward.py SO101HandoverBarV6Grip-v1: 18 PASS, 0 FAIL
