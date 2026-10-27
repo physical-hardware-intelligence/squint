@@ -44,14 +44,14 @@ At +1.5M: real handovers 39, 0, 107, 100; carries 0, 0, 105, 99.
 
 **Decision.** By the rule: the receiver does not learn the real grasp from the corrected check alone; practise the grasp itself. Before that, train seed 1 on Explorer and seed 3 on the box: if the release loss follows the seed, continuing B011 is unstable and grasp practice needs several seeds; if it follows the machine, results from the two machines cannot be pooled until that is found.
 
-## Amendment A1: seed or machine? (written 2026-10-26 23:05, before the runs)
+## Amendment A1: seed or machine? (written 2026-10-26 22:48, before the runs)
 The two seeds that lost the release are the two that ran on the RTX box. Train one more seed on each machine, same command and measurements as above: seed 1 on an Explorer A100, seed 3 on the box. "Lost the release" = at +3M, carries below half of real handovers (seeds 7 + 8). So far: kept 106/109, 99/100 (Explorer); lost 0/44, 0/59 (box).
 
 GPU physics is not bit-reproducible across machines, so "the same seed" does not replay the same run. Reading:
 - Box seed 3 loses it and Explorer seed 1 keeps it: the machine stays the suspect (3 of 3 box runs against 0 of 3). Next: compare the two installs (package versions, driver) and the same checkpoint's counts on both.
 - Any other outcome: the machine is ruled out as the cause; the loss is run-to-run chance when continuing B011, and B020 must run on several seeds and check the release on each.
 
-## Amendment A2: why does the receiver miss? (written 2026-10-26 23:05, before the run)
+## Amendment A2: why does the receiver miss? (written 2026-10-26 22:48, before the run)
 No learning. B011 seed 1 at 3M (B020's starting policy) runs its own episodes under the corrected check (`SO101HandoverBarV2Grip-v1`, seeds 7 + 8, 128 episodes each, settings as `stage_counts.py`). `probe_receiver_grasp.py` puts each episode in the first class that fits:
 1. real handover (the receiver's corrected grasp while both hold the lifted bar);
 2. the bar never reaches the handover point;
@@ -63,4 +63,4 @@ No learning. B011 seed 1 at 3M (B020's starting policy) runs its own episodes un
 
 At the receiver's first close near the bar it records, by class: the grip point's distance from the bar's centre line (the bar is 1.25 cm from centre to face), its depth in from the bar's end, the angle between the jaws' closing direction and the bar (90 degrees = across it), and the closes per episode.
 
-**Why look (from the reward, not yet measured).** Stage 3 pays the receiver 2(1 − tanh(5 × gap)), the gap from its grip point to a point on the bar's centre line 1.2 cm in from the end. A closed gripper pressed against the bar sits at least 1.25 cm off that line and loses about 0.13 of 2 compared with jaws around the bar; a real grasp pays +0.1 over a perfect hover while the picker still holds. If classes 5 and 6 dominate, the reward does not tell the receiver how to grasp, and B020 changes what the receiver is paid for near the bar, not only where it starts. If 3 dominates, the receiver does not get there and practice from near starts is the fix. If 4 dominates, it hesitates.
+**Why look (from the reward, not yet measured).** Stage 3 pays the receiver 2(1 − tanh(5 × gap)), the gap from its grip point to a point on the bar's centre line 1.2 cm in from the end. A closed gripper pressed against the bar sits at least 1.25 cm off that line and loses 0.125 of 2 compared with jaws around the bar; a real grasp pays +0.1 over a perfect hover while the picker still holds. If classes 5 and 6 dominate, the reward does not tell the receiver how to grasp, and B020 changes what the receiver is paid for near the bar, not only where it starts. If 3 dominates, the receiver does not get there and practice from near starts is the fix. If 4 dominates, it hesitates.
