@@ -47,7 +47,7 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | [B020](experiments/B020-open-approach.md) | Paying the receiver to come in with an open gripper (reward v5): more real handovers? | done: shut approach gone (106 → 0) on all seeds; the receiver then hovers open; release lost on seeds 2-3 |
 | [B021](experiments/B021-scratch-v6.md) | The handover from scratch with reward v6 (gripping at the handover point pays more than hovering) | done: seed 2 the best so far (168 real handovers, 152 carries of 256); seeds 1, 3, 4 hover or lost the release; B014's carry does not take the new handovers |
 | [B022](experiments/B022-carry-for-b021.md) | A carry policy trained on B021 seed 2's own handovers: the best chain so far? | protocol written |
-| [B023](experiments/B023-free-attempts.md) | Is hovering a choice, and does making a try at the bar free (reward v7) fix it? | step 0 written |
+| [B023](experiments/B023-free-attempts.md) | Why the receiver hovers, and reward v7 (half the reach pays the last centimetres) | step 0: the hover is ~2 cm short, where closing grasps 8%; v7 from scratch running |
 
 ## Story so far
 1. **B001.** The layout works; scripted grasps don't, so learning has to find the grasp.

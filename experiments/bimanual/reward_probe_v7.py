@@ -111,7 +111,7 @@ reach = [v6[k] for k in ("receiver 20 cm out, open", "receiver 20 cm out, shut",
 checks = {
     "S1 grip at the point beats the best hover by >= 0.5": g[0] - v6["receiver 0 cm from its target, open"] >= 0.5,
     "S2 grip pays less farther from the point": g[0] > g[1] > g[2] > g[3],
-    "S2 25 cm off: v6 at most 0.05 over v2": g[3] - v2["both hold, bar 25 cm from the handover point"] <= 0.05,
+    "S2 25 cm off: v7 at most 0.05 over v2": g[3] - v2["both hold, bar 25 cm from the handover point"] <= 0.05,
     "S3 the release never pays less as it goes": all(b >= a - 1e-6 for a, b in zip(path, path[1:])),
     "S4 open beats shut at the same spot": v6["receiver 20 cm out, open"] > v6["receiver 20 cm out, shut"]
                                           and v6["receiver at the bar, open (hover)"] > v6["receiver at the bar, shut"],
