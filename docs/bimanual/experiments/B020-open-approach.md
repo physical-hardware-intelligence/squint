@@ -52,5 +52,8 @@ Each holds if it holds at +3M on at least 3 of the 4 seeds (B019 showed seeds ca
 - **Where.** B019 A1 so far: box seed 3 lost the release by +1.5M (4 real handovers, 0 carries), as seeds 1 and 2 did there; Explorer's seed 3 kept it. Explorer's seed-3 checkpoint scores the same on the box (108 real handovers, 107 carries), so the box measures correctly and the difference is in training there. Both A1 outcomes lead to Explorer (machine suspect: Explorer only; chance: several seeds anywhere), so all four seeds run on Explorer A100s and are queued now, since the queue wait is hours.
 - **Gate.** The preflight runs on an A100 as its own job (`hpc/b020_preflight.sbatch`); the four training seeds start only if it exits 0 (`--dependency=afterok`).
 
+## Amendment A2 (2026-10-27 00:35, before any training)
+The A100 preflight (job at 03:24 Explorer time) passed 7 of 8. The failure was "short training exits 0": the trainer finished, saved its checkpoints, printed its own "Cleanup complete. Exiting." and then segfaulted at interpreter exit. That is the known Explorer exit crash (B019's Explorer runs: EXIT 139 after saving, results valid). The dependency then cancelled the four training seeds. `preflight.py` now passes that one case only: exit 139 (or signal 11) with the training log ending on the trainer's cleanup line. Preflight and seeds resubmitted.
+
 ## Results
 _Not run._
