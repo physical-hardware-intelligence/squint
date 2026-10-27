@@ -1,4 +1,6 @@
-# Reward design for the handover (v1 → v2)
+# Reward design for the handover (v1 → v6)
+
+The history: what each reward version changed and the measurement behind it. For the current reward explained from zero, read [reward-explained.md](reward-explained.md) first.
 
 Why task 1 stalls after the handover, measured, and what reward v2 changes. Numbers come from `experiments/bimanual/reward_probe.py` (the reward scored on hand-set states) and `check_reward.py`, 2026-10-25.
 
@@ -108,7 +110,26 @@ Code: `REWARD_VERSION = 4`, `PICKER_CLEAR_DISTANCE`, env `SO101HandoverBarV4-v1`
 
 **Result (B016): v4 failed.** Continued from B011 seed 1 on five seeds, the clean releases collapsed (carries 101 → 3-12). B011's picker stops a few centimetres from the bar; v2 paid that release the full +1, v4 about +0.6. Changing a trained policy's reward must be checked on the states the policy actually visits, not only along a constructed path.
 
-## 9. Known, not changed yet
+## 9. The grasp check (B018, B019)
+Not a reward version, but it changes what every version pays. `is_grasping` (0.5 N on each jaw, the push up to 110 degrees off the opening direction) also accepts a fully closed gripper pressed against the bar's side. B018: about half of B011's counted handovers were such fake grips (108 real of 193 counted). Since B019 the envs ending in `Grip` also require the jaws to be stopped by the bar, at least 3% open (`GRASP_NEEDS_OPEN_JAWS`, `MIN_GRASP_OPENNESS`). Real grips sit at 10-11%.
+
+## 10. Reward v5: the receiver comes in open (B020)
+B019 A2 (`probe_receiver_grasp.py`): in 106 of 256 episodes the receiver arrived with its gripper already shut and pressed it on the bar's side. A shut gripper resting on the face is at least 1.25 cm from the centre line, which v2's reach paid only 0.125 of 2 less than jaws around the bar. v5 = v2 with stage 3's reach multiplied by 0.5 + 0.5 × min(receiver openness / 0.15, 1). 0.15 was set on seed 9: real approaches run at a median 22% open and stay above 15% until the grip in 95% of steps. `reward_probe_v5.py` on B011's own episodes: real handovers lose 0.0 per reach step, shut-beside episodes 0.83, no dip at the grip.
+
+**Result (B020):** the shut approach went from 106 to 0 on every seed measured, but the receiver then hovered open beside the bar. Gripping paid 6.1 against the best hover's 6.0, and under v5 a missed close costs.
+
+## 11. Reward v6: gripping at the handover point (B021)
+v6 = v5 with stage 4 (both hold) = 6 + 0.5 × pull(bar → handover point) + 0.5 × picker openness, where v2 and v5 paid 6 + picker openness. A grip at the point beats the best hover by 0.61, not 0.1. The extra fades with distance (25 cm off: 0.02 over v2), so it does not repeat v3's flat pay anywhere (§7). The release still never pays less as it goes. `reward_probe_v6.py` checks these on constructed states.
+
+| State | v2 | v5 | v6 |
+|---|---|---|---|
+| receiver at the bar, open (hover) / shut | 5.95 / 5.95 | 5.95 / 4.98 | 5.95 / 4.98 |
+| both hold, bar 0 / 7 / 12 / 25 cm from the handover point | 6.11 | 6.11 | 6.56 / 6.39 / 6.29 / 6.13 |
+| both hold, picker 50% / 100% open | 6.50 / 7.00 | 6.50 / 7.00 | 6.75 / 7.00 |
+
+Trained from scratch, not continued from B011: continuing changed the reward under a trained policy and lost the release in most runs (B019, B020).
+
+## 12. Known, not changed yet
 
 - **Arms touching at the handover:** handled in v3 (§7).
 - **The receiver gets no signal before stage 3:** it wanders (the "visit the bin first" motion seen in the videos). A small term for waiting near the handover point would fix it; left out so that v2 changes only what happens after the handover.

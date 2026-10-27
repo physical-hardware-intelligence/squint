@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 500" width="880" height="500" font-family="Helvetica, Arial, sans-serif">
+  <rect width="880" height="500" fill="#ffffff"/>
+  <text x="70" y="22" font-size="15" font-weight="bold" fill="#1f2328">Handover reward v6: the score per step along a successful episode</text>
+  <!-- grid: y(v) = 400 - 22.5 v -->
+  <g stroke="#e6e8eb" stroke-width="1">
+    <line x1="60" y1="400" x2="850" y2="400"/>
+    <line x1="60" y1="310" x2="850" y2="310"/>
+    <line x1="60" y1="220" x2="850" y2="220"/>
+    <line x1="60" y1="130" x2="850" y2="130"/>
+    <line x1="60" y1="40" x2="850" y2="40"/>
+  </g>
+  <g font-size="12" fill="#59636e" text-anchor="end">
+    <text x="52" y="404">0</text>
+    <text x="52" y="314">4</text>
+    <text x="52" y="224">8</text>
+    <text x="52" y="134">12</text>
+    <text x="52" y="44">16</text>
+  </g>
+  <text x="18" y="230" font-size="12" fill="#59636e" transform="rotate(-90 18 230)" text-anchor="middle">score (of 16)</text>
+  <!-- stage bands: low..high -->
+  <g stroke="#ffffff" stroke-width="2">
+    <rect x="70" y="355" width="110" height="45" fill="#c6dbef"/>
+    <rect x="185" y="310" width="110" height="45" fill="#9ecae1"/>
+    <rect x="300" y="265" width="110" height="45" fill="#6baed6"/>
+    <rect x="415" y="242.5" width="110" height="22.5" fill="#4292c6"/>
+    <rect x="530" y="175" width="110" height="67.5" fill="#2171b5"/>
+    <rect x="645" y="62.5" width="110" height="112.5" fill="#08519c"/>
+    <rect x="760" y="38" width="80" height="6" fill="#08306b"/>
+  </g>
+  <!-- ranges above each band -->
+  <g font-size="13" font-weight="bold" fill="#1f2328" text-anchor="middle">
+    <text x="125" y="347">0–2</text>
+    <text x="240" y="302">2–4</text>
+    <text x="355" y="257">4–6</text>
+    <text x="470" y="234">6–7</text>
+    <text x="585" y="167">7–10</text>
+    <text x="700" y="55">10–15</text>
+    <text x="800" y="31">16</text>
+  </g>
+  <!-- where the newest changes act -->
+  <g font-size="11" fill="#ffffff" text-anchor="middle">
+    <text x="355" y="285">v5: shut gripper</text>
+    <text x="355" y="299">earns half</text>
+  </g>
+  <text x="470" y="282" font-size="11" fill="#1f2328" text-anchor="middle">v6: more when held</text>
+  <text x="470" y="296" font-size="11" fill="#1f2328" text-anchor="middle">at the meeting point</text>
+  <!-- stage numbers and names under the axis -->
+  <g font-size="12" fill="#1f2328" text-anchor="middle">
+    <text x="125" y="422" font-weight="bold">1</text>
+    <text x="125" y="438">Picker reaches</text>
+    <text x="125" y="453">the bar</text>
+    <text x="240" y="422" font-weight="bold">2</text>
+    <text x="240" y="438">Picker lifts it to</text>
+    <text x="240" y="453">the meeting point</text>
+    <text x="355" y="422" font-weight="bold">3</text>
+    <text x="355" y="438">Receiver comes in,</text>
+    <text x="355" y="453">jaws open</text>
+    <text x="470" y="422" font-weight="bold">4</text>
+    <text x="470" y="438">Both hold</text>
+    <text x="470" y="453">the bar</text>
+    <text x="585" y="422" font-weight="bold">5</text>
+    <text x="585" y="438">Picker lets go,</text>
+    <text x="585" y="453">receiver carries</text>
+    <text x="700" y="422" font-weight="bold">6</text>
+    <text x="700" y="438">Bar in the bin,</text>
+    <text x="700" y="453">receiver lets go</text>
+    <text x="800" y="422" font-weight="bold">done</text>
+    <text x="800" y="438">All still,</text>
+    <text x="800" y="453">nothing touching</text>
+  </g>
+  <text x="70" y="486" font-size="12" fill="#59636e">Penalties on any step: an arm on the table −6, on the bin −3, the arms touching each other −2, bar not yet lifted −1.</text>
+</svg>

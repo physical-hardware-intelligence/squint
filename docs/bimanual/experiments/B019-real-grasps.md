@@ -43,3 +43,56 @@ At +1.5M: real handovers 39, 0, 107, 100; carries 0, 0, 105, 99.
 **Two outcomes, not one.** Seeds 3 and 4 stayed where B011 started. Seeds 1 and 2 lost the release: after a real handover the picker keeps the bar (seed 7 episodes: seed 1, 17 of 18 handovers end with the picker alone holding; seed 2, 14 with both still holding to the end and 14 with the picker alone; B011, 2 of 55 fail at all). The box measures correctly (B011 re-measured there: 55 real handovers, 54 carries on seed 7), and the training return stayed flat on all four seeds (32-41), so the return did not show the loss. Not known: whether the split is the seed or the machine. The two bad seeds are exactly the two run on the box; B016 agreed across machines.
 
 **Decision.** By the rule: the receiver does not learn the real grasp from the corrected check alone; practise the grasp itself. Before that, train seed 1 on Explorer and seed 3 on the box: if the release loss follows the seed, continuing B011 is unstable and grasp practice needs several seeds; if it follows the machine, results from the two machines cannot be pooled until that is found.
+
+## Amendment A1: seed or machine? (written 2026-10-26 22:48, before the runs)
+The two seeds that lost the release are the two that ran on the RTX box. Train one more seed on each machine, same command and measurements as above: seed 1 on an Explorer A100, seed 3 on the box. "Lost the release" = at +3M, carries below half of real handovers (seeds 7 + 8). So far: kept 106/109, 99/100 (Explorer); lost 0/44, 0/59 (box).
+
+GPU physics is not bit-reproducible across machines, so "the same seed" does not replay the same run. Reading:
+- Box seed 3 loses it and Explorer seed 1 keeps it: the machine stays the suspect (3 of 3 box runs against 0 of 3). Next: compare the two installs (package versions, driver) and the same checkpoint's counts on both.
+- Any other outcome: the machine is ruled out as the cause; the loss is run-to-run chance when continuing B011, and B020 must run on several seeds and check the release on each.
+
+## Amendment A2: why does the receiver miss? (written 2026-10-26 22:48, before the run)
+No learning. B011 seed 1 at 3M (B020's starting policy) runs its own episodes under the corrected check (`SO101HandoverBarV2Grip-v1`, seeds 7 + 8, 128 episodes each, settings as `stage_counts.py`). `probe_receiver_grasp.py` puts each episode in the first class that fits:
+1. real handover (the receiver's corrected grasp while both hold the lifted bar);
+2. the bar never reaches the handover point;
+3. it does, but the receiver's grip point never comes within 3 cm of its end of the bar;
+4. it comes within 3 cm, but the receiver's gripper never closes below 15% open (a real grip stops at 10-11%);
+5. it closes near the bar and ends shut (below 3%) touching the bar: closed beside it;
+6. it closes near the bar and ends shut not touching it: closed on air;
+7. anything else.
+
+At the receiver's first close near the bar it records, by class: the grip point's distance from the bar's centre line (the bar is 1.25 cm from centre to face), its depth in from the bar's end, the angle between the jaws' closing direction and the bar (90 degrees = across it), and the closes per episode.
+
+**Why look (from the reward, not yet measured).** Stage 3 pays the receiver 2(1 − tanh(5 × gap)), the gap from its grip point to a point on the bar's centre line 1.2 cm in from the end. A closed gripper pressed against the bar sits at least 1.25 cm off that line and loses 0.125 of 2 compared with jaws around the bar; a real grasp pays +0.1 over a perfect hover while the picker still holds. If classes 5 and 6 dominate, the reward does not tell the receiver how to grasp, and B020 changes what the receiver is paid for near the bar, not only where it starts. If 3 dominates, the receiver does not get there and practice from near starts is the fix. If 4 dominates, it hesitates.
+
+### A2 results
+Run 2026-10-26 22:54 on the RTX box (tree `d922b5a` + the probe). Raw: `experiments/bimanual/out/b019_a2_receiver_grasp.txt`.
+
+| 256 episodes (seeds 7 + 8), B011 seed 1 at 3M | Episodes | Arrived with the gripper already shut |
+|---|---|---|
+| 1 real handover | 111 (43%) | 24 of 111 |
+| 2 bar never at the handover point | 7 | |
+| 3 receiver never within 3 cm | 7 | |
+| 4 near but never closes | 1 | |
+| **5 shuts beside the bar** | **106 (41%)** | **106 of 106** |
+| 6 shuts on air | 4 | |
+| 7 other | 20 | |
+
+At the first close near the bar (median): real grasps 0.9 cm off the centre line, 11-12% open; shut beside the bar 2.0 cm off (the face is at 1.25 cm), 0% open. The closing-direction angle (real 44-47 degrees, beside 79-81) is reported as measured but not validated: the fixed jaw's y axis may not be the true closing direction.
+
+**Reading.** Class 5 dominates, as the reward predicts: in every one of those episodes the receiver came in with its gripper already shut and pressed it against the bar's side; it never opened. Most real grasps arrived open. The receiver is not missing its aim; it is not opening. B020 must pay the receiver for an open gripper on the way in (inside stage 3's band, so a hover still scores below both holding), checked on the current policy's states first (B016's lesson) and probed for shortcuts (B012's).
+
+### A1 results
+Box seed 3 (2026-10-26 22:49-23:48): +1.5M 4 real handovers, 0 carries; +3M 6 and 0. Explorer seed 1 (2026-10-27 00:23-01:48 PDT): 0 and 0 at both. Raw: `experiments/bimanual/out/b019_a1_counts.txt` (box), `b019_counts.txt` (Explorer seed 1, at the end).
+
+| Continued with the corrected check | kept the release | lost it |
+|---|---|---|
+| RTX box | | seeds 1, 2, 3 |
+| Explorer A100 | seeds 3, 4 | seed 1 |
+
+By the reading set before the runs: the machine is ruled out. The same seed kept it on one machine and lost it on the other (GPU physics is not bit-reproducible), and both machines lost it. The release loss is run-to-run chance when continuing B011 under the corrected check: 4 of 6. The box also scores Explorer's seed-3 checkpoint as Explorer does (108 real handovers, 107 carries), so measurement is not the difference.
+
+## Amendment A3: is it the corrected check? (written 2026-10-27 01:49, before the runs)
+The only continuation under the old check, B015 (box, seed 1), kept the release; B019 under the corrected check lost it on the same machine and seed. Control on the box: B015's exact command (`SO101HandoverBarV2-v1`, old check, v2) with seeds 2 and 3, the seeds that lost it there under the corrected check. Counts under the corrected check (`SO101HandoverBarV2Grip-v1`, comparable with B019) at +1.5M and +3M.
+- Both keep the release (carries at least half of real handovers at +3M): the corrected check is the likely cause (old check 3 of 3 kept, corrected 2 of 6). B020 uses the corrected check too, so its release is at risk; its four seeds measure it, and the fix to try is to make the switch gentle (e.g. warm the critic on the corrected check before the actor updates).
+- Either loses it: continuing B011 loses the release by chance whatever the check; continuation itself is unstable and B020's seeds need checking one by one.

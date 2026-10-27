@@ -82,13 +82,21 @@ class Handover(BimanualWristCameraEnv):
     # other arm lets go (B018: 255 of 512 such starts; real grips sit at 10-11% open, those at 0%). Off in the envs as run
     GRASP_NEEDS_OPEN_JAWS = False
     MIN_GRASP_OPENNESS = 0.03
+    # Reward v5 (B020): the receiver's reach at the handover point pays in full only with its gripper open wider than the
+    # bar. B019 A2: 106 of 256 episodes the receiver came in shut and pressed on the bar's side, which v2 paid 0.125 of 2
+    # less than jaws around it. Set on seed 9 (not a check seed): real grips stop at 10-11% open; real approaches run at
+    # a median 22% and stay above 15% until the grip in 95% of steps
+    OPEN_APPROACH_WEIGHT = 0.5  # share of the reach that needs the open gripper
+    OPEN_APPROACH_FULL = 0.15  # openness that earns it in full
     # How the carry is paid for its distance d to the goal: "tanh" = 1 - tanh(5 d), steep only within ~15 cm (B001-B005);
     # "linear" = 1 - d / 40 cm, the same pull at every distance (B006). 40 cm covers the handover point to any goal
     CARRY_DISTANCE_SHAPE = "tanh"
     CARRY_LINEAR_RANGE = 0.40
     # Reward version. 1: B001-B007. 2 (B008): the same up to the handover; after it, scores follow the bar's progress
     # instead of contact flags, so the intended path never dips. 3 (B012): v2, plus a handover step that pays a full
-    # point, no 5 cm cliff, and no penalty for jaw-to-jaw contact during the handover (see docs/bimanual/reward-design.md)
+    # point, no 5 cm cliff, and no penalty for jaw-to-jaw contact during the handover (see docs/bimanual/reward-design.md).
+    # 4 (B016): v2 plus a slope for the picker moving off the bar. 5 (B020): v2 with the receiver's reach paid in full
+    # only with its gripper open (OPEN_APPROACH_*). 6 (B021): v5 with both holding paid more at the handover point
     REWARD_VERSION = 1
 
     def __init__(
@@ -342,6 +350,25 @@ class Handover(BimanualWristCameraEnv):
         """The bar's long axis in the world frame."""
         return self.bar.pose.to_transformation_matrix()[..., :3, 0]
 
+    def _receiver_grip_geometry(self):
+        """The receiver's grip point against the bar: (gap to the reward's target, a point on the centre line 1.2 cm in
+        from the end away from the picker; distance from the centre line; depth in from the bar's end, negative beyond it)."""
+        bar_p, axis = self.bar.pose.p, self._bar_axis()
+        grip_offset = (self.bar_half_lengths - 0.012)[:, None]
+        end_a, end_b = bar_p + axis * grip_offset, bar_p - axis * grip_offset
+        tcp_p = self._by_role(self.arms[0].tcp_pos, self.arms[1].tcp_pos, "picker")
+        tcp_r = self._by_role(self.arms[0].tcp_pos, self.arms[1].tcp_pos, "receiver")
+        a_nearer = torch.linalg.norm(tcp_p - end_a, dim=1) <= torch.linalg.norm(tcp_p - end_b, dim=1)
+        gap = torch.linalg.norm(tcp_r - torch.where(a_nearer[:, None], end_b, end_a), dim=1)
+        rel = tcp_r - bar_p
+        along = (rel * axis).sum(1)
+        return gap, torch.linalg.norm(rel - along[:, None] * axis, dim=1), self.bar_half_lengths - along.abs()
+
+    def _open_approach(self, receiver_open: torch.Tensor) -> torch.Tensor:
+        """Reward v5: the share of the receiver's reach it earns, 1 - w (shut) to 1 (open wider than the bar)."""
+        w = self.OPEN_APPROACH_WEIGHT
+        return 1 - w + w * torch.clamp(receiver_open / self.OPEN_APPROACH_FULL, 0, 1)
+
     def _arm_contacts(self):
         """Contacts between the two arms over the same 16 link pairs as before, split: (jaws, body). jaws: a gripper link or
         moving jaw of one arm against a gripper link or moving jaw of the other (a handover brings them ~3.6 cm apart);
@@ -467,12 +494,21 @@ class Handover(BimanualWristCameraEnv):
             # Stage 3, 4-6: at the handover point, the receiver reaches the free end
             at_handover = info["picker_grasp"] & (bar_to_handover < 0.05)
             receiver_reach = 2 * (1 - torch.tanh(5 * receiver_gap))
+            if self.REWARD_VERSION in (5, 6):
+                receiver_reach = receiver_reach * self._open_approach(receiver_open)
             reward = torch.where(at_handover, 4 + receiver_reach, reward)
 
             # Stage 4, 6-7: both hold the lifted bar; the picker is paid to let go
-            reward = torch.where(info["both_hold"], 6 + picker_open, reward)
+            if self.REWARD_VERSION == 6:
+                # v6 (B021): half the point is for where the bar is held, full at the handover point and fading with
+                # distance (not v3's flat pay anywhere), so a real grip there beats the best hover (6.0) by 0.55, not
+                # v2's 0.1 (B020: the receiver opened, then hovered). The picker's letting go pays the other half
+                at_point = 1 - torch.tanh(5 * bar_to_handover)
+                reward = torch.where(info["both_hold"], 6 + 0.5 * at_point + 0.5 * picker_open, reward)
+            else:
+                reward = torch.where(info["both_hold"], 6 + picker_open, reward)
 
-        if self.REWARD_VERSION in (2, 3, 4):
+        if self.REWARD_VERSION in (2, 3, 4, 5, 6):
             picker_gap = torch.linalg.norm(tcp_p - picker_end, axis=1)  # picker's grip point to its end of the bar
             return self._reward_after_handover_v2(reward, info, bar_p, axis, receiver_open, picker_gap)
 
@@ -647,6 +683,23 @@ class HandoverBarV2Grip(Handover):
     """Task 1, reward v2, and a grasp only when the jaws are stopped by the bar (GRASP_NEEDS_OPEN_JAWS)."""
 
     REWARD_VERSION = 2
+    GRASP_NEEDS_OPEN_JAWS = True
+
+
+@register_env("SO101HandoverBarV5Grip-v1", max_episode_steps=120)
+class HandoverBarV5Grip(Handover):
+    """B020: task 1, reward v5 (v2 with the receiver's reach paid in full only with its gripper open) and the corrected
+    grasp check."""
+
+    REWARD_VERSION = 5
+    GRASP_NEEDS_OPEN_JAWS = True
+
+
+@register_env("SO101HandoverBarV6Grip-v1", max_episode_steps=120)
+class HandoverBarV6Grip(Handover):
+    """B021: task 1, reward v6 (v5 with both holding paid more at the handover point) and the corrected grasp check."""
+
+    REWARD_VERSION = 6
     GRASP_NEEDS_OPEN_JAWS = True
 
 

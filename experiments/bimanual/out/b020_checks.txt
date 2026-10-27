@@ -1,0 +1,99 @@
+# 2026-10-26 23:27:41 B020 checks, commit 76e375872644eda34cd32e8fea98ad983f24ff48
+reward_probe_v5 seed 7 exit 0
+{
+ "checkpoint": "runs/b011_wrist_s1/ckpt_3M.pt",
+ "seed": 7,
+ "episodes": 128,
+ "classes": {
+  "1 real handover": 52,
+  "2 bar never at the handover point": 5,
+  "3 receiver never within 3 cm": 2,
+  "4 near but never closes": 0,
+  "5 shuts beside the bar": 58,
+  "6 shuts on air": 3,
+  "7 other": 8
+ },
+ "constants": {
+  "OPEN_APPROACH_WEIGHT": 0.5,
+  "OPEN_APPROACH_FULL": 0.15
+ },
+ "numbers": {
+  "min_v2_minus_v5": 0.0,
+  "max_v2_minus_v5": 0.9175,
+  "max_abs_where_unchanged": 0.0,
+  "reach_step_drop_median": {
+   "1 real handover": 0.0,
+   "2 bar never at the handover point": NaN,
+   "3 receiver never within 3 cm": 0.0,
+   "4 near but never closes": null,
+   "5 shuts beside the bar": 0.825,
+   "6 shuts on air": 0.738,
+   "7 other": 0.0
+  },
+  "real_no_dip_at_grip": "52 of 52"
+ },
+ "checks": {
+  "C1 v5 never above v2": "PASS",
+  "C1 v5 = v2 off reach steps and when open": "PASS",
+  "C2 real: median reach-step drop <= 0.1": "PASS",
+  "C2 real: no dip at the grip in >= 90%": "PASS",
+  "C3 beside: median reach-step drop >= 0.5": "PASS",
+  "C4 drop <= 2 * weight": "PASS"
+ }
+}
+reward_probe_v5 seed 8 exit 0
+{
+ "checkpoint": "runs/b011_wrist_s1/ckpt_3M.pt",
+ "seed": 8,
+ "episodes": 128,
+ "classes": {
+  "1 real handover": 54,
+  "2 bar never at the handover point": 1,
+  "3 receiver never within 3 cm": 6,
+  "4 near but never closes": 1,
+  "5 shuts beside the bar": 55,
+  "6 shuts on air": 2,
+  "7 other": 9
+ },
+ "constants": {
+  "OPEN_APPROACH_WEIGHT": 0.5,
+  "OPEN_APPROACH_FULL": 0.15
+ },
+ "numbers": {
+  "min_v2_minus_v5": 0.0,
+  "max_v2_minus_v5": 0.9189,
+  "max_abs_where_unchanged": 0.0,
+  "reach_step_drop_median": {
+   "1 real handover": 0.0,
+   "2 bar never at the handover point": NaN,
+   "3 receiver never within 3 cm": 0.0,
+   "4 near but never closes": 0.0,
+   "5 shuts beside the bar": 0.832,
+   "6 shuts on air": 0.392,
+   "7 other": 0.05
+  },
+  "real_no_dip_at_grip": "54 of 54"
+ },
+ "checks": {
+  "C1 v5 never above v2": "PASS",
+  "C1 v5 = v2 off reach steps and when open": "PASS",
+  "C2 real: median reach-step drop <= 0.1": "PASS",
+  "C2 real: no dip at the grip in >= 90%": "PASS",
+  "C3 beside: median reach-step drop >= 0.5": "PASS",
+  "C4 drop <= 2 * weight": "PASS"
+ }
+}
+check_reward exit 0
+      1 PASS  success = 16  16.00
+      1 PASS  stage 6 (in the bin) within 10-15  13.26
+      1 PASS  stage 5 (receiver carries) within 8-10  8.71
+preflight exit 1
+PASS  SO101HandoverBarV5Grip-v1: check_reset_frames.py  log runs/preflight/1_SO101HandoverBarV5Grip_v1_envcheck.log
+FAIL  SO101HandoverBarV5Grip-v1: short training exits 0  log runs/preflight/1_SO101HandoverBarV5Grip_v1_train.log
+PASS  SO101HandoverBarV5Grip-v1: images 16x16x6, state 24  trainer printed ('16', '16', '6', '24')
+PASS  SO101HandoverBarV5Grip-v1: gamma = 0.9  trainer printed 0.9
+PASS  SO101HandoverBarV5Grip-v1: v_min = -20.0  trainer printed -20.0
+PASS  SO101HandoverBarV5Grip-v1: v_max = 20.0  trainer printed 20.0
+FAIL  SO101HandoverBarV5Grip-v1: checkpoint saved  
+preflight: 5 of 7 passed
+# DONE 2026-10-26 23:30:28
