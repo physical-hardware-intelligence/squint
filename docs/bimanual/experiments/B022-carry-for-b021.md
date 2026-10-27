@@ -46,3 +46,16 @@ Run 2026-10-27 11:44-12:42 on the RTX box, tree `db051bc`. Harvest: 4,492 carry 
 **Decision.** By the rule (1 fails on one seed), watch the failed carries in video before changing anything. Chain videos: `chain_eval.py --video`.
 
 **Video (16 episodes, seed 7, carry seed 2).** 8 handovers, all 8 switched, 5 in the bin, 3 successes. In the side views at the last frame, the three failed carries end next to the bin rather than in it: one bar stands upright beside it, one lies on the table at its edge. Most of the other episodes never handed over: both grippers are still at the bar near the handover point. This is an impression from 16 low-resolution episodes `[UNVERIFIED]`. Before changing the carry, count where the failed carries end (on the rim, beside the bin, dropped on the way) over 256 episodes.
+
+## Amendment A2: where the failed carries end (written 2026-10-27 13:20, before the run)
+`chain_eval.py --failures`, the same chains (B021 seed 2 then each carry seed, seeds 7 + 8). For the episodes that switched to the carry but never had the bar in the bin by step 120, where the bar is at step 120, in the first class that fits:
+- still held, over the bin;
+- still held, elsewhere;
+- not held, part of it over the bin's outline (on the rim);
+- on the table within 5 cm of the bin's outline (beside it);
+- on the table farther away (dropped on the way);
+- other.
+
+Also: how many the receiver dropped and how far from the bin, the switch step of misses against successes (a late switch leaves the carry less than the 60 steps it trained on), how many misses reach the bin by step 180, and how many bars were in the bin and left it again.
+
+Reading: mostly beside it or on the rim means the placement is imprecise (as the receiver's grasp was); mostly dropped on the way means the carry grip fails; mostly still held means the carry runs out of time or does not let go.
