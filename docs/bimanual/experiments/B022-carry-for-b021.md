@@ -23,5 +23,8 @@ All on Explorer A100s.
 - **Both hold:** B021 seed 2 + B022 is the simulation baseline to beat. The recipe also carries over to the real rig once the top camera is calibrated.
 - **1 fails:** watch the failed carries in video before changing anything (B014's rule).
 
+## Amendment A1 (2026-10-27 11:45, before the runs)
+Run on the RTX box, not Explorer. The box came back idle while Explorer's queue had not started the jobs (cancelled there). B014, whose recipe this is, ran on the box, and B019 A1 ruled the machine out as a cause of different results. B021 seed 2's checkpoint was copied from Explorer, SHA-256 checked.
+
 ## Results
 _Not run._
