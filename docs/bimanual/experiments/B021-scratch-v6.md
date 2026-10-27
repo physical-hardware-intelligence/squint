@@ -70,4 +70,4 @@ Run 2026-10-27 on Explorer A100s, commit `f6d3141`, preflight 8 of 8. Seeds 1-2 
 - The release is lost from scratch too (seed 4), so it is not only a continuation effect.
 - The chain fails because B014's carry policies were trained on B011's handovers. They switch in 74-84 episodes on seed 2, yet put at most 14 in the bin per 128. The carry has to be trained on the handover policy's own handovers (B014's lesson).
 
-**Decision.** By the rule: 1 fails, so the grasp's pay is still wrong, and the top class is again hovering. 3 fails, so the release needs work in its own right. The next steps are proposed in the README and not yet run.
+**Decision.** By the rule: 1 fails, so the grasp's pay is still wrong, and the top class is again hovering. 3 fails, so the release needs work in its own right. Next steps are proposed and not yet run.
