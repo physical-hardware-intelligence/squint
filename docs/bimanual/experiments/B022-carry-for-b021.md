@@ -47,7 +47,7 @@ Run 2026-10-27 11:44-12:42 on the RTX box, tree `db051bc`. Harvest: 4,492 carry 
 
 **Video (16 episodes, seed 7, carry seed 2).** 8 handovers, all 8 switched, 5 in the bin, 3 successes. In the side views at the last frame, the three failed carries end next to the bin rather than in it: one bar stands upright beside it, one lies on the table at its edge. Most of the other episodes never handed over: both grippers are still at the bar near the handover point. This is an impression from 16 low-resolution episodes `[UNVERIFIED]`. Before changing the carry, count where the failed carries end (on the rim, beside the bin, dropped on the way) over 256 episodes.
 
-## Amendment A2: where the failed carries end (written 2026-10-27 13:20, before the run)
+## Amendment A2: where the failed carries end (written 2026-10-27 13:11, before the run)
 `chain_eval.py --failures`, the same chains (B021 seed 2 then each carry seed, seeds 7 + 8). For the episodes that switched to the carry but never had the bar in the bin by step 120, where the bar is at step 120, in the first class that fits:
 - still held, over the bin;
 - still held, elsewhere;
