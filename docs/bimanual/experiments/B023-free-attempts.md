@@ -1,4 +1,4 @@
-# B023: Making a try at the bar free (reward v7)
+# B023: Why the receiver hovers, and reward v7
 
 **Status:** step 0 done 2026-10-27 11:44: the hover is in the wrong place (a scripted close from it grasps 8% of the time). Reward v7 pays the position; its design data, checks and runs follow as amendments.
 
@@ -22,7 +22,7 @@ Run 2026-10-27 11:40-11:44 on the RTX box (tree `db051bc`). Raw: `experiments/bi
 | seeds 1, 3, 4 (hovering) | 250 | **21 (8%)** | 182 (73%) | 47 (19%) |
 | seed 2 (control) | 27 | 11 (41%) | 6 | 10 |
 
-**Reading (fewer than half).** The hover is not in a position to grasp: closing from it mostly closes on air. The receiver stops near the bar's end without its jaws around the bar, so making a try free would not help. v7 must pay the position, jaws around the bar, and not the attempt. The hypothesis written under Why (a failed close costs more than a grip gains) is not what keeps the receiver from closing: closing from where it hovers would fail anyway. Seed 2 hovers far less (27 against 250 across the other three), and its hovers are closer to grippable.
+**Reading (fewer than half).** The hover is not in a position to grasp: closing from it mostly closes on air. The receiver stops near the bar's end without its jaws around the bar, so making a try free would not help. v7 must pay the position, jaws around the bar, and not the attempt. The hypothesis written under Why (a failed close costs more than a grip gains) is not the main problem: closing from where it hovers would fail anyway. Seed 2 hovers far less (27 against 250 across the other three), and its hovers are closer to grippable.
 
 ## Results
 _Not run._
