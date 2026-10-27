@@ -50,7 +50,7 @@ The 2 cm to 1 cm step now pays 0.35 (v6: 0.09). The pull from far away halves (1
 3. The receiver still comes in open: shut beside the bar (class 5) at most 40, and never within 3 cm (class 3) at most 40 (B021: 18-37).
 
 **Decision rule.**
-- 1 and 2 hold: v7 is the handover reward. Train B022's carry on its best seed, and move on to the release (3 of 13 runs or more lost it) and to the real rig.
+- 1 and 2 hold: v7 is the handover reward. Train B022's carry on its best seed, and move on to the release (lost in 8 of 13 continued runs and 1 of 4 from scratch) and to the real rig.
 - 1 holds, 2 fails: the receiver now closes but misses or fails another way; run the A2 probe on it.
 - 1 fails: the last-centimetre pay is not the lever. Next: practice from saved starts with the receiver near the bar (the plan B019 wrote down).
 - 3 fails: halving the far pull lost the approach. Restore it, and pay the last centimetres from a wider band.
