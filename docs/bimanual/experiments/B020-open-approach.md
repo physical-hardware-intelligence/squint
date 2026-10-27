@@ -1,6 +1,6 @@
 # B020: Paying the receiver to come in with an open gripper
 
-**Status:** protocol written 2026-10-26 23:26, before the checks and the runs.
+**Status:** done 2026-10-27. The shut approach is gone on every seed (106 to 0); the receiver then hovers open beside the bar, and two of four seeds lost the release. Continued in [B021](B021-scratch-v6.md).
 
 ## Why
 B019 A2: in 106 of 256 episodes the receiver came in with its gripper already shut and pressed it against the bar's side. All 106 arrived shut; most real grasps arrived open. v2 pays the reach by the grip point's distance to a point on the bar's centre line, so a shut gripper resting on the face loses only 0.125 of 2. The receiver is not missing its aim; nothing tells it to open.
@@ -56,4 +56,18 @@ Each holds if it holds at +3M on at least 3 of the 4 seeds (B019 showed seeds ca
 The A100 preflight (job at 03:24 Explorer time) passed 7 of 8. The failure was "short training exits 0": the trainer finished, saved its checkpoints, printed its own "Cleanup complete. Exiting." and then segfaulted at interpreter exit. That is the known Explorer exit crash (B019's Explorer runs: EXIT 139 after saving, results valid). The dependency then cancelled the four training seeds. `preflight.py` now passes that one case only: exit 139 (or signal 11) with the training log ending on the trainer's cleanup line. Preflight and seeds resubmitted.
 
 ## Results
-_Not run._
+Run 2026-10-27 00:48-03:37 PDT on Explorer A100s, commit `c9ece42`, preflight 8 of 8 (after A2). Raw: `experiments/bimanual/out/b020_counts.txt`.
+
+| 256 episodes (seeds 7 + 8), +3M | Target | B011 (start) | Seed 1 | Seed 2 | Seed 3 | Seed 4 |
+|---|---|---|---|---|---|---|
+| shut beside the bar (class 5) | ≤ 40 | 106 | **0** | **0** | **0** | **0** |
+| open, never closes (class 4) | | 1 | 59 | 195 | 120 | 77 |
+| real handovers | ≥ 150 | 108 | 107 | 55 | 78 | 106 |
+| carries (share of real handovers) | ≥ 90% | 105 (97%) | 97 (91%) | 1 | 2 | 101 (95%) |
+| chained, bar in the bin (best carry) | ≥ 130 | 99 | 82 | 0 | 0 | 93 |
+
+**Predictions.** 1 holds on all four seeds. 2 fails on all four. 3 holds on 2 of 4 and so fails. 4 fails.
+
+**Reading.** v5 removed the shut approach entirely; the receiver then hovered open next to the bar instead. Gripping paid only 0.1 more than hovering, while a missed close now costs the shut share (about 1 point per step until it reopens). Seeds 2 and 3 also lost the release, as continuing B011 did in B019.
+
+**Decision.** By the rule (1 holds, 2 fails): the receiver opens but fails another way, and its top class is hovering (4). Addressed in [B021](B021-scratch-v6.md) (reward v6, trained from scratch).
