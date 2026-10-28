@@ -1,6 +1,6 @@
 # B023: Why the receiver hovers, and reward v7
 
-**Status:** step 0 done 2026-10-27 11:44: the hover is in the wrong place (a scripted close from it grasps 8% of the time). Amendment A1 (reward v7, checks passed) written 12:01, before its runs.
+**Status:** done 2026-10-28. Step 0 (10-27 11:44): the hover is in the wrong place (a scripted close from it grasps 8% of the time). A1, reward v7 from scratch: all three predictions fail. Seeds 1 and 4 stop hovering (26 and 7 of 256), seed 1 makes the most real handovers yet (194) but lets go of the bar in only 16; seed 3 hovers more than ever (161); the receiver more often never gets within 3 cm (43-98 on three seeds).
 
 ## Why
 v5's open share stopped the receiver pressing a shut gripper on the bar: that failure fell from 106 of 256 to 0 on every seed of B020 and B021. In 3 of 4 B021 seeds, though, the receiver now hovers open next to the bar instead (81-95 of 256).
@@ -56,4 +56,27 @@ The 2 cm to 1 cm step now pays 0.35 (v6: 0.09). The pull from far away halves (1
 - 3 fails: halving the far pull lost the approach. Restore it, and pay the last centimetres from a wider band.
 
 ## Results
-_Not run._
+Run on Explorer A100s, commit `90d427f`, preflight 8 of 8 (2026-10-27 12:08 PDT). Seeds 1-2 ran 10-27 22:00 to 10-28 00:46 PDT, seeds 3-4 10-28 03:34-06:48 PDT. Raw: `experiments/bimanual/out/b023_counts.txt`.
+
+| 256 episodes (seeds 7 + 8), 6M | Target | Seed 1 | Seed 2 | Seed 3 | Seed 4 | B021 seeds 1 / 2 / 3 / 4 |
+|---|---|---|---|---|---|---|
+| open, never closes (class 4) | ≤ 40 | **26** | 46 | 161 | **7** | 86 / 17 / 81 / 95 |
+| real handovers | ≥ 150 | **194** | 90 | 88 | 111 | 103 / 168 / 93 / 110 |
+| receiver never within 3 cm (class 3) | ≤ 40 | 43 | 71 | **2** | 98 | 26 / 16 / 28 / 39 |
+| shut beside the bar (class 5) | ≤ 40 | 0 | 0 | 0 | 0 | 0 / 0 / 0 / 0 |
+| carries | | 16 | 90 | 0 | 108 | 98 / 152 / 78 / 8 |
+| chained with B014's carry, bar in the bin (best carry) | | 0 | 8 | 0 | 23 | 12 / 20 / 0 / 1 |
+| at 3M: real handovers, carries, hovering | | 88, 1, 127 | 92, 87, 10 | 39, 0, 206 | 110, 102, 46 | |
+
+(B021's class counts here are recounted from `b021_counts.txt` by each class's full label.)
+
+**Predictions.** 1 fails: hovering is at most 40 on 2 of 4 seeds (1 and 4). 2 fails: only seed 1 reaches 150. 3 fails: no seed shuts beside the bar, but the receiver never gets within 3 cm on more than 40 episodes on 3 of 4 seeds.
+
+**Reading.**
+- v7 does what it was built for on two seeds: hovering falls from 86 and 95 (B021 seeds 1 and 4) to 26 and 7. On seed 3 it does the opposite (161, the most of any run).
+- Seed 1 makes 194 real handovers of 256, the most so far (B021 seed 2: 168), but the picker lets go in only 16. It lost the release by 3M (1 carry). The release is now lost in 2 of 8 from-scratch runs (B021 seed 4, B023 seed 1) and 8 of 13 continued runs.
+- Halving the far pull cost the approach, as A1 warned: "never within 3 cm" rises to 43, 71 and 98 on seeds 1, 2 and 4 (B021: 16-39).
+- Each seed fails in its own way: seed 1 the release, seeds 2 and 4 the approach, seed 3 the hover. Reliability across seeds, not any one failure, is what blocks the handover.
+- The chain is low because B014's carries were trained on B011's handovers (B021's finding); it was not a prediction here.
+
+**Decision.** By the rule, 1 fails (the last-centimetre pay alone is not the lever: next, practice from saved starts with the receiver near the bar) and 3 fails (restore the far pull and pay the last centimetres from a wider band). Proposed, not yet run.

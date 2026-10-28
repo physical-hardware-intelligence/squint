@@ -47,7 +47,7 @@ ALOHA (Zhao et al. 2023) defines Transfer Cube (right arm hands a cube to the le
 | [B020](experiments/B020-open-approach.md) | Paying the receiver to come in with an open gripper (reward v5): more real handovers? | done: shut approach gone (106 → 0) on all seeds; the receiver then hovers open; release lost on seeds 2-3 |
 | [B021](experiments/B021-scratch-v6.md) | The handover from scratch with reward v6 (gripping at the handover point pays more than hovering) | done: seed 2 the best so far (168 real handovers, 152 carries of 256); seeds 1, 3, 4 hover or lost the release; B014's carry does not take the new handovers |
 | [B022](experiments/B022-carry-for-b021.md) | A carry policy trained on B021 seed 2's own handovers: the best chain so far? | done: yes, 133 of 256 in the bin (52%; before 99). Misses mostly end on the bin's rim or beside it (45 of 59): placement is imprecise; 43 bars left the bin again |
-| [B023](experiments/B023-free-attempts.md) | Why the receiver hovers, and reward v7 (half the reach pays the last centimetres) | step 0: the hover is ~2 cm short, where closing grasps 8%; v7 from scratch running |
+| [B023](experiments/B023-free-attempts.md) | Why the receiver hovers, and reward v7 (half the reach pays the last centimetres) | done: step 0, the hover is ~2 cm short (closing from it grasps 8%). v7 fails all three predictions: hovering gone on seeds 1 and 4, but seed 3 hovers more, the approach weakens on 3 seeds, and seed 1 (194 real handovers, the most so far) lost the release |
 
 ## Story so far
 1. **B001.** The layout works; scripted grasps don't, so learning has to find the grasp.
